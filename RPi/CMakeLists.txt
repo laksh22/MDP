@@ -4,3 +4,11 @@ project(RPi C)
 set(CMAKE_C_STANDARD 99)
 
 add_executable(RPi main.c queue/queue.c queue/queue.h)
+
+add_subdirectory(queue)
+add_subdirectory(tap)
+add_subdirectory(tests)
+
+enable_testing()
+
+add_test(NAME DoTestQueue COMMAND TestQueue)
