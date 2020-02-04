@@ -1,5 +1,9 @@
 #include "DualVNH5019MotorShield.h"
 
+#define SPEED 400
+#define REVERSE -400
+#define BRAKE 400
+
 DualVNH5019MotorShield md; // M1 = left, M2 = right
 
 void setup()
@@ -11,48 +15,50 @@ void setup()
 
 void loop()
 {
-  moveFront(200);
-  stopIfFault();
+  moveFront();
   delay(1000);
-  md.setBrakes(400, 400);
+  stop();
 
-  moveBack(200);
-  stopIfFault();
+  moveBack();
   delay(1000);
-  md.setBrakes(400, 400);
+  stop();
 
-  turnLeft(200);
-  stopIfFault();
+  turnLeft();
   delay(1000);
-  md.setBrakes(400, 400);
+  stop();
 
-  turnRight(200);
-  stopIfFault();
+  turnRight();
   delay(1000);
-  md.setBrakes(400, 400);
+  stop();
 }
 
-void moveFront(int distance)
+void moveFront()
 {
-  md.setSpeeds(distance, distance);
+  md.setSpeeds(SPEED, SPEED);
+  stopIfFault();
 }
 
-void moveBack(int distance)
+void moveBack()
 {
-  distance = 0-distance;
-  md.setSpeeds(distance, distance);
+  md.setSpeeds(REVERSE, REVERSE);
+  stopIfFault();
 }
 
-void turnLeft(int angle)
+void turnLeft()
 {
-  int leftAngle = 0 - angle;
-  md.setSpeeds(leftAngle, angle);
+  md.setSpeeds(REVERSE, SPEED);
+  stopIfFault();
 }
 
-void turnRight(int angle)
+void turnRight()
 {
-  int rightAngle = 0 - angle;
-  md.setSpeeds(angle, rightAngle);
+  md.setSpeeds(SPEED, REVERSE);
+  stopIfFault();
+}
+
+void stop()
+{
+  md.setBrakes(BRAKE, BRAKE)
 }
 
 void stopIfFault()
