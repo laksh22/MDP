@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include "tcp.h"
 #include "../hub/hub.h"
+#include "../settings.h"
 
 struct sockaddr_in servaddr, tcp_client;
 socklen_t tcp_opt = sizeof(tcp_client);

@@ -6,8 +6,6 @@
 
 #define SERVER_IP "192.168.17.17"
 #define SERVER_PORT 4042
-#define SA struct sockaddr
-#define MAX 1024
 
 extern struct sockaddr_in servaddr, tcp_client;
 extern socklen_t tcp_opt;
