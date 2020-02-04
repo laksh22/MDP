@@ -1,6 +1,6 @@
 #include "DualVNH5019MotorShield.h"
 
-DualVNH5019MotorShield md;
+DualVNH5019MotorShield md; // M1 = left, M2 = right
 
 void setup()
 {
@@ -11,32 +11,48 @@ void setup()
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
-  for (int i = -400; i < 400; i++)
-  {
-    setLeftSpeed(i);
-    setRightSpeed(i);
+  moveFront(200);
+  stopIfFault();
+  delay(1000);
+  md.setBrakes(400, 400);
 
-    stopIfFault();
-    if (i % 100 == 0)
-    {
-      Serial.print("M1 current: ");
-      Serial.print(md.getM1CurrentMilliamps());
-      Serial.print(", M2 current: ");
-      Serial.println(md.getM2CurrentMilliamps());
-    }
-    delay(2);
-  }
+  moveBack(200);
+  stopIfFault();
+  delay(1000);
+  md.setBrakes(400, 400);
+
+  turnLeft(200);
+  stopIfFault();
+  delay(1000);
+  md.setBrakes(400, 400);
+
+  turnRight(200);
+  stopIfFault();
+  delay(1000);
+  md.setBrakes(400, 400);
 }
 
-void setLeftSpeed(int speed)
+void moveFront(int distance)
 {
-  md.setM1Speed(speed);
+  md.setSpeeds(distance, distance);
 }
 
-void setRightSpeed(int speed)
+void moveBack(int distance)
 {
-  md.setM2Speed(speed);
+  distance = 0-distance;
+  md.setSpeeds(distance, distance);
+}
+
+void turnLeft(int angle)
+{
+  int leftAngle = 0 - angle;
+  md.setSpeeds(leftAngle, angle);
+}
+
+void turnRight(int angle)
+{
+  int rightAngle = 0 - angle;
+  md.setSpeeds(angle, rightAngle);
 }
 
 void stopIfFault()
