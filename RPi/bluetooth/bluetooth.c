@@ -22,7 +22,7 @@ int bt_sock, client;
 sdp_session_t *register_service(uint8_t rfcomm_channel) {
     // Variables initialised for the registration of the sdp server
     const char *service_name = "2020Group01 Bluetooth server";
-    const char *svc_dsc = "MDP BT Server";
+    const char *svc_dsc = "MDP Bluetooth Server";
     const char *service_prov = "2020Group01";
 
     uuid_t root_uuid, l2cap_uuid, rfcomm_uuid, svc_uuid, svc_class_uuid;
