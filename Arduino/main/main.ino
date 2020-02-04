@@ -1,15 +1,26 @@
-#include "DualVNH5019MotorShield.h"
+#include <DualVNH5019MotorShield.h>
+#include <SharpIR.h>
 
 #define SPEED 400
 #define REVERSE -400
 #define BRAKE 400
 
+#define SRANGE A0 // PS1
+#define LRANGE A1 // PS2
+#define SMODEL 1080 // Short range sensor
+#define LMODEL 20150 // Long range sensor
+
+// Initialise motor shield
 DualVNH5019MotorShield md; // M1 = left, M2 = right
 
+// Initialise IR sensors
+SharpIR sensorSR(SRANGE, SMODEL);  
+SharpIR sensorLR(LRANGE, LMODEL);
+
 void setup()
-{
-  Serial.begin(115200);
-  Serial.println("Dual VNH5019 Motor Shield");
+{  
+  Serial.begin(9600);
+  Serial.println("Starting...");
   md.init();
 }
 
@@ -30,6 +41,17 @@ void loop()
   turnRight();
   delay(1000);
   stop();
+
+  int shortDistance = getIRDistance(sensorSR);
+  int longDistance = getIRDistance(sensorLR);
+  Serial.print("Short Range IR: ");
+  Serial.print(shortDistance);
+  Serial.print(", Long Range IR: ");
+  Serial.println(longDistance);
+}
+
+int getIRDistance(SharpIR sensor) {
+  return sensor.distance();
 }
 
 void moveFront()
@@ -58,7 +80,7 @@ void turnRight()
 
 void stop()
 {
-  md.setBrakes(BRAKE, BRAKE)
+  md.setBrakes(BRAKE, BRAKE);
 }
 
 void stopIfFault()
