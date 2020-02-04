@@ -31,7 +31,7 @@ char *tcp_read();
 // To setup thread to start writing data received from TCP to devices
 void *tcp_sender_create(void *args);
 
-//To send data to device through TCP port
+// To send data to device through TCP port
 int tcp_send(char *msg);
 
 #endif //RPI_RPI_TCP_TCP_H_
