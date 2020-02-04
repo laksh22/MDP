@@ -108,7 +108,7 @@ int serial_send(char *msg) {
     return 0;
 }
 
-void *serial_send_create(void *args) {
+void *serial_sender_create(void *args) {
     char *q;
 
     // Endless loop
