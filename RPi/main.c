@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "bluetooth/bluetooth.h"
 #include "queue/queue.h"
 
 int main() {

@@ -1,7 +1,3 @@
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/rfcomm.h>
-#include <bluetooth/sdp.h>
-#include <bluetooth/sdp_lib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>

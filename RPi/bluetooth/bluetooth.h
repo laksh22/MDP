@@ -1,6 +1,11 @@
 #ifndef RPI_RPI_BLUETOOTH_BLUETOOTH_H_
 #define RPI_RPI_BLUETOOTH_BLUETOOTH_H_
 
+#include <bluetooth/bluetooth.h>
+#include <bluetooth/rfcomm.h>
+#include <bluetooth/sdp.h>
+#include <bluetooth/sdp_lib.h>
+
 #define BT_PORT 3
 
 // To create and establish service discovery protocol
