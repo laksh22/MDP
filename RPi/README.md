@@ -1,13 +1,13 @@
-#Running
+# Running
 TODO
 
-##Bluetooth
+## Bluetooth
 Make sure you have the required bluetooth header files by running:
 ```shell script
 sudo apt-get install bluez libbluetooth-dev
 ```
 
-##Serial
+## Serial
 Make sure you have the required wiringPi and wiringSerial header files by running:
 If you are working on a linux based machine:
 ```shell script
