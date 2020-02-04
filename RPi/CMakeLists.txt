@@ -3,7 +3,7 @@ project(RPi C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(RPi main.c queue/queue.c queue/queue.h tcp/tcp.c tcp/tcp.h hub/hub.h hub/hub.c bluetooth/bluetooth.c bluetooth/bluetooth.h settings.h)
+add_executable(RPi main.c settings.h)
 
 add_subdirectory(bluetooth)
 add_subdirectory(hub)

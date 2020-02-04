@@ -12,6 +12,9 @@ struct sockaddr_in servaddr, tcp_client;
 socklen_t tcp_opt = sizeof(tcp_client);
 int tcp_sockfd, clientconn, isSetOption = 1;
 
+Queue *t_queue;
+pthread_mutex_t lock;
+
 int tcp_connect() {
   // Creates an IPv4 two-way endpoint connection for communication
   tcp_sockfd = socket(AF_INET, SOCK_STREAM, 0);

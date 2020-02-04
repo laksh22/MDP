@@ -25,5 +25,4 @@ char *front(Queue *queue);
 // Returns the last item in the queue
 char *rear(Queue *queue);
 
-
 #endif //RPI_QUEUE_H

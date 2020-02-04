@@ -6,6 +6,9 @@
 #include "hub.h"
 #include "../tcp/tcp.h"
 
+Queue *b_queue;
+Queue *s_queue;
+
 void distribute_command(char *buf, char source) {
   const char s[2] = "!";
   char *point;
