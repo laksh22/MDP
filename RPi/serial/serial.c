@@ -1,14 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <wiringPi.h>
 #include <wiringSerial.h>
 #include "../settings.h"
 #include "../hub/hub.h"
 
 int fd_serial;
 
-// Connect and verify the use of serial connection
 int serial_connect() {
     fd_serial = serialOpen(SERIAL_PORT, BAUD);
     if (fd_serial == -1) {
@@ -21,13 +19,11 @@ int serial_connect() {
     }
 }
 
-// Disconnect the use of serial connection
 void serial_disconnect() {
     serialClose(fd_serial);
     printf("[serial_disconnect]: Serial port connection closed succesffully!\n");
 }
 
-// To reconnect serial client
 void serial_reconnect() {
     int conn = 0;
 
@@ -41,7 +37,6 @@ void serial_reconnect() {
     printf("[serial_reconnect]: Serial connection successfully reconnected!\n");
 }
 
-// Read from the serial port if data is available
 char *serial_read() {
     int bytes_read;
     int count = 0;
@@ -84,7 +79,6 @@ char *serial_read() {
     }
 }
 
-// Setup thread to read from serial port
 void *serial_reader_create(void *args) {
     char read_buf[MAX];
     char *rpointer;
@@ -101,7 +95,6 @@ void *serial_reader_create(void *args) {
     }
 }
 
-// Send data to device through serial port
 int serial_send(char *msg) {
     char send[MAX];
     if (strlen(msg) > 0) {
@@ -115,7 +108,6 @@ int serial_send(char *msg) {
     return 0;
 }
 
-// Setup a thread to start writing data received from serial port to devices
 void *serial_send_create(void *args) {
     char *q;
 
