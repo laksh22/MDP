@@ -48,7 +48,7 @@ int tcp_connect() {
   // Configure server to listen for incoming connections
   if (listen(tcp_sockfd, 2) != 0) {
     perror(
-        "[tcp_connect]: Error encountered when listening for TCP connections: ");
+            "[tcp_connect]: Error encountered when listening for TCP connections: ");
     return 0;
   } else {
     printf("[tcp_connect]: TCP Server is now listening...\n");
@@ -72,7 +72,7 @@ void tcp_disconnect(int sock) {
            sock);
   } else {
     perror(
-        "[tcp_disconnect]: Error encountered when trying to close TCP connection: ");
+            "[tcp_disconnect]: Error encountered when trying to close TCP connection: ");
   }
 }
 
@@ -101,7 +101,7 @@ void *tcp_reader_create(void *args) {
       distribute_command(read_buf, 't');
     } else {
       perror(
-          "[tcp_reader_create]: Error encountered when receiving data from tcp_read: ");
+              "[tcp_reader_create]: Error encountered when receiving data from tcp_read: ");
     }
   }
 }
@@ -130,8 +130,8 @@ char *tcp_read() {
         }
       } else {
         printf(
-            "[tcp_read]: Invalid string [%s] received, please send a new command\n",
-            tcp_buf);
+                "[tcp_read]: Invalid string [%s] received, please send a new command\n",
+                tcp_buf);
         return NULL;
       }
     } else {
@@ -141,6 +141,7 @@ char *tcp_read() {
     }
   }
 }
+
 void *tcp_sender_create(void *args) {
   char *q;
 
