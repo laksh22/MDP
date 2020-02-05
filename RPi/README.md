@@ -43,4 +43,4 @@ Please set them or make sure they are set and tested correctly in the CMake file
 -- Configuring incomplete, errors occurred!
 ```
 
-To resolve this issue, you probably forgot to run the [install Bluetooth dependency command](###Bluetooth). Make sure to run the package install command.
+To resolve this issue, you probably forgot to run the [install Bluetooth dependency command](#bluetooth). Make sure to run the package install command.
