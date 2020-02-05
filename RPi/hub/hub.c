@@ -46,9 +46,9 @@ void write_hub(char *wpointer, char source) {
 
         tcp_send(wpointer + 1);
       } else if (tolower(wpointer[1]) == 'b') {
-        // TODO: bt_send((void *) wpointer + 2);
+          bt_send((void *) wpointer + 2);
       } else if (tolower(wpointer[1]) == 's') {
-        // TODO: serial_send((void *) wpointer + 2);
+          serial_send((void *) wpointer + 2);
       } else if (tolower(wpointer[1]) == 'r') {
 
         while (1) {
