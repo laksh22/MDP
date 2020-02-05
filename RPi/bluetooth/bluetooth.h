@@ -27,6 +27,9 @@ void *bt_reader_create(void *args);
 char *bt_read();
 
 // Setup thread to start writing data received from Bluetooth to device
-void* bt_sender_create(void *args);
+void *bt_sender_create(void *args);
+
+// To send data to device through Bluetooth port
+int bt_send(char *msg);
 
 #endif //RPI_RPI_BLUETOOTH_BLUETOOTH_H_

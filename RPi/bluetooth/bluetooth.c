@@ -23,7 +23,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
   uuid_t root_uuid, l2cap_uuid, rfcomm_uuid, svc_uuid, svc_class_uuid;
 
   sdp_list_t *l2cap_list = 0, *rfcomm_list = 0, *root_list = 0, *proto_list = 0,
-      *access_proto_list = 0, *svc_class_list = 0, *profile_list = 0;
+          *access_proto_list = 0, *svc_class_list = 0, *profile_list = 0;
 
   sdp_data_t *channel = 0;
   sdp_profile_desc_t profile;
@@ -134,14 +134,14 @@ int bt_connect() {
     return 0;
   } else {
     printf(
-        "[bt_connect]: Bluetooth Server is now listening for connections...\n");
+            "[bt_connect]: Bluetooth Server is now listening for connections...\n");
   }
 
   // Accepts the incoming data packet from client
   client = accept(bt_sock, (SA *) &rem_addr, &opt);
   if (client < 0) {
     perror(
-        "[bt_connect]: Error encountered when trying to accept BT clients...: ");
+            "[bt_connect]: Error encountered when trying to accept BT clients...: ");
     return 0;
   } else {
     printf("[bt_connect]: BT Server has accepted the client successfully...\n");
@@ -159,7 +159,7 @@ void bt_disconnect() {
     printf("[bt_disconnect]: Bluetooth connection is closed successfully!\n");
   } else {
     perror(
-        "[bt_disconnect]: Error encountered when trying to close Bluetooth connection: ");
+            "[bt_disconnect]: Error encountered when trying to close Bluetooth connection: ");
   }
 }
 
@@ -203,8 +203,8 @@ char *bt_read() {
         }
       } else {
         printf(
-            "[bt_read]: Invalid string [%s] received, please send a new command\n",
-            bt_buf);
+                "[bt_read]: Invalid string [%s] received, please send a new command\n",
+                bt_buf);
       }
     } else {
       perror("[bt_read]: Error encountered when trying to read from Bluetooth: ");
@@ -225,7 +225,7 @@ void bt_reconnect() {
   }
 
   printf(
-      "[bt_reconnect]: Bluetooth services have been successfully reconnected!\n");
+          "[bt_reconnect]: Bluetooth services have been successfully reconnected!\n");
 }
 
 void *bt_sender_create(void *args) {
@@ -240,4 +240,23 @@ void *bt_sender_create(void *args) {
       pthread_mutex_unlock(&lock);
     }
   }
+}
+
+int bt_send(char *msg) {
+  int bytes_write = 0;
+  char send[MAX];
+
+  if (strlen(msg) > 0) {
+    strcpy(send, msg);
+    strcat(send, "\n");
+    bytes_write = write(client, msg, strlen(msg));
+    if (bytes_write > 0) {
+      printf("[bt_send]: RPi send message [%s] to BT.\n", msg);
+      fflush(stdout);
+      return 1;
+    } else {
+      perror("[bt_send]: Encountered error when RPi tried to send to BT: ");
+    }
+  }
+  return 0;
 }
