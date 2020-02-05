@@ -1,3 +1,4 @@
+#include <pthread.h>
 #include <stdio.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -12,6 +13,8 @@
 int tcp_status, bt_status, serial_status;
 pthread_mutex_t lock;
 
+Queue *b_queue, *s_queue, *t_queue;
+
 int main() {
   // Ctrl+C to terminate the entire program properly
   signal(SIGINT, all_disconnect);
@@ -19,7 +22,7 @@ int main() {
   // Turn on BT discovery
   system("sudo hciconfig hci0 piscan");
 
-  //Create the respective queues for each devices
+  // Create the respective queues for each devices
   t_queue = createQueue(QSIZE);
   b_queue = createQueue(QSIZE);
   s_queue = createQueue(QSIZE);
