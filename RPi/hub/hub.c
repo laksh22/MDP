@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hub.h"
+#include "../bluetooth/bluetooth.h"
+#include "../serial/serial.h"
 #include "../tcp/tcp.h"
 
 Queue *b_queue;
@@ -17,7 +19,7 @@ void distribute_command(char *buf, char source) {
 
   if (!point) {
     perror(
-        "[distribute_command]: Error encountered when splitting received data: ");
+            "[distribute_command]: Error encountered when splitting received data: ");
   } else {
     while (point != NULL) {
       pthread_mutex_lock(&lock);
@@ -33,6 +35,7 @@ void distribute_command(char *buf, char source) {
     }
   }
 }
+
 void write_hub(char *wpointer, char source) {
   if (wpointer) {
     if (strlen(wpointer) > 0) {
@@ -46,9 +49,9 @@ void write_hub(char *wpointer, char source) {
 
         tcp_send(wpointer + 1);
       } else if (tolower(wpointer[1]) == 'b') {
-        // TODO: bt_send((void *) wpointer + 2);
+        bt_send((void *) wpointer + 2);
       } else if (tolower(wpointer[1]) == 's') {
-        // TODO: serial_send((void *) wpointer + 2);
+        serial_send((void *) wpointer + 2);
       } else if (tolower(wpointer[1]) == 'r') {
 
         while (1) {
@@ -60,9 +63,8 @@ void write_hub(char *wpointer, char source) {
         }
 
       } else {
-        printf(
-            "[write_hub]: Incorrect format provided, message [%s] will be dropped!\n",
-            wpointer);
+        printf("[write_hub]: Incorrect format provided, message [%s] will be dropped!\n",
+               wpointer);
       }
     }
   } else {
@@ -70,10 +72,10 @@ void write_hub(char *wpointer, char source) {
   }
 
 }
+
 void all_disconnect(int sig) {
-  printf(
-      "[all_disconnect]: %d signal received, terminating all connection ports!",
-      sig);
+  printf("[all_disconnect]: %d signal received, terminating all connection ports!",
+         sig);
   tcp_disconnect(tcp_sockfd);
   // TODO: bt_disconnect();
   // TODO: serial_disconnect();

@@ -22,6 +22,6 @@ void *serial_reader_create(void *args);
 int serial_send(char *msg);
 
 // Setup a thread to start writing data received from serial port to devices
-void *serial_send_create(void *args);
+void *serial_sender_create(void *args);
 
 #endif //RPI_SERIAL_H
