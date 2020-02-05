@@ -1,13 +1,17 @@
-# Running
+# RPi communication Hub
 TODO
 
-## Bluetooth
+## Compiling
+
+## Dependencies
+
+### Bluetooth
 Make sure you have the required bluetooth header files by running:
 ```shell script
 sudo apt-get install bluez libbluetooth-dev
 ```
 
-## Serial
+### Serial
 **This is only required when developing on a non Raspbian platform with no wiringPi header files.**
 
 Make sure you have the required wiringPi and wiringSerial header files by running (If you are working on a linux based machine):
