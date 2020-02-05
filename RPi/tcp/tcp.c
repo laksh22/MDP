@@ -150,7 +150,7 @@ void *tcp_sender_create(void *args) {
       pthread_mutex_lock(&lock);
       q = dequeue(t_queue);
 
-      // TODO: write to hub
+      write_hub(q, 't');
       pthread_mutex_unlock(&lock);
     }
   }
