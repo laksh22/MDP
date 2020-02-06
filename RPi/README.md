@@ -28,7 +28,7 @@ Make sure you have the required bluetooth header files by running:
 ```shell script
 sudo apt-get install bluez libbluetooth-dev
 ```
-A well known SPP UUID `00001101-0000-1000-8000-00805F9B34FB` should be used when connecting to to a Bluetooth serial board (Big-endian).
+A well known SPP UUID `00001101-0000-1000-8000-00805F9B34FB` should be used when connecting to to a Bluetooth serial board.
 
 
 This 128-bit number is used to identify this Bluetooth service. The words are ordered from most to least significant (Big-endian).
