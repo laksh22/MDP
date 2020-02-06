@@ -10,8 +10,8 @@
 #include "../hub/hub.h"
 
 // BT Variables
-// Unique UUID 00000000-0000-0000-0000-000000000000
-uint32_t svc_uuid_int[] = {0x00000000, 0x00000000, 0x00000000, 0x00000000};
+// UUID 01110000-0010-0000-8000-0080fb349b5f
+uint32_t svc_uuid_int[] = {0x00001101, 0x00001000, 0x80000080, 0x5F9B34FB};
 int bt_sock, client;
 
 sdp_session_t *register_service(uint8_t rfcomm_channel) {
@@ -23,7 +23,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
   uuid_t root_uuid, l2cap_uuid, rfcomm_uuid, svc_uuid, svc_class_uuid;
 
   sdp_list_t *l2cap_list = 0, *rfcomm_list = 0, *root_list = 0, *proto_list = 0,
-          *access_proto_list = 0, *svc_class_list = 0, *profile_list = 0;
+      *access_proto_list = 0, *svc_class_list = 0, *profile_list = 0;
 
   sdp_data_t *channel = 0;
   sdp_profile_desc_t profile;
@@ -133,14 +133,15 @@ int bt_connect() {
     perror("[bt_connect]: Error encountered when listing for BT connections: ");
     return 0;
   } else {
-    printf("[bt_connect]: Bluetooth Server is now listening for connections...\n");
+    printf(
+        "[bt_connect]: Bluetooth Server is now listening for connections...\n");
   }
 
   // Accepts the incoming data packet from client
   client = accept(bt_sock, (SA *) &rem_addr, &opt);
   if (client < 0) {
     perror(
-            "[bt_connect]: Error encountered when trying to accept BT clients...: ");
+        "[bt_connect]: Error encountered when trying to accept BT clients...: ");
     return 0;
   } else {
     printf("[bt_connect]: BT Server has accepted the client successfully...\n");
@@ -158,7 +159,7 @@ void bt_disconnect() {
     printf("[bt_disconnect]: Bluetooth connection is closed successfully!\n");
   } else {
     perror(
-            "[bt_disconnect]: Error encountered when trying to close Bluetooth connection: ");
+        "[bt_disconnect]: Error encountered when trying to close Bluetooth connection: ");
   }
 }
 
@@ -173,7 +174,8 @@ void *bt_reader_create(void *args) {
       memset(rpointer, '\0', MAX);
       distribute_command(read_buf, 'b');
     } else {
-      perror("[bt_reader_create]: Error encountered when receiving data from bt_read:  ");
+      perror(
+          "[bt_reader_create]: Error encountered when receiving data from bt_read:  ");
     }
   }
 }
@@ -201,8 +203,9 @@ char *bt_read() {
           return p;
         }
       } else {
-        printf("[bt_read]: Invalid string [%s] received, please send a new command\n",
-                bt_buf);
+        printf(
+            "[bt_read]: Invalid string [%s] received, please send a new command\n",
+            bt_buf);
       }
     } else {
       perror("[bt_read]: Error encountered when trying to read from Bluetooth: ");
@@ -222,7 +225,8 @@ void bt_reconnect() {
     sleep(1);
   }
 
-  printf("[bt_reconnect]: Bluetooth services have been successfully reconnected!\n");
+  printf(
+      "[bt_reconnect]: Bluetooth services have been successfully reconnected!\n");
 }
 
 void *bt_sender_create(void *args) {

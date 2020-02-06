@@ -28,6 +28,16 @@ Make sure you have the required bluetooth header files by running:
 ```shell script
 sudo apt-get install bluez libbluetooth-dev
 ```
+A well known SPP UUID `00001101-0000-1000-8000-00805F9B34FB` should be used when connecting to to a Bluetooth serial board (Big-endian).
+
+
+This 128-bit number is used to identify this Bluetooth service. The words are ordered from most to least significant (Big-endian).
+ 
+```c
+uint32_t svc_uuid_int[] = { 0x00001101, 0x00001000, 0x80000080, 0x5F9B34FB };
+```
+
+Read more about why this string was use [here](https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#createRfcommSocketToServiceRecord%28java.util.UUID%29).  
 
 ### Serial
 **This is only required when developing on a non Raspbian platform with no wiringPi header files.**
