@@ -2,7 +2,10 @@
 TODO
 
 ## Compiling
-You must be in the `RPi` directory before running the commands below.
+You must be in the `RPi/src` directory before running the commands below.
+```shell script
+cd RPi/src/
+```
 
 To compile, run the following commands:
 ```shell script
