@@ -129,8 +129,7 @@ char *tcp_read() {
           return p;
         }
       } else {
-        printf(
-                "[tcp_read]: Invalid string [%s] received, please send a new command\n",
+        printf("[tcp_read]: Invalid string [%s] received, please send a new command\n",
                 tcp_buf);
         return NULL;
       }
