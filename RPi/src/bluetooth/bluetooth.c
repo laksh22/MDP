@@ -107,7 +107,7 @@ int bt_connect() {
     perror("bt_connect: Error encountered when creating BT socket: ");
     return 0;
   } else {
-    printf("bt_connect: Creation of BT socket successful....\n");
+    printf("bt_connect: Creation of BT socket successful...\n");
   }
 
   // Clears the memory of the loc_addr variable
