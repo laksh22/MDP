@@ -74,10 +74,10 @@ void write_hub(char *wpointer, char source) {
 }
 
 void all_disconnect(int sig) {
-  printf("[all_disconnect]: %d signal received, terminating all connection ports!",
+  printf("[all_disconnect]: %d signal received, terminating all connection ports!\n",
          sig);
   tcp_disconnect(tcp_sockfd);
-  // TODO: bt_disconnect();
-  // TODO: serial_disconnect();
+  bt_disconnect();
+  serial_disconnect();
   exit(EXIT_SUCCESS);
 }

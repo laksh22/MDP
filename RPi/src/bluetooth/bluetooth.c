@@ -104,10 +104,10 @@ int bt_connect() {
   // Creates an RFCOMM bluetooth socket for communication
   bt_sock = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
   if (bt_sock == -1) {
-    perror("bt_connect: Error encountered when creating BT socket: ");
+    perror("[bt_connect]: Error encountered when creating BT socket: ");
     return 0;
   } else {
-    printf("bt_connect: Creation of BT socket successful....\n");
+    printf("[bt_connect]: Creation of BT socket successful...\n");
   }
 
   // Clears the memory of the loc_addr variable
@@ -133,8 +133,7 @@ int bt_connect() {
     perror("[bt_connect]: Error encountered when listing for BT connections: ");
     return 0;
   } else {
-    printf(
-            "[bt_connect]: Bluetooth Server is now listening for connections...\n");
+    printf("[bt_connect]: Bluetooth Server is now listening for connections...\n");
   }
 
   // Accepts the incoming data packet from client
@@ -174,7 +173,7 @@ void *bt_reader_create(void *args) {
       memset(rpointer, '\0', MAX);
       distribute_command(read_buf, 'b');
     } else {
-      perror("readBT: Error encountered when receiving data from bt_read:  ");
+      perror("[bt_reader_create]: Error encountered when receiving data from bt_read:  ");
     }
   }
 }
@@ -202,8 +201,7 @@ char *bt_read() {
           return p;
         }
       } else {
-        printf(
-                "[bt_read]: Invalid string [%s] received, please send a new command\n",
+        printf("[bt_read]: Invalid string [%s] received, please send a new command\n",
                 bt_buf);
       }
     } else {
@@ -224,8 +222,7 @@ void bt_reconnect() {
     sleep(1);
   }
 
-  printf(
-          "[bt_reconnect]: Bluetooth services have been successfully reconnected!\n");
+  printf("[bt_reconnect]: Bluetooth services have been successfully reconnected!\n");
 }
 
 void *bt_sender_create(void *args) {

@@ -28,7 +28,7 @@ void enqueue(Queue *queue, char *item) {
     queue->rear = (queue->rear + 1) % queue->capacity;
     queue->array[queue->rear] = item;
     queue->size = queue->size + 1;
-    printf("Value [%s] enqueued to queue\n", item);
+    printf("[enqueue]: Value [%s] enqueued to queue\n", item);
   }
 }
 
@@ -37,7 +37,7 @@ char *dequeue(Queue *queue) {
     char *item = queue->array[queue->front];
     queue->front = (queue->front + 1) % queue->capacity;
     queue->size = queue->size - 1;
-    printf("dequeue: Value [%s] dequeued from queue\n", item);
+    printf("[dequeue]: Value [%s] dequeued from queue\n", item);
     return item;
   }
 

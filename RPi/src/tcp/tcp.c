@@ -42,7 +42,7 @@ int tcp_connect() {
   if ((bind(tcp_sockfd, (SA *) &servaddr, sizeof(servaddr))) != 0) {
     perror("[tcp_connect]: Error encountered when binding trying to bind: ");
   } else {
-    printf("[tcp_connect]: TCP Socket successfully binded....\n");
+    printf("[tcp_connect]: TCP Socket successfully binded...\n");
   }
 
   // Configure server to listen for incoming connections
@@ -129,8 +129,7 @@ char *tcp_read() {
           return p;
         }
       } else {
-        printf(
-                "[tcp_read]: Invalid string [%s] received, please send a new command\n",
+        printf("[tcp_read]: Invalid string [%s] received, please send a new command\n",
                 tcp_buf);
         return NULL;
       }
