@@ -2,7 +2,13 @@
 TODO
 
 ## Compiling
-TODO
+You must be in the `RPi` directory before running the commands below.
+
+To compile, run the following commands:
+```shell script
+cmake .
+make
+``` 
 
 ## Running
 TODO
