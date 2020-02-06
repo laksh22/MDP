@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include "../queue/queue.h"
 
-#define SERVER_IP "192.168.17.17"
+#define SERVER_IP "192.168.101.1"
 #define SERVER_PORT 4042
 
 extern struct sockaddr_in servaddr, tcp_client;
