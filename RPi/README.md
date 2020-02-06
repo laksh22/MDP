@@ -9,7 +9,9 @@ cd RPi/src/
 
 To compile, run the following commands:
 ```shell script
-cmake .
+mkdir build
+cd build
+cmake ..
 make
 ``` 
 
