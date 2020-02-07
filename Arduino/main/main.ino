@@ -1,5 +1,4 @@
 #include <DualVNH5019MotorShield.h>
-//#include <SharpIR.h>
 
 #define SPEED 400
 #define REVERSE -400
@@ -7,12 +6,8 @@
 
 #define SPIN A0 // PS1
 #define LPIN A1 // PS2
-///#define SMODEL 1080 // Short range sensor
-//#define LMODEL 20150 // Long range sensor
-
-// Initialise IR sensors
-//SharpIR sensorSR(SPIN, /*SharpIR::GP2Y0A21YK0F*/ SMODEL);  
-//SharpIR sensorLR(LPIN, /*SharpIR::GP2Y0A02YK0F*/ LMODEL);
+#define SMODEL 1080 // Short range sensor
+#define LMODEL 20150 // Long range sensor
 
 // Initialise motor shield
 DualVNH5019MotorShield md; // M1 = left, M2 = right
@@ -28,22 +23,6 @@ void setup()
 
 void loop()
 {
-//  moveFront();
-//  delay(1000);
-//  stop();
-
-//  moveBack();
-//  delay(1000);
-//  stop();
-//
-//  turnLeft();
-//  delay(1000);
-//  stop();
-//
-//  turnRight();
-//  delay(1000);
-//  stopMotors();
-
   delay(500);
   
   int longDistance = getLongIRDistance(LPIN);
