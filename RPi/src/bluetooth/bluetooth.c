@@ -32,10 +32,6 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
 
   char str[256] = "";
 
-  // This function uses a deprecated method which is not supported in Bluez 5
-  // Execute the following to circumvent it
-  system("sudo chmod 777 /var/run/sdp");
-
   // Set the general service ID
   sdp_uuid128_create(&svc_uuid, &svc_uuid_int);
   sdp_set_service_id(&record, svc_uuid);
@@ -61,7 +57,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
   // Set l2cap information
   sdp_uuid16_create(&l2cap_uuid, L2CAP_UUID);
   l2cap_list = sdp_list_append(0, &l2cap_uuid);
-  proto_list = sdp_list_append(0, &l2cap_list);
+  proto_list = sdp_list_append(0, l2cap_list);
 
   // Register the RFCOMM channel for RFCOMM sockets
   sdp_uuid16_create(&rfcomm_uuid, RFCOMM_UUID);
