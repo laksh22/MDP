@@ -10,8 +10,8 @@
 #include "../hub/hub.h"
 
 // BT Variables
-// UUID 01110000-0010-0000-8000-0080fb349b5f
-uint32_t svc_uuid_int[] = {0x00001101, 0x00001000, 0x80000080, 0x5F9B34FB};
+// UUID 00001101-0000-1000-8000-00805f9b34fb
+uint32_t svc_uuid_int[] = {0x01110000, 0x00100000, 0x80000080, 0xFB349B5F};
 int bt_sock, client;
 
 sdp_session_t *register_service(uint8_t rfcomm_channel) {
@@ -43,7 +43,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
   printf("[register_service]: Registering UUID %s\n", str);
 
   // Set the service class
-  sdp_uuid16_create(&root_uuid, SERIAL_PORT_SVCLASS_ID);
+  sdp_uuid16_create(&svc_class_uuid, SERIAL_PORT_SVCLASS_ID);
   svc_class_list = sdp_list_append(0, &svc_class_uuid);
   sdp_set_service_classes(&record, svc_class_list);
 
