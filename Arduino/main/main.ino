@@ -1,35 +1,49 @@
-#include "DualVNH5019MotorShield.h"
+#include <DualVNH5019MotorShield.h>
 
 #define SPEED 400
 #define REVERSE -400
 #define BRAKE 400
 
+#define SPIN A0 // PS1
+#define LPIN A1 // PS2
+#define SMODEL 1080 // Short range sensor
+#define LMODEL 20150 // Long range sensor
+
+// Initialise motor shield
 DualVNH5019MotorShield md; // M1 = left, M2 = right
 
 void setup()
-{
-  Serial.begin(115200);
-  Serial.println("Dual VNH5019 Motor Shield");
+{  
+  pinMode(A0, INPUT);
+  pinMode(A1, INPUT);
+  Serial.begin(9600);
+  Serial.println("Starting...");
   md.init();
 }
 
 void loop()
 {
-  moveFront();
-  delay(1000);
-  stop();
+  delay(500);
+  
+  int longDistance = getLongIRDistance(LPIN);
+  int shortDistance = getShortIRDistance(SPIN);
+  
+  Serial.print("Short Range IR: ");
+  Serial.print(shortDistance);
+  Serial.print(", Long Range IR: ");
+  Serial.println(longDistance);
+}
 
-  moveBack();
-  delay(1000);
-  stop();
+int getLongIRDistance(int pin) {
+  int sensorValue = analogRead(pin);
+  float voltage= sensorValue * (5.0 / 1023.0);
+  return (int)(60.374 * pow(voltage , -1.16));
+}
 
-  turnLeft();
-  delay(1000);
-  stop();
-
-  turnRight();
-  delay(1000);
-  stop();
+int getShortIRDistance(int pin) {
+  int sensorValue = analogRead(pin);
+  float voltage= sensorValue * (5.0 / 1023.0);
+  return (int)(29.988 * pow(voltage , -1.173));
 }
 
 void moveFront()
@@ -56,9 +70,9 @@ void turnRight()
   stopIfFault();
 }
 
-void stop()
+void stopMotors()
 {
-  md.setBrakes(BRAKE, BRAKE)
+  md.setBrakes(BRAKE, BRAKE);
 }
 
 void stopIfFault()
