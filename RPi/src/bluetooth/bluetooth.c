@@ -10,8 +10,11 @@
 #include "../hub/hub.h"
 
 // BT Variables
+bdaddr_t bdaddr_any = {0, 0, 0, 0, 0, 0};
+bdaddr_t bdaddr_local = {0, 0, 0, 0xff, 0xff, 0xff};
+
 // UUID 00001101-0000-1000-8000-00805f9b34fb
-uint32_t svc_uuid_int[] = {0x01180000, 0x00100000, 0x80000080, 0xFB349B5F};
+uint32_t svc_uuid_int[] = {0x01110000, 0x00100000, 0x80000080, 0xFB349B5F};
 int bt_sock, client;
 
 sdp_session_t *register_service(uint8_t rfcomm_channel) {
@@ -73,7 +76,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
   sdp_set_info_attr(&record, service_name, service_prov, svc_dsc);
 
   // Connect to the local SDP server, register the service record, and disconnect
-  session = sdp_connect(BDADDR_ANY, BDADDR_LOCAL, SDP_RETRY_IF_BUSY);
+  session = sdp_connect(&bdaddr_any, &bdaddr_local, SDP_RETRY_IF_BUSY);
   sdp_record_register(session, &record, 0);
 
   // Cleanup
@@ -94,10 +97,18 @@ int bt_connect() {
   struct sockaddr_rc loc_addr = {0}, rem_addr = {0};
   socklen_t opt = sizeof(rem_addr);
 
-  // Registers the bluetooth service
+  // Local Bluetooth Adapter
+  // Assigns the respective Bluetooth variables for binding
+  loc_addr.rc_family = AF_BLUETOOTH;
+  // Sets which local Bluetooth device to be used
+  loc_addr.rc_bdaddr = *BDADDR_ANY;
+  // Sets which RFCOMM channel to be used
+  loc_addr.rc_channel = (uint8_t) BT_PORT;
+
+  // Registers the Bluetooth service
   sdp_session_t *session = register_service(BT_PORT);
 
-  // Creates an RFCOMM bluetooth socket for communication
+  // Creates an RFCOMM Bluetooth socket for communication
   bt_sock = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
   if (bt_sock == -1) {
     perror("[bt_connect]: Error encountered when creating BT socket: ");
@@ -109,15 +120,8 @@ int bt_connect() {
   // Clears the memory of the loc_addr variable
   bzero(&loc_addr, sizeof(loc_addr));
 
-  // Assigns the respective bluetooth variables for binding
-  loc_addr.rc_family = AF_BLUETOOTH;
-  // Sets which local bluetooth device to be used
-  loc_addr.rc_bdaddr = *BDADDR_ANY;
-  // Sets which RFCOMM channel to be used
-  loc_addr.rc_channel = (uint8_t) BT_PORT;
-
   // Binds socket to port 1 of the first available local bluetooth adapter
-  if ((bind(bt_sock, (SA *) &loc_addr, sizeof(loc_addr))) != 0) {
+  if ((bind(bt_sock, (struct sockaddr *) &loc_addr, sizeof(loc_addr))) != 0) {
     perror("[bt_connect]: Error encountered when trying to bind BT socket: ");
     return 0;
   } else {
@@ -134,7 +138,7 @@ int bt_connect() {
   }
 
   // Accepts the incoming data packet from client
-  client = accept(bt_sock, (SA *) &rem_addr, &opt);
+  client = accept(bt_sock, (struct sockaddr *) &rem_addr, &opt);
   if (client < 0) {
     perror(
         "[bt_connect]: Error encountered when trying to accept BT clients...: ");

@@ -191,7 +191,7 @@ int main() {
 
   signal(SIGPIPE, SIG_IGN);
 
-  int port = 3, result, sock, client, bytes_read, bytes_sent;
+  int port = 4, result, sock, client, bytes_read, bytes_sent;
   struct sockaddr_rc loc_addr = {0}, rem_addr = {0};
   char buffer[1024] = {0};
   socklen_t opt = sizeof(rem_addr);
