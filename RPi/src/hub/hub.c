@@ -11,6 +11,7 @@
 Queue *t_queue;
 Queue *b_queue;
 Queue *s_queue;
+pthread_mutex_t lock;
 
 void distribute_command(char *buf, char source) {
   const char s[2] = "!";
