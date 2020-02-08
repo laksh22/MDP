@@ -68,10 +68,5 @@ int main() {
     pthread_join(thread_group[i], NULL);
   }
 
-  // Endless loop
-  while (1) {
-    sleep(1);
-  }
-
   return 0;
 }
