@@ -91,7 +91,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
 int bt_connect() {
   // Initialise connection variables
   char buf[MAX];
-  struct sockaddr_rc loc_addr, rem_addr;
+  struct sockaddr_rc loc_addr = {0}, rem_addr = {0};
   socklen_t opt = sizeof(rem_addr);
 
   // Registers the bluetooth service
