@@ -207,7 +207,7 @@ int main() {
   sock = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
   printf("socket() returned %d\n", sock);
 
-  // bind socket to port 3 of the first available
+  // bind socket to port 4 of the first available
   result = bind(sock, (struct sockaddr *) &loc_addr, sizeof(loc_addr));
   printf("bind() on channel %d returned %d\n", port, result);
 

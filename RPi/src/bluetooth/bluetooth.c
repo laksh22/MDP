@@ -117,9 +117,6 @@ int bt_connect() {
     printf("[bt_connect]: Creation of BT socket successful...\n");
   }
 
-  // Clears the memory of the loc_addr variable
-  bzero(&loc_addr, sizeof(loc_addr));
-
   // Binds socket to port 1 of the first available local bluetooth adapter
   if ((bind(bt_sock, (struct sockaddr *) &loc_addr, sizeof(loc_addr))) != 0) {
     perror("[bt_connect]: Error encountered when trying to bind BT socket: ");

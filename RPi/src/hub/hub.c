@@ -52,15 +52,15 @@ void write_hub(char *wpointer, char source) {
         bt_send((void *) wpointer + 2);
       } else if (tolower(wpointer[1]) == 's') {
         serial_send((void *) wpointer + 2);
-      } else if (tolower(wpointer[1]) == 'r') {
-
-        while (1) {
-          // TODO: Implement activate camera
+//      } else if (tolower(wpointer[1]) == 'r') {
+//
+//        while (1) {
+//          // TODO: Implement activate camera
 //          if (camera_activate(wpointer + 2)) {
 //            tcp_send("rTAKEN");
 //            break;
 //          }
-        }
+//        }
 
       } else {
         printf("[write_hub]: Incorrect format provided, message [%s] will be dropped!\n",
