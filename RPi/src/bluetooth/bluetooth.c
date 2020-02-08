@@ -203,12 +203,14 @@ char *bt_read() {
         printf(
             "[bt_read]: Invalid string [%s] received, please send a new command\n",
             bt_buf);
+        return NULL;
       }
     } else {
       perror("[bt_read]: Error encountered when trying to read from Bluetooth: ");
       bt_reconnect();
       return NULL;
     }
+
   }
 }
 
