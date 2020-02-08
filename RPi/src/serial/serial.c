@@ -21,7 +21,7 @@ int serial_connect() {
 
 void serial_disconnect() {
   serialClose(fd_serial);
-  printf("[serial_disconnect]: Serial port connection closed succesffully!\n");
+  printf("[serial_disconnect]: Serial port connection closed successfully!\n");
 }
 
 void serial_reconnect() {
