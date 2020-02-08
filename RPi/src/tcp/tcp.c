@@ -25,7 +25,7 @@ int tcp_connect() {
              sizeof(isSetOption));
 
   if (tcp_sockfd == -1) {
-    perror("[tcp_connect]: Error encountered when creating TCP Socket: ");
+    perror("[tcp_connect]: Error encountered when creating TCP Socket");
   } else {
     printf("[tcp_connect]: TCP socket has been created successfully!\n");
   }
@@ -40,7 +40,7 @@ int tcp_connect() {
 
   // Binds the newly created socket to the given IP and verifies binding
   if ((bind(tcp_sockfd, (SA *) &servaddr, sizeof(servaddr))) != 0) {
-    perror("[tcp_connect]: Error encountered when binding trying to bind: ");
+    perror("[tcp_connect]: Error encountered when binding trying to bind");
   } else {
     printf("[tcp_connect]: TCP Socket successfully binded...\n");
   }
@@ -48,7 +48,7 @@ int tcp_connect() {
   // Configure server to listen for incoming connections
   if (listen(tcp_sockfd, 2) != 0) {
     perror(
-            "[tcp_connect]: Error encountered when listening for TCP connections: ");
+            "[tcp_connect]: Error encountered when listening for TCP connections");
     return 0;
   } else {
     printf("[tcp_connect]: TCP Server is now listening...\n");
@@ -58,7 +58,7 @@ int tcp_connect() {
   // Accept the incoming data packet from client and verifies it
   clientconn = accept(tcp_sockfd, (SA *) &tcp_client, &tcp_opt);
   if (clientconn < 0) {
-    perror("[tcp_connect]: Error encountered when accepting TCP clients: ");
+    perror("[tcp_connect]: Error encountered when accepting TCP clients");
     return 0;
   } else {
     printf("[tcp_connect]: TCP Server has successfully accepted the client...\n");
@@ -101,7 +101,7 @@ void *tcp_reader_create(void *args) {
       distribute_command(read_buf, 't');
     } else {
       perror(
-              "[tcp_reader_create]: Error encountered when receiving data from tcp_read: ");
+              "[tcp_reader_create]: Error encountered when receiving data from tcp_read");
     }
   }
 }
@@ -134,7 +134,7 @@ char *tcp_read() {
         return NULL;
       }
     } else {
-      perror("[tcp_read]: Error encountered when trying to read from TCP: ");
+      perror("[tcp_read]: Error encountered when trying to read from TCP");
       tcp_reconnect();
       return NULL;
     }
@@ -168,7 +168,7 @@ int tcp_send(char *msg) {
       fflush(stdout);
       return 1;
     } else {
-      perror("[tcp_send]: Encountered error when RPi tried to send to TCP: ");
+      perror("[tcp_send]: Encountered error when RPi tried to send to TCP");
     }
     return 0;
   }

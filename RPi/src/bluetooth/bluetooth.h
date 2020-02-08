@@ -6,7 +6,7 @@
 #include <bluetooth/sdp.h>
 #include <bluetooth/sdp_lib.h>
 
-#define BT_PORT 3
+#define BT_PORT 4
 
 // To create and establish service discovery p
 sdp_session_t *register_service(uint8_t rfcomm_channel);

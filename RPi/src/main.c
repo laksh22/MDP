@@ -19,8 +19,6 @@ int main() {
   // Ctrl+C to terminate the entire program properly
   signal(SIGINT, all_disconnect);
   printf("===== Initializing connections =====\n");
-  // Turn on BT discovery
-  system("sudo hciconfig hci0 piscan");
 
   // Create the respective queues for each devices
   t_queue = createQueue(QSIZE);
@@ -28,8 +26,8 @@ int main() {
   s_queue = createQueue(QSIZE);
 
   // Default should be 0
-  tcp_status = bt_status = 1;
-  // Default should be 0
+  tcp_status = 1;
+  bt_status = 1;
   serial_status = 1;
 
   serial_status = serial_connect();

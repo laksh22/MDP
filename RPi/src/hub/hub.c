@@ -8,8 +8,10 @@
 #include "../serial/serial.h"
 #include "../tcp/tcp.h"
 
+Queue *t_queue;
 Queue *b_queue;
 Queue *s_queue;
+pthread_mutex_t lock;
 
 void distribute_command(char *buf, char source) {
   const char s[2] = "!";
@@ -19,7 +21,7 @@ void distribute_command(char *buf, char source) {
 
   if (!point) {
     perror(
-            "[distribute_command]: Error encountered when splitting received data: ");
+            "[distribute_command]: Error encountered when splitting received data");
   } else {
     while (point != NULL) {
       pthread_mutex_lock(&lock);
@@ -52,15 +54,15 @@ void write_hub(char *wpointer, char source) {
         bt_send((void *) wpointer + 2);
       } else if (tolower(wpointer[1]) == 's') {
         serial_send((void *) wpointer + 2);
-      } else if (tolower(wpointer[1]) == 'r') {
-
-        while (1) {
-          // TODO: Implement activate camera
+//      } else if (tolower(wpointer[1]) == 'r') {
+//
+//        while (1) {
+//          // TODO: Implement activate camera
 //          if (camera_activate(wpointer + 2)) {
 //            tcp_send("rTAKEN");
 //            break;
 //          }
-        }
+//        }
 
       } else {
         printf("[write_hub]: Incorrect format provided, message [%s] will be dropped!\n",
@@ -68,7 +70,7 @@ void write_hub(char *wpointer, char source) {
       }
     }
   } else {
-    perror("[write_hub]: Error encountered when receiving data to be routed: ");
+    perror("[write_hub]: Error encountered when receiving data to be routed");
   }
 
 }

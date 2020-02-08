@@ -10,8 +10,11 @@
 #include "../hub/hub.h"
 
 // BT Variables
-// Unique UUID 00000000-0000-0000-0000-000000000000
-uint32_t svc_uuid_int[] = {0x00000000, 0x00000000, 0x00000000, 0x00000000};
+bdaddr_t bdaddr_any = {0, 0, 0, 0, 0, 0};
+bdaddr_t bdaddr_local = {0, 0, 0, 0xff, 0xff, 0xff};
+
+// UUID 00001101-0000-1000-8000-00805f9b34fb
+uint32_t svc_uuid_int[] = {0x01110000, 0x00100000, 0x80000080, 0xFB349B5F};
 int bt_sock, client;
 
 sdp_session_t *register_service(uint8_t rfcomm_channel) {
@@ -23,7 +26,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
   uuid_t root_uuid, l2cap_uuid, rfcomm_uuid, svc_uuid, svc_class_uuid;
 
   sdp_list_t *l2cap_list = 0, *rfcomm_list = 0, *root_list = 0, *proto_list = 0,
-          *access_proto_list = 0, *svc_class_list = 0, *profile_list = 0;
+      *access_proto_list = 0, *svc_class_list = 0, *profile_list = 0;
 
   sdp_data_t *channel = 0;
   sdp_profile_desc_t profile;
@@ -32,10 +35,6 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
 
   char str[256] = "";
 
-  // This function uses a deprecated method which is not supported in Bluez 5
-  // Execute the following to circumvent it
-  system("sudo chmod 777 /var/run/sdp");
-
   // Set the general service ID
   sdp_uuid128_create(&svc_uuid, &svc_uuid_int);
   sdp_set_service_id(&record, svc_uuid);
@@ -43,7 +42,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
   printf("[register_service]: Registering UUID %s\n", str);
 
   // Set the service class
-  sdp_uuid16_create(&root_uuid, SERIAL_PORT_SVCLASS_ID);
+  sdp_uuid16_create(&svc_class_uuid, SERIAL_PORT_SVCLASS_ID);
   svc_class_list = sdp_list_append(0, &svc_class_uuid);
   sdp_set_service_classes(&record, svc_class_list);
 
@@ -61,7 +60,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
   // Set l2cap information
   sdp_uuid16_create(&l2cap_uuid, L2CAP_UUID);
   l2cap_list = sdp_list_append(0, &l2cap_uuid);
-  proto_list = sdp_list_append(0, &l2cap_list);
+  proto_list = sdp_list_append(0, l2cap_list);
 
   // Register the RFCOMM channel for RFCOMM sockets
   sdp_uuid16_create(&rfcomm_uuid, RFCOMM_UUID);
@@ -77,7 +76,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
   sdp_set_info_attr(&record, service_name, service_prov, svc_dsc);
 
   // Connect to the local SDP server, register the service record, and disconnect
-  session = sdp_connect(BDADDR_ANY, BDADDR_LOCAL, SDP_RETRY_IF_BUSY);
+  session = sdp_connect(&bdaddr_any, &bdaddr_local, SDP_RETRY_IF_BUSY);
   sdp_record_register(session, &record, 0);
 
   // Cleanup
@@ -95,34 +94,32 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
 int bt_connect() {
   // Initialise connection variables
   char buf[MAX];
-  struct sockaddr_rc loc_addr, rem_addr;
+  struct sockaddr_rc loc_addr = {0}, rem_addr = {0};
   socklen_t opt = sizeof(rem_addr);
 
-  // Registers the bluetooth service
+  // Local Bluetooth Adapter
+  // Assigns the respective Bluetooth variables for binding
+  loc_addr.rc_family = AF_BLUETOOTH;
+  // Sets which local Bluetooth device to be used
+  loc_addr.rc_bdaddr = *BDADDR_ANY;
+  // Sets which RFCOMM channel to be used
+  loc_addr.rc_channel = (uint8_t) BT_PORT;
+
+  // Registers the Bluetooth service
   sdp_session_t *session = register_service(BT_PORT);
 
-  // Creates an RFCOMM bluetooth socket for communication
+  // Creates an RFCOMM Bluetooth socket for communication
   bt_sock = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
   if (bt_sock == -1) {
-    perror("[bt_connect]: Error encountered when creating BT socket: ");
+    perror("[bt_connect]: Error encountered when creating BT socket");
     return 0;
   } else {
     printf("[bt_connect]: Creation of BT socket successful...\n");
   }
 
-  // Clears the memory of the loc_addr variable
-  bzero(&loc_addr, sizeof(loc_addr));
-
-  // Assigns the respective bluetooth variables for binding
-  loc_addr.rc_family = AF_BLUETOOTH;
-  // Sets which local bluetooth device to be used
-  loc_addr.rc_bdaddr = *BDADDR_ANY;
-  // Sets which RFCOMM channel to be used
-  loc_addr.rc_channel = (uint8_t) BT_PORT;
-
   // Binds socket to port 1 of the first available local bluetooth adapter
-  if ((bind(bt_sock, (SA *) &loc_addr, sizeof(loc_addr))) != 0) {
-    perror("[bt_connect]: Error encountered when trying to bind BT socket: ");
+  if ((bind(bt_sock, (struct sockaddr *) &loc_addr, sizeof(loc_addr))) != 0) {
+    perror("[bt_connect]: Error encountered when trying to bind BT socket");
     return 0;
   } else {
     printf("[bt_connect]: Binding of BT socket successful..\n");
@@ -130,17 +127,18 @@ int bt_connect() {
 
   // Configure server to listen for incoming connections
   if (listen(bt_sock, 1) != 0) {
-    perror("[bt_connect]: Error encountered when listing for BT connections: ");
+    perror("[bt_connect]: Error encountered when listing for BT connections");
     return 0;
   } else {
-    printf("[bt_connect]: Bluetooth Server is now listening for connections...\n");
+    printf(
+        "[bt_connect]: Bluetooth Server is now listening for connections...\n");
   }
 
   // Accepts the incoming data packet from client
-  client = accept(bt_sock, (SA *) &rem_addr, &opt);
+  client = accept(bt_sock, (struct sockaddr *) &rem_addr, &opt);
   if (client < 0) {
     perror(
-            "[bt_connect]: Error encountered when trying to accept BT clients...: ");
+        "[bt_connect]: Error encountered when trying to accept BT clients...: ");
     return 0;
   } else {
     printf("[bt_connect]: BT Server has accepted the client successfully...\n");
@@ -158,7 +156,7 @@ void bt_disconnect() {
     printf("[bt_disconnect]: Bluetooth connection is closed successfully!\n");
   } else {
     perror(
-            "[bt_disconnect]: Error encountered when trying to close Bluetooth connection: ");
+        "[bt_disconnect]: Error encountered when trying to close Bluetooth connection");
   }
 }
 
@@ -173,7 +171,8 @@ void *bt_reader_create(void *args) {
       memset(rpointer, '\0', MAX);
       distribute_command(read_buf, 'b');
     } else {
-      perror("[bt_reader_create]: Error encountered when receiving data from bt_read:  ");
+      perror(
+          "[bt_reader_create]: Error encountered when receiving data from bt_read:  ");
     }
   }
 }
@@ -201,14 +200,17 @@ char *bt_read() {
           return p;
         }
       } else {
-        printf("[bt_read]: Invalid string [%s] received, please send a new command\n",
-                bt_buf);
+        printf(
+            "[bt_read]: Invalid string [%s] received, please send a new command\n",
+            bt_buf);
+        return '\0';
       }
     } else {
-      perror("[bt_read]: Error encountered when trying to read from Bluetooth: ");
+      perror("[bt_read]: Error encountered when trying to read from Bluetooth");
       bt_reconnect();
-      return NULL;
+      return '\0';
     }
+
   }
 }
 
@@ -222,7 +224,8 @@ void bt_reconnect() {
     sleep(1);
   }
 
-  printf("[bt_reconnect]: Bluetooth services have been successfully reconnected!\n");
+  printf(
+      "[bt_reconnect]: Bluetooth services have been successfully reconnected!\n");
 }
 
 void *bt_sender_create(void *args) {
@@ -252,7 +255,7 @@ int bt_send(char *msg) {
       fflush(stdout);
       return 1;
     } else {
-      perror("[bt_send]: Encountered error when RPi tried to send to BT: ");
+      perror("[bt_send]: Encountered error when RPi tried to send to BT");
     }
   }
   return 0;
