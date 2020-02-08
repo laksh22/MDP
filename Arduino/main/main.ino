@@ -1,90 +1,93 @@
 #include <DualVNH5019MotorShield.h>
 
+// Movement variables
 #define SPEED 400
 #define REVERSE -400
 #define BRAKE 400
 
-#define SPIN A0 // PS1
-#define LPIN A1 // PS2
-#define SMODEL 1080 // Short range sensor
-#define LMODEL 20150 // Long range sensor
+// Sensor pins
+#define LSPIN A0 // PS1
+#define LLPIN A1 // PS2
+#define RSPIN A1 // PS3
+#define FLPIN A1 // PS4
 
-// Initialise motor shield
-DualVNH5019MotorShield md; // M1 = left, M2 = right
+// Sensor calculation parameters
+#define LCONST 60.374
+#define SCONST 29.988
+#define L_EXP -1.16
+#define S_EXP -1.173
+
+// Motor shield | M1 = left, M2 = right
+DualVNH5019MotorShield md;
 
 void setup()
 {  
-  pinMode(A0, INPUT);
-  pinMode(A1, INPUT);
+  pinMode(LSPIN, INPUT);
+  pinMode(LLPIN, INPUT);
+  pinMode(RSPIN, INPUT);
+  pinMode(FLPIN, INPUT);
+  
   Serial.begin(9600);
   Serial.println("Starting...");
+  
   md.init();
 }
 
 void loop()
 {
+  
+  int LSDistance = getLongIRDistance(LSPIN);
+  int LLDistance = getLongIRDistance(LLPIN);
+  int RSDistance = getShortIRDistance(RSPIN);
+  int FLDistance = getLongIRDistance(FLPIN);
+  
   delay(500);
-  
-  int longDistance = getLongIRDistance(LPIN);
-  int shortDistance = getShortIRDistance(SPIN);
-  
-  Serial.print("Short Range IR: ");
-  Serial.print(shortDistance);
-  Serial.print(", Long Range IR: ");
-  Serial.println(longDistance);
 }
 
 int getLongIRDistance(int pin) {
   int sensorValue = analogRead(pin);
   float voltage= sensorValue * (5.0 / 1023.0);
-  return (int)(60.374 * pow(voltage , -1.16));
+  return (int)(LCONST * pow(voltage , L_EXP));
 }
 
 int getShortIRDistance(int pin) {
   int sensorValue = analogRead(pin);
   float voltage= sensorValue * (5.0 / 1023.0);
-  return (int)(29.988 * pow(voltage , -1.173));
+  return (int)(SCONST * pow(voltage , S_EXP));
 }
 
-void moveFront()
-{
+void moveFront(){
   md.setSpeeds(SPEED, SPEED);
   stopIfFault();
 }
 
-void moveBack()
-{
+void moveBack(){
   md.setSpeeds(REVERSE, REVERSE);
   stopIfFault();
 }
 
-void turnLeft()
-{
+void turnLeft(){
   md.setSpeeds(REVERSE, SPEED);
   stopIfFault();
 }
 
-void turnRight()
-{
+void turnRight(){
   md.setSpeeds(SPEED, REVERSE);
   stopIfFault();
 }
 
-void stopMotors()
-{
+void stopMotors(){
   md.setBrakes(BRAKE, BRAKE);
 }
 
-void stopIfFault()
-{
-  if (md.getM1Fault())
-  {
+void stopIfFault() {
+  if (md.getM1Fault()) {
     Serial.println("M1 fault");
     while (1)
       ;
   }
-  if (md.getM2Fault())
-  {
+  
+  if (md.getM2Fault()) {
     Serial.println("M2 fault");
     while (1)
       ;
