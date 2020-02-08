@@ -11,7 +11,7 @@
 
 // BT Variables
 // UUID 00001101-0000-1000-8000-00805f9b34fb
-uint32_t svc_uuid_int[] = {0x01110000, 0x00100000, 0x80000080, 0xFB349B5F};
+uint32_t svc_uuid_int[] = {0x01180000, 0x00100000, 0x80000080, 0xFB349B5F};
 int bt_sock, client;
 
 sdp_session_t *register_service(uint8_t rfcomm_channel) {
