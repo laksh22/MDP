@@ -8,6 +8,7 @@
 #include "../serial/serial.h"
 #include "../tcp/tcp.h"
 
+Queue *t_queue;
 Queue *b_queue;
 Queue *s_queue;
 
