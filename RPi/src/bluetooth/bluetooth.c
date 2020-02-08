@@ -111,7 +111,7 @@ int bt_connect() {
   // Creates an RFCOMM Bluetooth socket for communication
   bt_sock = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
   if (bt_sock == -1) {
-    perror("[bt_connect]: Error encountered when creating BT socket: ");
+    perror("[bt_connect]: Error encountered when creating BT socket");
     return 0;
   } else {
     printf("[bt_connect]: Creation of BT socket successful...\n");
@@ -119,7 +119,7 @@ int bt_connect() {
 
   // Binds socket to port 1 of the first available local bluetooth adapter
   if ((bind(bt_sock, (struct sockaddr *) &loc_addr, sizeof(loc_addr))) != 0) {
-    perror("[bt_connect]: Error encountered when trying to bind BT socket: ");
+    perror("[bt_connect]: Error encountered when trying to bind BT socket");
     return 0;
   } else {
     printf("[bt_connect]: Binding of BT socket successful..\n");
@@ -127,7 +127,7 @@ int bt_connect() {
 
   // Configure server to listen for incoming connections
   if (listen(bt_sock, 1) != 0) {
-    perror("[bt_connect]: Error encountered when listing for BT connections: ");
+    perror("[bt_connect]: Error encountered when listing for BT connections");
     return 0;
   } else {
     printf(
@@ -156,7 +156,7 @@ void bt_disconnect() {
     printf("[bt_disconnect]: Bluetooth connection is closed successfully!\n");
   } else {
     perror(
-        "[bt_disconnect]: Error encountered when trying to close Bluetooth connection: ");
+        "[bt_disconnect]: Error encountered when trying to close Bluetooth connection");
   }
 }
 
@@ -203,12 +203,12 @@ char *bt_read() {
         printf(
             "[bt_read]: Invalid string [%s] received, please send a new command\n",
             bt_buf);
-        return NULL;
+        return '\0';
       }
     } else {
-      perror("[bt_read]: Error encountered when trying to read from Bluetooth: ");
+      perror("[bt_read]: Error encountered when trying to read from Bluetooth");
       bt_reconnect();
-      return NULL;
+      return '\0';
     }
 
   }
@@ -255,7 +255,7 @@ int bt_send(char *msg) {
       fflush(stdout);
       return 1;
     } else {
-      perror("[bt_send]: Encountered error when RPi tried to send to BT: ");
+      perror("[bt_send]: Encountered error when RPi tried to send to BT");
     }
   }
   return 0;

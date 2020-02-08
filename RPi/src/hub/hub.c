@@ -21,7 +21,7 @@ void distribute_command(char *buf, char source) {
 
   if (!point) {
     perror(
-            "[distribute_command]: Error encountered when splitting received data: ");
+            "[distribute_command]: Error encountered when splitting received data");
   } else {
     while (point != NULL) {
       pthread_mutex_lock(&lock);
@@ -70,7 +70,7 @@ void write_hub(char *wpointer, char source) {
       }
     }
   } else {
-    perror("[write_hub]: Error encountered when receiving data to be routed: ");
+    perror("[write_hub]: Error encountered when receiving data to be routed");
   }
 
 }

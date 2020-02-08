@@ -10,7 +10,7 @@ int fd_serial;
 int serial_connect() {
   fd_serial = serialOpen(SERIAL_PORT, BAUD);
   if (fd_serial == -1) {
-    perror("[serial_connect]: Error encounted when establishing serial port connection: ");
+    perror("[serial_connect]: Error encounted when establishing serial port connection");
     return 0;
   } else {
     printf("[serial_connect]: Serial port connection %s with %d established successfully.\n",
@@ -69,7 +69,7 @@ char *serial_read() {
         count++;
       }
     } else if (bytes_read < 0) {
-      perror("[serial_read]: Error encountered when trying to read from serial: ");
+      perror("[serial_read]: Error encountered when trying to read from serial");
       serial_reconnect();
       return 0;
     } else {
@@ -90,7 +90,7 @@ void *serial_reader_create(void *args) {
       memset(rpointer, '\0', MAX);
       distribute_command(read_buf, 's');
     } else {
-      perror("[serial_reader_create]: Error encountered when receiving data from serial_read: ");
+      perror("[serial_reader_create]: Error encountered when receiving data from serial_read");
     }
   }
 }
