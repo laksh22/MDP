@@ -1,25 +1,25 @@
 import socket
 
-TCP_IP = '192.168.101.1'
-TCP_PORT = 4042
-BUFFER_SIZE = 1024
+
+def client_program():
+    host = "192.168.101.1"
+    port = 4042
+
+    client_socket = socket.socket()  # instantiate
+    client_socket.connect((host, port))  # connect to the server
+
+    message = input(" -> ")  # take input
+
+    while message.lower().strip() != "bye":
+        client_socket.send(message.encode())  # send message
+        data = client_socket.recv(1024).decode()  # receive response
+
+        print("Received from server: " + data)  # show in terminal
+
+        message = input(" -> ")  # again take input
+
+    client_socket.close()  # close the connection
+
 
 if __name__ == "__main__":
-    # A message that will be sent to the tcp connection port
-    tcp_message = str.encode("@txxx_tcp_msg_xxx!")
-
-    # A message that will be sent to the bluetooth connection port
-    bt_message = str.encode("@bxxx_bluetooth_msg_xxx!")
-
-    # A message that will be sent to the serial connection port
-    serial_message = str.encode("@sxxx_serial_msg_xxx!")
-
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((TCP_IP, TCP_PORT))
-    s.send(tcp_message)
-    data = s.recv(BUFFER_SIZE)
-    print ("Received data:", data)
-
-    s.send(bt_message)
-    s.send(serial_message)
-    s.close()
+    client_program()
