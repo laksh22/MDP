@@ -43,45 +43,49 @@ void serial_reconnect() {
 }
 
 char *serial_read() {
-  int bytes_read;
   int count = 0;
   char serial_buf[MAX];
   char new_char;
   char *p;
 
   while (1) {
-    bytes_read = serialDataAvail(fd_serial);
-    if (bytes_read > 0) {
-      new_char = serialGetchar(fd_serial);
-      if (new_char == '\n') {
-        if (serial_buf[0] == '@') {
-          if (serial_buf[(count - 2)] == '!') {
-            serial_buf[(count - 1)] == '\0';
-            printf(
-                "[serial_read]: Received [%s] from Serial client connection\n",
-                serial_buf);
-            p = serial_buf;
-            return p;
-          } else {
-            continue;
-          }
-        } else {
-          printf(
-              "[serial_read]: Invalid string [%s] received, please send a new command\n",
-              serial_buf);
-          return 0;
-        }
-      } else {
-        serial_buf[count] = new_char;
-        count++;
-      }
-    } else if (bytes_read < 0) {
+    // Use serialDataAvail as an error flag
+    if (serialDataAvail(fd_serial) < 0) {
       perror("[serial_read]: Error encountered when trying to read from serial");
       serial_reconnect();
       return 0;
-    } else {
-      // bytes_read == 0
+    }
+
+    // serialGetchar will block up to 10 seconds; if nothing is read, return -1
+    new_char = serialGetchar(fd_serial);
+
+    if (new_char == -1) {
+      // Nothing read in
       continue;
+    }
+
+    if (new_char == '\n') {
+      if (serial_buf[0] == '@') {
+        if (serial_buf[(count - 2)] == '!') {
+          serial_buf[(count - 1)] == '\0';
+          printf(
+              "[serial_read]: Received [%s] from Serial client connection\n",
+              serial_buf);
+          p = serial_buf;
+          return p;
+        } else {
+          continue;
+        }
+      } else {
+        printf(
+            "[serial_read]: Invalid string [%s] received, please send a new command\n",
+            serial_buf);
+        return 0;
+      }
+    } else {
+      // Build String and it into serial_buf
+      serial_buf[count] = new_char;
+      count++;
     }
   }
 }
