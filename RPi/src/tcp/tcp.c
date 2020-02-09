@@ -12,8 +12,10 @@ struct sockaddr_in servaddr, tcp_client;
 socklen_t tcp_opt = sizeof(tcp_client);
 int tcp_sockfd, clientconn, isSetOption = 1;
 
-Queue *t_queue;
-pthread_mutex_t lock;
+//Queue *t_queue;
+//pthread_mutex_t lock;
+
+rpa_queue_t *t_queue;
 
 int tcp_connect() {
   // Creates an IPv4 two-way endpoint connection for communication
@@ -48,7 +50,7 @@ int tcp_connect() {
   // Configure server to listen for incoming connections
   if (listen(tcp_sockfd, 2) != 0) {
     perror(
-            "[tcp_connect]: Error encountered when listening for TCP connections");
+        "[tcp_connect]: Error encountered when listening for TCP connections");
     return 0;
   } else {
     printf("[tcp_connect]: TCP Server is now listening...\n");
@@ -72,7 +74,7 @@ void tcp_disconnect(int sock) {
            sock);
   } else {
     perror(
-            "[tcp_disconnect]: Error encountered when trying to close TCP connection: ");
+        "[tcp_disconnect]: Error encountered when trying to close TCP connection: ");
   }
 }
 
@@ -101,7 +103,7 @@ void *tcp_reader_create(void *args) {
       distribute_command(read_buf, 't');
     } else {
       perror(
-              "[tcp_reader_create]: Error encountered when receiving data from tcp_read");
+          "[tcp_reader_create]: Error encountered when receiving data from tcp_read");
     }
   }
 }
@@ -129,8 +131,9 @@ char *tcp_read() {
           return p;
         }
       } else {
-        printf("[tcp_read]: Invalid string [%s] received, please send a new command\n",
-                tcp_buf);
+        printf(
+            "[tcp_read]: Invalid string [%s] received, please send a new command\n",
+            tcp_buf);
         return NULL;
       }
     } else {
@@ -141,17 +144,30 @@ char *tcp_read() {
   }
 }
 
+//// Non-blocking queue implementation
+//void *tcp_sender_create(void *args) {
+//  char *q;
+//
+//  // Endless loop
+//  while (1) {
+//    if (!isEmpty(t_queue)) {
+//      pthread_mutex_lock(&lock);
+//      q = dequeue(t_queue);
+//
+//      write_hub(q, 't');
+//      pthread_mutex_unlock(&lock);
+//    }
+//  }
+//}
+
+// Blocking rpa_queue implementation
 void *tcp_sender_create(void *args) {
   char *q;
 
+  // Endless loop
   while (1) {
-    if (!isEmpty(t_queue)) {
-      pthread_mutex_lock(&lock);
-      q = dequeue(t_queue);
-
-      write_hub(q, 't');
-      pthread_mutex_unlock(&lock);
-    }
+    rpa_queue_pop(t_queue, (void **) &q);
+    write_hub(q, 't');
   }
 }
 
@@ -174,4 +190,3 @@ int tcp_send(char *msg) {
   }
   return 0;
 }
-

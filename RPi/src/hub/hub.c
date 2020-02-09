@@ -8,11 +8,36 @@
 #include "../serial/serial.h"
 #include "../tcp/tcp.h"
 
-Queue *t_queue;
-Queue *b_queue;
-Queue *s_queue;
-pthread_mutex_t lock;
+rpa_queue_t *b_queue, *s_queue, *t_queue;
+//pthread_mutex_t lock;
 
+// // Non-blocking queue implementation
+//void distribute_command(char *buf, char source) {
+//  const char s[2] = "!";
+//  char *point;
+//
+//  point = strtok(buf, s);
+//
+//  if (!point) {
+//    perror(
+//            "[distribute_command]: Error encountered when splitting received data");
+//  } else {
+//    while (point != NULL) {
+//      pthread_mutex_lock(&lock);
+//      if (source == 't') {
+//        enqueue(t_queue, point);
+//      } else if (source == 'b') {
+//        enqueue(b_queue, point);
+//      } else if (source == 's') {
+//        enqueue(s_queue, point);
+//      }
+//      pthread_mutex_unlock(&lock);
+//      point = strtok(NULL, s);
+//    }
+//  }
+}
+
+// Blocking rpa_queue implementation
 void distribute_command(char *buf, char source) {
   const char s[2] = "!";
   char *point;
@@ -24,15 +49,13 @@ void distribute_command(char *buf, char source) {
             "[distribute_command]: Error encountered when splitting received data");
   } else {
     while (point != NULL) {
-      pthread_mutex_lock(&lock);
       if (source == 't') {
-        enqueue(t_queue, point);
+        rpa_queue_push(t_queue, point);
       } else if (source == 'b') {
-        enqueue(b_queue, point);
+        rpa_queue_push(b_queue, point);
       } else if (source == 's') {
-        enqueue(s_queue, point);
+        rpa_queue_push(s_queue, point);
       }
-      pthread_mutex_unlock(&lock);
       point = strtok(NULL, s);
     }
   }
