@@ -8,8 +8,8 @@ find_package(Threads REQUIRED)
 
 add_executable(RPi main.c settings.h
         hub/hub.h hub/hub.c
-#        queue/queue.h queue/queue.c
-        rpa_queue/rpa_queue.h rpa_queue/rpa_queue.c
+        queue/queue.h queue/queue.c
+#        rpa_queue/rpa_queue.h rpa_queue/rpa_queue.c
         serial/serial.h serial/serial.c
         bluetooth/bluetooth.h bluetooth/bluetooth.c
         tcp/tcp.h tcp/tcp.c)
@@ -23,8 +23,8 @@ target_link_libraries(RPi ${bluez_LIB})
 
 add_subdirectory(bluetooth)
 add_subdirectory(hub)
-#add_subdirectory(queue)
-add_subdirectory(rpa_queue)
+add_subdirectory(queue)
+#add_subdirectory(rpa_queue)
 add_subdirectory(serial)
 add_subdirectory(tap)
 add_subdirectory(tcp)
