@@ -28,7 +28,7 @@ add_subdirectory(rpa_queue)
 add_subdirectory(serial)
 add_subdirectory(tap)
 add_subdirectory(tcp)
-add_subdirectory(tests)
+#add_subdirectory(tests)
 
 #enable_testing()
 
