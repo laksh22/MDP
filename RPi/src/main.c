@@ -27,9 +27,9 @@ int main() {
 //  t_queue = createQueue(QSIZE);
 
   // Create the respective rpa_queue for each communication port
-  s_queue = rpa_queue_create(QSIZE);
-  b_queue = rpa_queue_create(QSIZE);
-  t_queue = rpa_queue_create(QSIZE);
+  rpa_queue_create(&s_queue, (uint32_t) QSIZE);
+  rpa_queue_create(&b_queue, (uint32_t) QSIZE);
+  rpa_queue_create(&t_queue, (uint32_t) QSIZE);
 
   // Default should be 0
   serial_status = 1;

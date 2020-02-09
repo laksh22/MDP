@@ -30,6 +30,6 @@ add_subdirectory(tap)
 add_subdirectory(tcp)
 add_subdirectory(tests)
 
-enable_testing()
+#enable_testing()
 
-add_test(NAME DoTestQueue COMMAND TestQueue)
+#add_test(NAME DoTestQueue COMMAND TestQueue)

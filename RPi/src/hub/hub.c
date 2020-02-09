@@ -35,7 +35,7 @@ rpa_queue_t *b_queue, *s_queue, *t_queue;
 //      point = strtok(NULL, s);
 //    }
 //  }
-}
+//}
 
 // Blocking rpa_queue implementation
 void distribute_command(char *buf, char source) {
