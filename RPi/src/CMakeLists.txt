@@ -8,7 +8,8 @@ find_package(Threads REQUIRED)
 
 add_executable(RPi main.c settings.h
         hub/hub.h hub/hub.c
-        queue/queue.h queue/queue.c
+#        queue/queue.h queue/queue.c
+        rpa_queue/rpa_queue.h rpa_queue/rpa_queue.c
         serial/serial.h serial/serial.c
         bluetooth/bluetooth.h bluetooth/bluetooth.c
         tcp/tcp.h tcp/tcp.c)
