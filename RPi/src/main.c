@@ -5,7 +5,8 @@
 #include <unistd.h>
 #include "settings.h"
 #include "hub/hub.h"
-#include "queue/queue.h"
+//#include "queue/queue.h"
+#include "rpa_queue/rpa_queue.h"
 #include "bluetooth/bluetooth.h"
 #include "serial/serial.h"
 #include "tcp/tcp.h"
@@ -13,22 +14,27 @@
 int tcp_status, bt_status, serial_status;
 pthread_mutex_t lock;
 
-Queue *b_queue, *s_queue, *t_queue;
+rpa_queue_t *b_queue, *s_queue, *t_queue;
 
 int main() {
   // Ctrl+C to terminate the entire program properly
   signal(SIGINT, all_disconnect);
   printf("===== Initializing connections =====\n");
 
-  // Create the respective queues for each devices
-  t_queue = createQueue(QSIZE);
-  b_queue = createQueue(QSIZE);
-  s_queue = createQueue(QSIZE);
+//  // Create the respective queues for each devices
+//  s_queue = createQueue(QSIZE);
+//  b_queue = createQueue(QSIZE);
+//  t_queue = createQueue(QSIZE);
+
+  // Create the respective rpa_queue for each communication port
+  rpa_queue_create(&s_queue, (uint32_t) QSIZE);
+  rpa_queue_create(&b_queue, (uint32_t) QSIZE);
+  rpa_queue_create(&t_queue, (uint32_t) QSIZE);
 
   // Default should be 0
-  tcp_status = 1;
-  bt_status = 1;
   serial_status = 1;
+  bt_status = 1;
+  tcp_status = 1;
 
   serial_status = serial_connect();
   bt_status = bt_connect();
@@ -66,11 +72,6 @@ int main() {
   int i;
   for (i = 0; i < NUM_THREADS; i++) {
     pthread_join(thread_group[i], NULL);
-  }
-
-  // Endless loop
-  while (1) {
-    sleep(1);
   }
 
   return 0;

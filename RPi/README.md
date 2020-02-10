@@ -1,5 +1,5 @@
 # RPi communication Hub
-TODO
+This section contains everything you will need to know to get the `RPi` communication hub binary that is written in C to run.
 
 ## Compiling
 You must be in the `RPi/src` directory before running the commands below.
@@ -16,10 +16,29 @@ make
 ``` 
 
 ## Running
-TODO
+After compiling, make sure that you are in the `~/work_dir/RPi/src/build` directory before running the command below.
+```shell script
+./RPi
+```
 
 ## Message structure
-TODO
+Each message is prefixed by `@` and suffixed with `!`. New lines at the end of each messages are not allowed.
+
+### Examples
+To send a message to **Bluetooth**:
+```text
+@binsert_bluetooth_message_here!
+```
+
+To send a message to **TCP**:
+```text
+@tinsert_tcp_message_here!
+```
+
+To send a message to **Serial**:
+```text
+@sinsert_serial_message_here!
+```
 
 ## Dependencies
 

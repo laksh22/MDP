@@ -17,6 +17,8 @@ bdaddr_t bdaddr_local = {0, 0, 0, 0xff, 0xff, 0xff};
 uint32_t svc_uuid_int[] = {0x01110000, 0x00100000, 0x80000080, 0xFB349B5F};
 int bt_sock, client;
 
+rpa_queue_t *b_queue;
+
 sdp_session_t *register_service(uint8_t rfcomm_channel) {
   // Variables initialised for the registration of the sdp server
   const char *service_name = "2020Group01 Bluetooth server";
@@ -228,17 +230,29 @@ void bt_reconnect() {
       "[bt_reconnect]: Bluetooth services have been successfully reconnected!\n");
 }
 
+//// Non-blocking queue implementation
+//void *bt_sender_create(void *args) {
+//  char *q;
+//
+//  // Endless loop
+//  while (1) {
+//    if (!isEmpty(b_queue)) {
+//      pthread_mutex_lock(&lock);
+//      q = dequeue(b_queue);
+//      write_hub(q, 'b');
+//      pthread_mutex_unlock(&lock);
+//    }
+//  }
+//}
+
+// Blocking rpa_queue implementation
 void *bt_sender_create(void *args) {
   char *q;
 
   // Endless loop
   while (1) {
-    if (!isEmpty(b_queue)) {
-      pthread_mutex_lock(&lock);
-      q = dequeue(b_queue);
-      write_hub(q, 'b');
-      pthread_mutex_unlock(&lock);
-    }
+    rpa_queue_pop(b_queue, (void **) &q);
+    write_hub(q, 'b');
   }
 }
 

@@ -2,13 +2,18 @@
 #define RPI_RPI_HUB_HUB_H_
 
 #include <pthread.h>
-#include "../queue/queue.h"
+//#include "../queue/queue.h"
+#include "../rpa_queue/rpa_queue.h"
 
-extern Queue *b_queue;
-extern Queue *s_queue;
-extern Queue *t_queue;
+//extern Queue *b_queue;
+//extern Queue *s_queue;
+//extern Queue *t_queue;
 
-extern pthread_mutex_t lock;
+extern rpa_queue_t *b_queue;
+extern rpa_queue_t *s_queue;
+extern rpa_queue_t *t_queue;
+
+//extern pthread_mutex_t lock;
 
 // Segment instructions received into individual discrete instructions
 void distribute_command(char buf[], char source);
