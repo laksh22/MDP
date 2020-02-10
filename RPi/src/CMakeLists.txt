@@ -26,7 +26,7 @@ add_subdirectory(hub)
 #add_subdirectory(queue)
 add_subdirectory(rpa_queue)
 add_subdirectory(serial)
-add_subdirectory(tap)
+#add_subdirectory(tap)
 add_subdirectory(tcp)
 #add_subdirectory(tests)
 
