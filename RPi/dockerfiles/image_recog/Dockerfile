@@ -1,3 +1,4 @@
+# Reference: https://github.com/stigtsp/yolo3-docker/blob/master/Dockerfile
 FROM debian:stretch
 
 # Based in part on on schickling/opencv by Johannes Schickling <schickling.j@gmail.com>
