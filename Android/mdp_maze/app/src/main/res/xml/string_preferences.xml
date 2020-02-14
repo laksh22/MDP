@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="@string/string_f1_key"
+        android:title="String Value for F1"
+        android:defaultValue="@string/defaultValue_f1"
+        android:persistent="true"
+        />
+    <EditTextPreference
+        android:key="@string/string_f2_key"
+        android:title="String Value for F2"
+        android:defaultValue="@string/defaultValue_f2"
+        android:persistent="true"
+        />
+</PreferenceScreen>
