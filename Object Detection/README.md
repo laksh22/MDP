@@ -33,7 +33,19 @@ docker build -t mdp_obj_detection -f Dockerfile .
 ```
 
 ## 1.2 Running the Docker image as a container
-TODO
+To run a container of the image that was built, run the command below.
+```shell script
+docker run --name=mdp_grp01_obj_detect -v ~/work_dir:/darknet/work_dir -p 5000:8003 mdp_obj_detection
+```
+
+**What is happening**:
+- `--name=mdp_grp01_obj_detect` names the container so we can refer to it more easily.
+- `-v ~/work_dir:/darknet/work_dir` sets up a bindmount volume that links the `/darknet/work_dir` directory from inside the **mdp_obj_detection** container to the `~/work_dir` directory on the host machine. Docker uses a : to split the host’s path from the container path, and the host path always comes first.
+- `-p 5000:8003` sets up a port forward. The **mdp_obj_detection** container is listening on port 8003 (should there be any process that is binding to it). This flag maps the container’s port 8003 to port 5000 on the host system. Docker uses a : to split the host’s port from the container port, and the host port always comes first.
+- `mdp_obj_detection` specifies that the container should be built from the `mdp_obj_detection` image.
+
+**Other flags:**
+- TODO: add if there are any.
 
 # 2. Server dependencies
 
