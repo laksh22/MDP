@@ -133,15 +133,33 @@ if __name__ == "__main__":
     userFramerate = None
     userRotation = None
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--port", default=DEFAULT_PORT,
-                        help="Port number to listen for incoming connections "
-                             "on (default: 8000)")
-    parser.add_argument("-res", "--resolution", default="640x480",
-                        help="Pi Camera stream resolution")
-    parser.add_argument("-f", "--framerate", default=DEFAULT_FRAME_RATE,
-                        help="Pi Camera stream framerate")
-    parser.add_argument('-rot', '--rotation', default=DEFAULT_ROTATION,
-                        help='Angle to rotate Pi Camera stream')
+    parser.add_argument(
+        "-p",
+        "--port",
+        default=DEFAULT_PORT,
+        type=int,
+        help="Port number to listen for incoming connections on (default: 8000)"
+    )
+    parser.add_argument(
+        "-res",
+        "--resolution",
+        default="640x480",
+        type=str,
+        help="Pi Camera stream resolution"
+    )
+    parser.add_argument(
+        "-f",
+        "--framerate",
+        default=DEFAULT_FRAME_RATE,
+        type=int,
+        help="Pi Camera stream framerate"
+    )
+    parser.add_argument(
+        '-rot',
+        '--rotation',
+        default=DEFAULT_ROTATION,
+        type=float,
+        help='Angle to rotate Pi Camera stream')
     args = parser.parse_args()
 
     try:
