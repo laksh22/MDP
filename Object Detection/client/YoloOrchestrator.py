@@ -38,10 +38,9 @@ class Yolo:
                 This threshold represents the overlapping ratio on these
                 imprecise object window hypotheses, and will be used as a
                 gauge by NMS to combine these overlapping object window
-                hypotheses. In such a case, if the overlapping ration is
-                above the threshold value, these object window hypotheses
-                will be combined together into a single bounding box that to
-                be rendered.
+                hypotheses. In such a case, if the overlapping ratio is above
+                the threshold value, these object window hypotheses will be
+                combined together into a single bounding box to be rendered.
         """
         self.confience = confidence
         self.threshold = threshold

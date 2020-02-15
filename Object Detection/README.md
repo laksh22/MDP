@@ -1,8 +1,8 @@
 # Object Detection and Recognition
 This path contains the the required sources to perform object detection and recognition using YOLOv3. 
 
-# 1. Dockerfile
-The dependencies are managed with the Dockerfile to ensure reproducibility, and environment consistency.
+# 1. Client dependencies
+The client dependencies are managed with the Dockerfile to ensure reproducibility, and environment consistency.
 
 The required dependencies have already been configured in the docker file provided in `~/dockerfiles/Dockerfile`.
 
@@ -34,3 +34,12 @@ docker build -t mdp_obj_detection -f Dockerfile .
 
 ## 1.2 Running the Docker image as a container
 TODO
+
+# 2. Server dependencies
+
+# 2.1 picamera
+Ensure that you have `picamera` installed on your Raspberry Pi.
+```shell script
+sudo apt-get update
+sudo apt-get install python-picamera python3-picamera 
+```
