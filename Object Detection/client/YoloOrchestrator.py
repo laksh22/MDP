@@ -1,5 +1,7 @@
 import os
 import time
+from pathlib import Path
+from typing import Union
 
 import cv2
 import numpy as np
@@ -79,17 +81,24 @@ class Yolo:
         self.ln = [self.ln[i[0] - 1]
                    for i in self.net.getUnconnectedOutLayers()]
 
-        output_video_path = "videos"
-        output_image_found_path = "images/found/"
-        output_image_not_found_path = "images/not_found/"
+        # Debug flag, comment if you do not want to print debug strings
+        self.is_debug = True
+
+        self.output_video_path = "videos/"
+        self.output_image_found_path = "images/found/"
+        self.output_image_not_found_path = "images/not_found/"
+
         # Create the required output folders
-        if not os.path.exists(output_video_path):
-            os.makedirs(output_video_path)
+        if not os.path.exists(self.output_video_path):
+            os.makedirs(self.output_video_path)
 
-        if not os.path.exists(output_video_path):
-            os.makedirs(output_video_path)
+        if not os.path.exists(self.output_image_found_path):
+            os.makedirs(self.output_image_found_path)
 
-    def process_image(self, image_path: str):
+        if not os.path.exists(self.output_image_not_found_path):
+            os.makedirs(self.output_image_not_found_path)
+
+    def process_image(self, image: Union[str, np.ndarray]):
         """
         Processes a given image by performing object detection on it. Should
         an object be detected, a bounding box will be drawn around it,
@@ -97,22 +106,146 @@ class Yolo:
         annotated on the image.
 
         If an object be detected, the processed image will be created in the
-        ~/images/found/path. The image file name will follow the structure of
-        [timestamp]_[label_id]_found_[original_file_name].jpg.
+        ~/images/found/image_name. The image file name will follow the
+        structure of [timestamp]_[label_ids]_found_[original_file_name].jpg.
 
         If an object is not detected, the processed image will be created in
-        the ~/images/not_found/path. The image file name will follow the
+        the ~/images/not_found/image_name. The image file name will follow the
         structure of [timestamp]_not_found_[original_file_name].jpg.
 
         Args:
-            image_path (str):
+            image (Union[str, np.ndarray]):
                 Absolute path to the image to be processed.
 
         Returns:
             None
         """
-        # TODO: Implement this (Read the docstring to see what needs to be done)
-        pass
+        # Determine the image input type and ensure that it is of the
+        # numpy.ndarray type
+        if isinstance(image, str):
+            image = cv2.imread(image)
+            image_file_name = Path(image).stem
+        elif isinstance(image, np.ndarray):
+            image_file_name = "vid_source"
+        else:
+            print("Invalid image input type detected. Exiting...")
+            exit(2)
+
+        # Get the image width and height
+        (im_height, im_width) = image.shape[:2]
+
+        # Construct a blob from the input frame and then perform a forward
+        # pass of the YOLO object detector, giving us the bounding boxes
+        # and associated probabilities.
+        # Here we supply the spatial size that the Convolutional Neural
+        # Network expects. YOLO requires a size of (416, 416)
+        blob = cv2.dnn.blobFromImage(image, 1 / 255.0, (416, 416),
+                                     swapRB=True, crop=False)
+        start = time.time()
+        self.net.setInput(blob)
+        layer_outputs = self.net.forward(self.ln)
+        end = time.time()
+
+        # Show timing information on YOLO
+        if self.is_debug:
+            print("[INFO] YOLO took {:.6f} seconds".format(end - start))
+
+        # Initialize our lists of detected bounding boxes, confidences,
+        # and class IDs, respectively
+        boxes = []
+        confidences = []
+        class_ids = []
+
+        # Loop over each of the layer outputs
+        for output in layer_outputs:
+            # Loop over each of the detections
+            for detection in output:
+                # Extract the class ID and confidence (i.e., probability)
+                # of the current object detection
+                scores = detection[5:]
+                class_id = np.argmax(scores)
+                confidence = scores[class_id]
+
+                # Filter out weak predictions by ensuring the detected
+                # probability is greater than the minimum probability
+                if confidence > self.confidence:
+                    # Scale the bounding box coordinates back relative to
+                    # the size of the image, keeping in mind that YOLO
+                    # actually returns the center (x, y)-coordinates of
+                    # the bounding box followed by the boxes' width and
+                    # height
+                    box = detection[0:4] * np.array(
+                        [im_width, im_height, im_width, im_height]
+                    )
+                    (center_x, center_y, box_width, box_height) = box.astype(
+                        "int")
+
+                    # Use the center (x, y)-coordinates to derive the top
+                    # and and left corner of the bounding box
+                    x = int(center_x - (im_width / 2))
+                    y = int(center_y - (im_height / 2))
+
+                    # Update our list of bounding box coordinates,
+                    # confidences, and class IDs
+                    boxes.append([x, y, int(box_width), int(box_height)])
+                    confidences.append(float(confidence))
+                    class_ids.append(class_id)
+
+        # Apply non-maxima suppression to suppress weak, overlapping
+        # bounding boxes
+        idxs = cv2.dnn.NMSBoxes(
+            boxes,
+            confidences,
+            self.confidence,
+            self.threshold
+        )
+
+        # Ensure at least one detection exists
+        if len(idxs) > 0:
+            detected_label_ids = []
+            # Loop over the indexes we are keeping
+            for i in idxs.flatten():
+                # Extract the bounding box coordinates
+                (x, y) = (boxes[i][0], boxes[i][1])
+                (w, h) = (boxes[i][2], boxes[i][3])
+
+                # Draw a bounding box rectangle and label on the frame
+                color = [int(c) for c in self.colors[class_ids[i]]]
+                cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
+                text = "{}: {:.4f}".format(self.labels[class_ids[i]],
+                                           confidences[i])
+                cv2.putText(
+                    image,
+                    text,
+                    (x, y - 5),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    color,
+                    2
+                )
+                detected_label_ids.append(self.labels[class_ids[i]])
+
+            # Write detected image to found directory
+            cv2.imwrite(
+                self.output_image_found_path +
+                "{timestamp}_{label_id}_found_{original_file_name}.jpg".format(
+                    timestamp=int(time.time()),
+                    label_id="-".join(detected_label_ids),
+                    original_file_name=image_file_name
+                ),
+                image
+            )
+        else:
+            # No objects detected
+            # Write image with nothing detected to not_found directory
+            cv2.imwrite(
+                self.output_image_found_path +
+                "{timestamp}_not_found_{original_file_name}.jpg".format(
+                    timestamp=int(time.time()),
+                    original_file_name=image_file_name
+                ),
+                image
+            )
 
     def process_video(self, video_path: str, reconstruct_vid: bool):
         """
@@ -146,7 +279,6 @@ class Yolo:
             None
         """
         v_writer = None
-        (v_width, v_height) = (None, None)
         epoch_ts = int(time.time())
 
         v_cap = cv2.VideoCapture(video_path)
@@ -159,100 +291,20 @@ class Yolo:
             if not grabbed:
                 break
 
-            # If the frame dimensions are empty, grab them
-            if v_width is None or v_height is None:
-                (v_height, v_width) = frame.shape[:2]
-
-            # Construct a blob from the input frame and then perform a forward
-            # pass of the YOLO object detector, giving us the bounding boxes
-            # and associated probabilities
-
-            # Here we supply the spatial size that the Convolutional Neural
-            # Network expects. YOLO requires a size of (416, 416)
-            blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (416, 416),
-                                         swapRB=True, crop=False)
-            self.net.setInput(blob)
-            layer_outputs = self.net.forward(self.ln)
-
-            # Initialize our lists of detected bounding boxes, confidences,
-            # and class IDs, respectively
-            boxes = []
-            confidences = []
-            class_ids = []
-
-            # Loop over each of the layer outputs
-            for output in layer_outputs:
-                # Loop over each of the detections
-                for detection in output:
-                    # Extract the class ID and confidence (i.e., probability)
-                    # of the current object detection
-                    scores = detection[5:]
-                    class_id = np.argmax(scores)
-                    confidence = scores[class_id]
-
-                    # Filter out weak predictions by ensuring the detected
-                    # probability is greater than the minimum probability
-                    if confidence > self.confidence:
-                        # Scale the bounding box coordinates back relative to
-                        # the size of the image, keeping in mind that YOLO
-                        # actually returns the center (x, y)-coordinates of
-                        # the bounding box followed by the boxes' width and
-                        # height
-                        box = detection[0:4] * np.array(
-                            [v_width, v_height, v_width, v_height]
-                        )
-                        (centerX, centerY, width, height) = box.astype("int")
-
-                        # Use the center (x, y)-coordinates to derive the top
-                        # and and left corner of the bounding box
-                        x = int(centerX - (width / 2))
-                        y = int(centerY - (height / 2))
-
-                        # Update our list of bounding box coordinates,
-                        # confidences, and class IDs
-                        boxes.append([x, y, int(width), int(height)])
-                        confidences.append(float(confidence))
-                        class_ids.append(class_id)
-
-            # Apply non-maxima suppression to suppress weak, overlapping
-            # bounding boxes
-            idxs = cv2.dnn.NMSBoxes(
-                boxes,
-                confidences,
-                self.confidence,
-                self.threshold
-            )
-
-            # Ensure at least one detection exists
-            if len(idxs) > 0:
-                # Loop over the indexes we are keeping
-                for i in idxs.flatten():
-                    # Extract the bounding box coordinates
-                    (x, y) = (boxes[i][0], boxes[i][1])
-                    (w, h) = (boxes[i][2], boxes[i][3])
-
-                    # Draw a bounding box rectangle and label on the frame
-                    color = [int(c) for c in self.colors[class_ids[i]]]
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-                    text = "{}: {:.4f}".format(self.labels[class_ids[i]],
-                                               confidences[i])
-                    cv2.putText(frame, text, (x, y - 5),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+            # Proccess frame as image
+            self.process_image(frame)
 
             # Check if the video writer is None
             if v_writer is None:
                 # Initialize our video writer
                 fourcc = cv2.VideoWriter_fourcc(*"MJPG")
                 v_writer = cv2.VideoWriter(
-                    "videos/%s_out.avi" % epoch_ts,
+                    "%s/%s_out.avi" % (self.output_video_path, epoch_ts),
                     fourcc,
                     30,
                     (frame.shape[1], frame.shape[0]),
                     True
                 )
-
-            # Write detected frame as image file
-            # TODO: Implement this
 
             # Check if video should be reconstructed
             if reconstruct_vid:
