@@ -1,4 +1,5 @@
 import os
+import time
 
 import cv2
 import numpy as np
@@ -42,7 +43,7 @@ class Yolo:
                 the threshold value, these object window hypotheses will be
                 combined together into a single bounding box to be rendered.
         """
-        self.confience = confidence
+        self.confidence = confidence
         self.threshold = threshold
         self.yolo_asset_dir = yolo_asset_dir
 
@@ -72,6 +73,21 @@ class Yolo:
             self.config_path,
             self.weight_path
         )
+
+        # Determine only the *output* layer names that we need from YOLO
+        self.ln = self.net.getLayerNames()
+        self.ln = [self.ln[i[0] - 1]
+                   for i in self.net.getUnconnectedOutLayers()]
+
+        output_video_path = "videos"
+        output_image_found_path = "images/found/"
+        output_image_not_found_path = "images/not_found/"
+        # Create the required output folders
+        if not os.path.exists(output_video_path):
+            os.makedirs(output_video_path)
+
+        if not os.path.exists(output_video_path):
+            os.makedirs(output_video_path)
 
     def process_image(self, image_path: str):
         """
@@ -123,8 +139,126 @@ class Yolo:
                 confidence level, and label id) drawn around detected objects
                 should be created.
 
+                If the flag is set (true) the reconstructed video will be
+                saved to ~/videos/[timestamp]_out.avi.
+
         Returns:
             None
         """
-        # TODO: Implement this (Read the docstring to see what needs to be done)
-        pass
+        v_writer = None
+        (v_width, v_height) = (None, None)
+        epoch_ts = int(time.time())
+
+        v_cap = cv2.VideoCapture(video_path)
+        while v_cap.isOpened():
+            # Read the next frame from the file
+            (grabbed, frame) = v_cap.read()
+
+            # If the frame was not grabbed, then we have reached the end of
+            # the stream
+            if not grabbed:
+                break
+
+            # If the frame dimensions are empty, grab them
+            if v_width is None or v_height is None:
+                (v_height, v_width) = frame.shape[:2]
+
+            # Construct a blob from the input frame and then perform a forward
+            # pass of the YOLO object detector, giving us the bounding boxes
+            # and associated probabilities
+
+            # Here we supply the spatial size that the Convolutional Neural
+            # Network expects. YOLO requires a size of (416, 416)
+            blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (416, 416),
+                                         swapRB=True, crop=False)
+            self.net.setInput(blob)
+            layer_outputs = self.net.forward(self.ln)
+
+            # Initialize our lists of detected bounding boxes, confidences,
+            # and class IDs, respectively
+            boxes = []
+            confidences = []
+            class_ids = []
+
+            # Loop over each of the layer outputs
+            for output in layer_outputs:
+                # Loop over each of the detections
+                for detection in output:
+                    # Extract the class ID and confidence (i.e., probability)
+                    # of the current object detection
+                    scores = detection[5:]
+                    class_id = np.argmax(scores)
+                    confidence = scores[class_id]
+
+                    # Filter out weak predictions by ensuring the detected
+                    # probability is greater than the minimum probability
+                    if confidence > self.confidence:
+                        # Scale the bounding box coordinates back relative to
+                        # the size of the image, keeping in mind that YOLO
+                        # actually returns the center (x, y)-coordinates of
+                        # the bounding box followed by the boxes' width and
+                        # height
+                        box = detection[0:4] * np.array(
+                            [v_width, v_height, v_width, v_height]
+                        )
+                        (centerX, centerY, width, height) = box.astype("int")
+
+                        # Use the center (x, y)-coordinates to derive the top
+                        # and and left corner of the bounding box
+                        x = int(centerX - (width / 2))
+                        y = int(centerY - (height / 2))
+
+                        # Update our list of bounding box coordinates,
+                        # confidences, and class IDs
+                        boxes.append([x, y, int(width), int(height)])
+                        confidences.append(float(confidence))
+                        class_ids.append(class_id)
+
+            # Apply non-maxima suppression to suppress weak, overlapping
+            # bounding boxes
+            idxs = cv2.dnn.NMSBoxes(
+                boxes,
+                confidences,
+                self.confidence,
+                self.threshold
+            )
+
+            # Ensure at least one detection exists
+            if len(idxs) > 0:
+                # Loop over the indexes we are keeping
+                for i in idxs.flatten():
+                    # Extract the bounding box coordinates
+                    (x, y) = (boxes[i][0], boxes[i][1])
+                    (w, h) = (boxes[i][2], boxes[i][3])
+
+                    # Draw a bounding box rectangle and label on the frame
+                    color = [int(c) for c in self.colors[class_ids[i]]]
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+                    text = "{}: {:.4f}".format(self.labels[class_ids[i]],
+                                               confidences[i])
+                    cv2.putText(frame, text, (x, y - 5),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+
+            # Check if the video writer is None
+            if v_writer is None:
+                # Initialize our video writer
+                fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+                v_writer = cv2.VideoWriter(
+                    "videos/%s_out.avi" % epoch_ts,
+                    fourcc,
+                    30,
+                    (frame.shape[1], frame.shape[0]),
+                    True
+                )
+
+            # Write detected frame as image file
+            # TODO: Implement this
+
+            # Check if video should be reconstructed
+            if reconstruct_vid:
+                v_writer.write(frame)
+
+        # Release the file pointers
+        print("[INFO] cleaning up...")
+        v_writer.release()
+        v_cap.release()

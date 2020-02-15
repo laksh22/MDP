@@ -184,7 +184,7 @@ if __name__ == "__main__":
                     userPort, userResolution, userFramerate, userRotation))
             try:
                 print("Serving video stream...")
-                streamServer.server = StreamingServer(("", userPort),
+                streamServer.server = StreamingServer(("0.0.0.0", userPort),
                                                       StreamingHandler)
                 streamServer.server.serve_forever()
                 print("Closing video stream.")
