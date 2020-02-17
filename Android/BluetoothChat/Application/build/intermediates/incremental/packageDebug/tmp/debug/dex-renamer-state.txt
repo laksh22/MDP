@@ -1,4 +1,4 @@
-#Fri Feb 14 03:03:02 SGT 2020
-base.0=C\:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
+#Tue Feb 18 00:30:46 SGT 2020
+base.0=D\:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
 path.0=classes.dex
 renamed.0=classes.dex

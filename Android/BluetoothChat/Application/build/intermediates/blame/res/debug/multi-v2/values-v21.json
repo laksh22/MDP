@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v21\\values-v21.xml",
+            "outputFile": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v21\\values-v21.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\src\\main\\res\\values-v21\\base-template-styles.xml",
+                    "source": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\src\\main\\res\\values-v21\\base-template-styles.xml",
                     "from": {
                         "startLines": "20",
                         "startColumns": "4",

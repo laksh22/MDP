@@ -1,29 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-sw600dp-v13\\values-sw600dp-v13.xml",
+            "outputFile": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-sw600dp-v13\\values-sw600dp-v13.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\src\\main\\res\\values-sw600dp\\template-styles.xml",
-                    "from": {
-                        "startLines": "18",
-                        "startColumns": "4",
-                        "startOffsets": "621",
-                        "endLines": "22",
-                        "endColumns": "12",
-                        "endOffsets": "861"
-                    },
-                    "to": {
-                        "startLines": "12",
-                        "startColumns": "4",
-                        "startOffsets": "747",
-                        "endLines": "16",
-                        "endColumns": "12",
-                        "endOffsets": "987"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\src\\main\\res\\values-sw600dp\\template-dimens.xml",
+                    "source": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\src\\main\\res\\values-sw600dp\\template-dimens.xml",
                     "from": {
                         "startLines": "20,21",
                         "startColumns": "4,4",
@@ -47,6 +28,25 @@
                         "startOffsets": "55,124,193,263,337,413,472,543",
                         "endColumns": "68,68,69,73,75,58,70,67",
                         "endOffsets": "119,188,258,332,408,467,538,606"
+                    }
+                },
+                {
+                    "source": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\src\\main\\res\\values-sw600dp\\template-styles.xml",
+                    "from": {
+                        "startLines": "18",
+                        "startColumns": "4",
+                        "startOffsets": "621",
+                        "endLines": "22",
+                        "endColumns": "12",
+                        "endOffsets": "861"
+                    },
+                    "to": {
+                        "startLines": "12",
+                        "startColumns": "4",
+                        "startOffsets": "747",
+                        "endLines": "16",
+                        "endColumns": "12",
+                        "endOffsets": "987"
                     }
                 }
             ]

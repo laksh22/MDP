@@ -1,25 +1,8 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+            "outputFile": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
             "map": [
-                {
-                    "source": "C:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\src\\main\\res\\values\\template-dimens.xml",
-                    "from": {
-                        "startLines": "28,24,23,22,21,20,29",
-                        "startColumns": "4,4,4,4,4,4,4",
-                        "startOffsets": "959,880,836,791,748,706,1029",
-                        "endColumns": "69,42,43,44,42,41,67",
-                        "endOffsets": "1024,918,875,831,786,743,1092"
-                    },
-                    "to": {
-                        "startLines": "165,166,167,168,169,170,194",
-                        "startColumns": "4,4,4,4,4,4,4",
-                        "startOffsets": "11354,11424,11467,11511,11556,11599,13072",
-                        "endColumns": "69,42,43,44,42,41,67",
-                        "endOffsets": "11419,11462,11506,11551,11594,11636,13135"
-                    }
-                },
                 {
                     "source": "C:\\Users\\Dennis\\.gradle\\caches\\transforms-2\\files-2.1\\dd07e922b5233b833d82ee834e6becf7\\appcompat-resources-1.1.0\\res\\values\\values.xml",
                     "from": {
@@ -37,6 +20,59 @@
                         "endLines": "1987,1994,2005,3044,3049",
                         "endColumns": "24,24,24,24,24",
                         "endOffsets": "133088,133473,134070,189348,189618"
+                    }
+                },
+                {
+                    "source": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\src\\main\\res\\values\\base-strings.xml",
+                    "from": {
+                        "startLines": "18,19",
+                        "startColumns": "4,4",
+                        "startOffsets": "647,705",
+                        "endLines": "18,33",
+                        "endColumns": "57,13",
+                        "endOffsets": "700,1303"
+                    },
+                    "to": {
+                        "startLines": "284,289",
+                        "startColumns": "4,4",
+                        "startOffsets": "18485,18834",
+                        "endLines": "284,303",
+                        "endColumns": "57,13",
+                        "endOffsets": "18538,19432"
+                    }
+                },
+                {
+                    "source": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\src\\main\\res\\values\\fragmentview_strings.xml",
+                    "from": {
+                        "startLines": "17,16",
+                        "startColumns": "4,4",
+                        "startOffsets": "670,617",
+                        "endColumns": "52,52",
+                        "endOffsets": "718,665"
+                    },
+                    "to": {
+                        "startLines": "307,308",
+                        "startColumns": "4,4",
+                        "startOffsets": "19637,19690",
+                        "endColumns": "52,52",
+                        "endOffsets": "19685,19738"
+                    }
+                },
+                {
+                    "source": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\src\\main\\res\\values\\strings.xml",
+                    "from": {
+                        "startLines": "21,33,38,37,30,29,20,27,36,28,19,23,22,24,32,31",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "882,1630,1856,1783,1438,1370,806,1240,1714,1301,768,1043,984,1144,1558,1494",
+                        "endColumns": "101,56,58,72,55,67,75,60,68,68,37,100,58,61,71,63",
+                        "endOffsets": "979,1682,1910,1851,1489,1433,877,1296,1778,1365,801,1139,1038,1201,1625,1553"
+                    },
+                    "to": {
+                        "startLines": "285,286,287,288,304,305,306,309,311,312,313,315,316,317,318,319",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "18543,18645,18702,18761,19437,19493,19561,19743,19857,19926,19995,20104,20201,20260,20322,20394",
+                        "endColumns": "101,56,58,72,55,67,75,60,68,68,37,96,58,61,71,63",
+                        "endOffsets": "18640,18697,18756,18829,19488,19556,19632,19799,19921,19990,20028,20196,20255,20317,20389,20453"
                     }
                 },
                 {
@@ -59,23 +95,6 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\src\\main\\res\\values\\fragmentview_strings.xml",
-                    "from": {
-                        "startLines": "17,16",
-                        "startColumns": "4,4",
-                        "startOffsets": "670,617",
-                        "endColumns": "52,52",
-                        "endOffsets": "718,665"
-                    },
-                    "to": {
-                        "startLines": "307,308",
-                        "startColumns": "4,4",
-                        "startOffsets": "19637,19690",
-                        "endColumns": "52,52",
-                        "endOffsets": "19685,19738"
-                    }
-                },
-                {
                     "source": "C:\\Users\\Dennis\\.gradle\\caches\\transforms-2\\files-2.1\\c527b78844be871c44103f6f45a963fb\\core-1.1.0\\res\\values\\values.xml",
                     "from": {
                         "startLines": "2,3,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,83,84,88,89,90,91,98,141,173,210",
@@ -95,43 +114,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\src\\main\\res\\values\\strings.xml",
-                    "from": {
-                        "startLines": "21,33,38,37,30,29,20,27,36,28,19,23,22,24,32,31",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "882,1630,1856,1783,1438,1370,806,1240,1714,1301,768,1043,984,1144,1558,1494",
-                        "endColumns": "101,56,58,72,55,67,75,60,68,68,37,100,58,61,71,63",
-                        "endOffsets": "979,1682,1910,1851,1489,1433,877,1296,1778,1365,801,1139,1038,1201,1625,1553"
-                    },
-                    "to": {
-                        "startLines": "285,286,287,288,304,305,306,309,311,312,313,315,316,317,318,319",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "18543,18645,18702,18761,19437,19493,19561,19743,19857,19926,19995,20104,20201,20260,20322,20394",
-                        "endColumns": "101,56,58,72,55,67,75,60,68,68,37,96,58,61,71,63",
-                        "endOffsets": "18640,18697,18756,18829,19488,19556,19632,19799,19921,19990,20028,20196,20255,20317,20389,20453"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\src\\main\\res\\values\\base-strings.xml",
-                    "from": {
-                        "startLines": "18,19",
-                        "startColumns": "4,4",
-                        "startOffsets": "647,705",
-                        "endLines": "18,33",
-                        "endColumns": "57,13",
-                        "endOffsets": "700,1303"
-                    },
-                    "to": {
-                        "startLines": "284,289",
-                        "startColumns": "4,4",
-                        "startOffsets": "18485,18834",
-                        "endLines": "284,303",
-                        "endColumns": "57,13",
-                        "endOffsets": "18538,19432"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Dennis\\AndroidStudioProjects\\BluetoothChat\\Application\\src\\main\\res\\values\\template-styles.xml",
+                    "source": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\src\\main\\res\\values\\template-styles.xml",
                     "from": {
                         "startLines": "24,20,22,27,29,34",
                         "startColumns": "4,4,4,4,4,4",
@@ -147,6 +130,23 @@
                         "endLines": "325,1712,1713,1726,1827,1833",
                         "endColumns": "50,59,52,26,12,12",
                         "endOffsets": "20946,114656,114709,115739,123730,124008"
+                    }
+                },
+                {
+                    "source": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\src\\main\\res\\values\\template-dimens.xml",
+                    "from": {
+                        "startLines": "28,24,23,22,21,20,29",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "959,880,836,791,748,706,1029",
+                        "endColumns": "69,42,43,44,42,41,67",
+                        "endOffsets": "1024,918,875,831,786,743,1092"
+                    },
+                    "to": {
+                        "startLines": "165,166,167,168,169,170,194",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "11354,11424,11467,11511,11556,11599,13072",
+                        "endColumns": "69,42,43,44,42,41,67",
+                        "endOffsets": "11419,11462,11506,11551,11594,11636,13135"
                     }
                 }
             ]
