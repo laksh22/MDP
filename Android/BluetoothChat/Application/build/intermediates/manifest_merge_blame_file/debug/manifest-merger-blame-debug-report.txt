@@ -21,65 +21,65 @@
 21
 22    <uses-sdk
 23        android:minSdkVersion="14"
-23-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml
+23-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
 24        android:targetSdkVersion="29" />
-24-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml
+24-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
 25
 26    <!-- Min/target SDK versions (<uses-sdk>) managed by build.gradle -->
 27
 28    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-28-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:26:5-74
-28-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:26:22-71
+28-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:26:5-74
+28-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:26:22-71
 29    <uses-permission android:name="android.permission.BLUETOOTH" />
-29-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:27:5-68
-29-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:27:22-65
+29-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:27:5-68
+29-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:27:22-65
 30    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-30-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:28:5-79
-30-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:28:22-76
+30-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:28:5-79
+30-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:28:22-76
 31
 32    <application
-32-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:30:5-53:19
+32-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:30:5-53:19
 33        android:allowBackup="true"
-33-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:31:9-35
+33-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:31:9-35
 34        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-34-->[androidx.core:core:1.1.0] C:\Users\Dennis\.gradle\caches\transforms-2\files-2.1\c527b78844be871c44103f6f45a963fb\core-1.1.0\AndroidManifest.xml:24:18-86
+34-->[androidx.core:core:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c527b78844be871c44103f6f45a963fb/core-1.1.0/AndroidManifest.xml:24:18-86
 35        android:debuggable="true"
 36        android:icon="@drawable/ic_launcher"
-36-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:32:9-45
+36-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:32:9-45
 37        android:label="@string/app_name"
-37-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:33:9-41
+37-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:33:9-41
 38        android:testOnly="true"
 39        android:theme="@style/AppTheme" >
-39-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:34:9-40
+39-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:34:9-40
 40        <activity
-40-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:37:9-45:20
+40-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:37:9-45:20
 41            android:name="com.example.android.bluetoothchat.MainActivity"
-41-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:38:13-41
+41-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:38:13-41
 42            android:configChanges="orientation|keyboardHidden"
-42-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:39:13-63
+42-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:39:13-63
 43            android:label="@string/app_name" >
-43-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:40:13-45
+43-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:40:13-45
 44            <intent-filter>
-44-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:41:13-44:29
+44-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:41:13-44:29
 45                <action android:name="android.intent.action.MAIN" />
-45-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:42:17-69
-45-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:42:25-66
+45-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:42:17-69
+45-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:42:25-66
 46
 47                <category android:name="android.intent.category.LAUNCHER" />
-47-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:43:17-77
-47-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:43:27-74
+47-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:43:17-77
+47-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:43:27-74
 48            </intent-filter>
 49        </activity>
 50        <activity
-50-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:47:9-51:64
+50-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:47:9-51:64
 51            android:name="com.example.android.bluetoothchat.DeviceListActivity"
-51-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:48:13-47
+51-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:48:13-47
 52            android:configChanges="orientation|keyboardHidden"
-52-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:49:13-63
+52-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:49:13-63
 53            android:label="@string/select_device"
-53-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:50:13-50
+53-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:50:13-50
 54            android:theme="@android:style/Theme.Holo.Dialog" />
-54-->D:\0DCS\Uni\CZ3004 MDP\BluetoothChat\Application\src\main\AndroidManifest.xml:51:13-61
+54-->/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:51:13-61
 55    </application>
 56
 57</manifest>

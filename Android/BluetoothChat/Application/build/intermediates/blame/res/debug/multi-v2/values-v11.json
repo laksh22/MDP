@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v11\\values-v11.xml",
+            "outputFile": "/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/build/intermediates/incremental/mergeDebugResources/merged.dir/values-v11/values-v11.xml",
             "map": [
                 {
-                    "source": "D:\\0DCS\\Uni\\CZ3004 MDP\\BluetoothChat\\Application\\src\\main\\res\\values-v11\\template-styles.xml",
+                    "source": "/Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/res/values-v11/template-styles.xml",
                     "from": {
                         "startLines": "19",
                         "startColumns": "4",
