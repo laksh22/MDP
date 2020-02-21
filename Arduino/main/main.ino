@@ -40,7 +40,6 @@ void setup()
   pinMode(FRSPIN, INPUT);
 
   Serial.begin(9600);
-  Serial.println("Starting...");
 
   md.init();
 }
