@@ -66,13 +66,13 @@ void write_hub(char *wpointer, char source) {
     if (strlen(wpointer) > 0) {
       if (tolower(wpointer[1]) == 't') {
 
-        if (source == 's') {
-          *(wpointer + 1) = 's';
-        } else if (source == 'b') {
-          *(wpointer + 1) = 'b';
-        }
+//        if (source == 's') {
+//          *(wpointer + 1) = 's';
+//        } else if (source == 'b') {
+//          *(wpointer + 1) = 'b';
+//        }
 
-        tcp_send(wpointer + 1);
+        tcp_send(wpointer + 2);
       } else if (tolower(wpointer[1]) == 'b') {
         bt_send((void *) wpointer + 2);
       } else if (tolower(wpointer[1]) == 's') {
@@ -90,6 +90,7 @@ void write_hub(char *wpointer, char source) {
       } else {
         printf("[write_hub]: Incorrect format provided, message [%s] will be dropped!\n",
                wpointer);
+        fflush(stdout);
       }
     }
   } else {
@@ -101,6 +102,7 @@ void write_hub(char *wpointer, char source) {
 void all_disconnect(int sig) {
   printf("[all_disconnect]: %d signal received, terminating all connection ports!\n",
          sig);
+  fflush(stdout);
   tcp_disconnect(tcp_sockfd);
   bt_disconnect();
   serial_disconnect();
