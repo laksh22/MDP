@@ -29,6 +29,7 @@ void enqueue(Queue *queue, char *item) {
     queue->array[queue->rear] = item;
     queue->size = queue->size + 1;
     printf("[enqueue]: Value [%s] enqueued to queue\n", item);
+    fflush(stdout);
   }
 }
 
@@ -38,6 +39,7 @@ char *dequeue(Queue *queue) {
     queue->front = (queue->front + 1) % queue->capacity;
     queue->size = queue->size - 1;
     printf("[dequeue]: Value [%s] dequeued from queue\n", item);
+    fflush(stdout);
     return item;
   }
 

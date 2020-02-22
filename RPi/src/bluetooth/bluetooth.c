@@ -42,6 +42,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
   sdp_set_service_id(&record, svc_uuid);
   sdp_uuid2strn(&svc_uuid, str, 256);
   printf("[register_service]: Registering UUID %s\n", str);
+  fflush(stdout);
 
   // Set the service class
   sdp_uuid16_create(&svc_class_uuid, SERIAL_PORT_SVCLASS_ID);
@@ -117,6 +118,7 @@ int bt_connect() {
     return 0;
   } else {
     printf("[bt_connect]: Creation of BT socket successful...\n");
+    fflush(stdout);
   }
 
   // Binds socket to port 1 of the first available local bluetooth adapter
@@ -125,6 +127,7 @@ int bt_connect() {
     return 0;
   } else {
     printf("[bt_connect]: Binding of BT socket successful..\n");
+    fflush(stdout);
   }
 
   // Configure server to listen for incoming connections
@@ -134,6 +137,7 @@ int bt_connect() {
   } else {
     printf(
         "[bt_connect]: Bluetooth Server is now listening for connections...\n");
+    fflush(stdout);
   }
 
   // Accepts the incoming data packet from client
@@ -144,6 +148,7 @@ int bt_connect() {
     return 0;
   } else {
     printf("[bt_connect]: BT Server has accepted the client successfully...\n");
+    fflush(stdout);
   }
 
   ba2str(&rem_addr.rc_bdaddr, buf);
@@ -156,6 +161,7 @@ int bt_connect() {
 void bt_disconnect() {
   if (!close(client) && !close(bt_sock)) {
     printf("[bt_disconnect]: Bluetooth connection is closed successfully!\n");
+    fflush(stdout);
   } else {
     perror(
         "[bt_disconnect]: Error encountered when trying to close Bluetooth connection");
@@ -197,6 +203,7 @@ char *bt_read() {
         } else {
           printf("[bt_read]: Received [%s] from Bluetooth client connection\n",
                  bt_buf);
+          fflush(stdout);
           bt_buf[count] = '\0';
           p = bt_buf;
           return p;
@@ -205,6 +212,7 @@ char *bt_read() {
         printf(
             "[bt_read]: Invalid string [%s] received, please send a new command\n",
             bt_buf);
+        fflush(stdout);
         return '\0';
       }
     } else {
@@ -221,6 +229,7 @@ void bt_reconnect() {
 
   while (!conn) {
     printf("[bt_reconnect]: Attempting to restart Bluetooth server...\n");
+    fflush(stdout);
     bt_disconnect();
     conn = bt_connect();
     sleep(1);
@@ -228,6 +237,7 @@ void bt_reconnect() {
 
   printf(
       "[bt_reconnect]: Bluetooth services have been successfully reconnected!\n");
+  fflush(stdout);
 }
 
 //// Non-blocking queue implementation

@@ -19,6 +19,7 @@ int serial_connect() {
         "[serial_connect]: Serial port connection %s with %d established successfully.\n",
         SERIAL_PORT,
         BAUD);
+    fflush(stdout);
     return 1;
   }
 }
@@ -34,12 +35,16 @@ void serial_reconnect() {
   while (!conn) {
     printf(
         "[serial_reconnect]: Attempting to re-establish connection to serial port...\n");
-    serial_disconnect();
+    fflush(stdout);
+
+    // Do not need to close serial port
+//    serial_disconnect();
     conn = serial_connect();
     sleep(1);
   }
 
   printf("[serial_reconnect]: Serial connection successfully reconnected!\n");
+  fflush(stdout);
 }
 
 char *serial_read() {
@@ -71,6 +76,7 @@ char *serial_read() {
           printf(
               "[serial_read]: Received [%s] from Serial client connection\n",
               serial_buf);
+          fflush(stdout);
           p = serial_buf;
           return p;
         } else {
@@ -80,6 +86,7 @@ char *serial_read() {
         printf(
             "[serial_read]: Invalid string [%s] received, please send a new command\n",
             serial_buf);
+        fflush(stdout);
         return 0;
       }
     } else {
@@ -111,7 +118,7 @@ int serial_send(char *msg) {
   char send[MAX];
   if (strlen(msg) > 0) {
     strcpy(send, msg);
-    strcat(send, "\n");
+//    strcat(send, "\n");
     serialPuts(fd_serial, send);
     printf("[serial_send]: RPi send message [%s] to serial.\n", msg);
     fflush(stdout);
@@ -144,6 +151,7 @@ void *serial_sender_create(void *args) {
   while (1) {
     rpa_queue_pop(s_queue, (void **) &q);
     printf("[serial_send_create]: [%s] dequeued from serial queue\n", q);
+    fflush(stdout);
     write_hub(q, 's');
   }
 }

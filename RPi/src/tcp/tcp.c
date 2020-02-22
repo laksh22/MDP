@@ -30,6 +30,7 @@ int tcp_connect() {
     perror("[tcp_connect]: Error encountered when creating TCP Socket");
   } else {
     printf("[tcp_connect]: TCP socket has been created successfully!\n");
+    fflush(stdout);
   }
 
   // Clears the memory of sockaddr
@@ -45,6 +46,7 @@ int tcp_connect() {
     perror("[tcp_connect]: Error encountered when binding trying to bind");
   } else {
     printf("[tcp_connect]: TCP Socket successfully binded...\n");
+    fflush(stdout);
   }
 
   // Configure server to listen for incoming connections
@@ -54,6 +56,7 @@ int tcp_connect() {
     return 0;
   } else {
     printf("[tcp_connect]: TCP Server is now listening...\n");
+    fflush(stdout);
   }
 
   // Can shift to become part of the multi-threaded connection
@@ -64,6 +67,7 @@ int tcp_connect() {
     return 0;
   } else {
     printf("[tcp_connect]: TCP Server has successfully accepted the client...\n");
+    fflush(stdout);
   }
   return 1;
 }
@@ -72,6 +76,7 @@ void tcp_disconnect(int sock) {
   if (!close(sock)) {
     printf("[tcp_disconnect]: TCP connection id %d closed successfully!\n",
            sock);
+    fflush(stdout);
   } else {
     perror(
         "[tcp_disconnect]: Error encountered when trying to close TCP connection: ");
@@ -83,12 +88,14 @@ void tcp_reconnect() {
 
   while (!conn) {
     printf("[tcp_reconnect]: Attempting to restart tcp connection...\n");
+    fflush(stdout);
     tcp_disconnect(tcp_sockfd);
     conn = tcp_connect();
     sleep(1);
   }
 
   printf("[tcp_reconnect]: TCP server connection successfully started!\n");
+  fflush(stdout);
 }
 
 void *tcp_reader_create(void *args) {
@@ -126,6 +133,7 @@ char *tcp_read() {
         } else {
           printf("[tcp_read]: Received [%s] from tcp client connection\n",
                  tcp_buf);
+          fflush(stdout);
           tcp_buf[count] = '\0';
           p = tcp_buf;
           return p;
@@ -134,6 +142,7 @@ char *tcp_read() {
         printf(
             "[tcp_read]: Invalid string [%s] received, please send a new command\n",
             tcp_buf);
+        fflush(stdout);
         return NULL;
       }
     } else {
