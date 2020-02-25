@@ -1,10 +1,22 @@
 #include <DualVNH5019MotorShield.h>
 #include <ArduinoSort.h>
+#include <PinChangeInt.h>
 
 // Movement variables
 #define SPEED 400
 #define REVERSE -400
 #define BRAKE 400
+
+// Encoder variables
+#define leftEncoderPinA  3
+#define leftEncoderPinB  5
+#define rightEncoderPinA  11
+#define rightEncoderPinB  13
+#define MOVE_DISTANCE 10 // In cm
+
+// Rotation
+#define wheelDistance 17
+#define ROTATE_DISTANCE 3.14*wheelDistance/4 // + 1.665 
 
 // Sensor pins
 #define LSPIN A0  // PS1
@@ -30,6 +42,14 @@
 // Motor shield | M1 = left, M2 = right
 DualVNH5019MotorShield md;
 
+//Variables
+unsigned long ticksL = 0; //number of times we've seen rising/falling edge in encoder output
+volatile long encoderPosL=0;
+unsigned long ticksR = 0; //number of times we've seen rising/falling edge in encoder output
+volatile long encoderPosR=0;
+
+int distanceToMove = 0;
+
 void setup()
 {
   pinMode(LSPIN, INPUT);
@@ -39,6 +59,14 @@ void setup()
   pinMode(FLSPIN, INPUT);
   pinMode(FRSPIN, INPUT);
 
+  pinMode(leftEncoderPinA, INPUT_PULLUP); 
+  pinMode(leftEncoderPinB, INPUT_PULLUP); 
+  pinMode(rightEncoderPinA, INPUT_PULLUP); 
+  pinMode(rightEncoderPinB, INPUT_PULLUP);
+
+  attachPinChangeInterrupt(rightEncoderPinA,countTicksCalcPosR,RISING);
+  attachPinChangeInterrupt(leftEncoderPinA,countTicksCalcPosL,RISING);
+  
   Serial.begin(9600);
 
   md.init();
@@ -102,32 +130,20 @@ void loop()
     //    Serial.println(finalDebug);
   case 'W':
   {
-    if (arg == 0)
-      moveFront();
-    else
-      moveFront();
-    stopMotors();
-    sendAck();
+    distanceToMove = MOVE_DISTANCE;
+    moveFront();
     break;
   }
   case 'A':
   {
-    if (arg == 0)
-      turnLeft();
-    else
-      turnLeft();
-    stopMotors();
-    sendAck();
+    distanceToMove = ROTATE_DISTANCE;
+    turnLeft();
     break;
   }
   case 'D':
   {
-    if (arg == 0)
-      turnRight();
-    else
-      turnRight();
-    stopMotors();
-    sendAck();
+    distanceToMove = ROTATE_DISTANCE;
+    turnRight();
     break;
   }
   case 'E':
@@ -139,28 +155,22 @@ void loop()
   {
     //TODO: frontAlignment();
     moveFront();
-    sendAck();
     break;
   }
   case 'L':
   {
     turnLeft();
-    stopMotors();
-    sendAck();
     break;
   }
   case 'R':
   {
     turnRight();
-    stopMotors();
-    sendAck();
     break;
   }
   case 'F':
   {
     //TODO: MazeRunner_Flag = true;
     stopMotors();
-    sendAck();
     break;
   }
   default:
@@ -170,6 +180,39 @@ void loop()
     memset(command_buffer, 0, sizeof(command_buffer));
   }
 }
+
+void countTicksCalcPosL()
+{
+  ticksL++;
+
+  int maxDistance = distanceToMove*10*11.93/4;
+
+  if(ticksL>maxDistance && ticksR>maxDistance){
+    stopMotors();
+    ticksL = 0;
+    sendAck();
+  }
+
+  if (digitalRead(leftEncoderPinA) == digitalRead(leftEncoderPinB)) encoderPosL++;
+  else encoderPosL--;
+}
+
+void countTicksCalcPosR()
+{
+  ticksR++;
+
+  int maxDistance = distanceToMove*10*11.93/4;
+
+  if(ticksR>maxDistance && ticksR>maxDistance){
+    stopMotors();
+    ticksR = 0;
+    sendAck();
+  }
+
+  if (digitalRead(rightEncoderPinA) == digitalRead(rightEncoderPinB)) encoderPosR++;
+  else encoderPosR--;
+}
+
 
 void sendAck()
 {
@@ -298,28 +341,24 @@ int getShortIRDistance(int pin)
 void moveFront()
 {
   md.setSpeeds(SPEED, REVERSE);
-  delay(500);
   stopIfFault();
 }
 
 void moveBack()
 {
   md.setSpeeds(REVERSE, SPEED);
-  delay(500);
   stopIfFault();
 }
 
 void turnLeft()
 {
   md.setSpeeds(REVERSE, REVERSE);
-  delay(500);
   stopIfFault();
 }
 
 void turnRight()
 {
   md.setSpeeds(SPEED, SPEED);
-  delay(500);
   stopIfFault();
 }
 
@@ -332,13 +371,11 @@ void stopIfFault()
 {
   if (md.getM1Fault())
   {
-    Serial.println("M1 fault");
     while (1)
       ;
   }
   if (md.getM2Fault())
   {
-    Serial.println("M2 fault");
     while (1)
       ;
   }
