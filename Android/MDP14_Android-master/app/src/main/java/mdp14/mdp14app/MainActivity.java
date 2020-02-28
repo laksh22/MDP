@@ -605,9 +605,13 @@ public class MainActivity extends AppCompatActivity {
 
     //swipe gesture input
     public void onSwipeTop() {
+
+        //check if robot is out of bounds
         if(!Robot.getInstance().rotateToNorth()){
-            Robot.getInstance().moveForward(10);
-            outgoingMessage("MOVE:F");
+            if(!Robot.getInstance().isOutOfBounds()) {
+                Robot.getInstance().moveForward(10);
+                outgoingMessage("MOVE:F");
+            }
         }
         else{
             Integer count = Robot.getInstance().getCount();
@@ -627,8 +631,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSwipeLeft() {
         if(!Robot.getInstance().rotateToWest()){
-            Robot.getInstance().moveForward(10);
-            outgoingMessage("MOVE:F");
+            if(!Robot.getInstance().isOutOfBounds()) {
+                Robot.getInstance().moveForward(10);
+                outgoingMessage("MOVE:F");
+            }
         }
         else{
             Integer count = Robot.getInstance().getCount();
@@ -649,8 +655,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSwipeRight() {
         if(!Robot.getInstance().rotateToEast()){
-            Robot.getInstance().moveForward(10);
-            outgoingMessage("MOVE:F");
+            if(!Robot.getInstance().isOutOfBounds()) {
+                Robot.getInstance().moveForward(10);
+                outgoingMessage("MOVE:F");
+            }
         }
         else{
             Integer count = Robot.getInstance().getCount();
@@ -670,8 +678,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void onSwipeBottom() {
         if(!Robot.getInstance().rotateToSouth()){
-            Robot.getInstance().moveForward(10);
-            outgoingMessage("MOVE:F");
+            if(!Robot.getInstance().isOutOfBounds()) {
+                Robot.getInstance().moveForward(10);
+                outgoingMessage("MOVE:F");
+            }
         }
         else{
             Integer count = Robot.getInstance().getCount();

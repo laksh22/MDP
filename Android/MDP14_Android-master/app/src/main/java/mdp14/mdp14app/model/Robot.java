@@ -112,7 +112,7 @@ public class Robot {
 		return true;
 	}
 	public boolean rotateToSouth(){
-		if(direction == 180){
+		if(direction == 180 || direction == -180){
 			return false;
 		}
 		float degree = (int) degreeToRotateToDirection(direction,180);
@@ -132,7 +132,7 @@ public class Robot {
 		return true;
 	}
 	public boolean rotateToEast(){
-		if(direction == 90){
+		if(direction == 90 || direction == -270){
 			return false;
 		}
 		float degree = (int) degreeToRotateToDirection(direction,90);
@@ -156,7 +156,7 @@ public class Robot {
 
 
 	public boolean rotateToWest(){
-		if(direction == 270){
+		if(direction == 270 || direction == -90){
 			return false;
 		}
 		float degree = (int) degreeToRotateToDirection(direction,270);
