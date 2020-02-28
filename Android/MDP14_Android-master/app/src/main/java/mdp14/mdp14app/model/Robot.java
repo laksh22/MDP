@@ -50,7 +50,21 @@ public class Robot {
 	public void setPosY(float posY) {
 		this.posY = posY;
 	}
+	public boolean isOutOfBounds(){
+		int posX = (int)getPosX();
+		int posY = (int)getPosY();
+		int direction = (int)getDirection();
 
+		if((posX>=13 && posY <=1 && (direction==180 || direction == 90 || direction == -180 || direction == -270))) return true;
+		else if ((posX<=1 && posY <=1 && (direction==270 || direction == 180 || direction == -90 || direction == -180))) return true;
+		else if ((posX<=1 && posY >=18 && (direction==0 || direction == 270 || direction == -90))) return true;
+		else if ((posX>=13 && posY >=18 && (direction==0 || direction == 90 || direction == -270))) return true;
+		else if (posX <= 1 && (direction == 270 || direction ==-90 )) return true;
+		else if (posX >= 13 && (direction == 90 || direction == -270)) return true;
+		else if (posY <= 1 && (direction == 180|| direction==-180)) return true;
+		else if (posY >= 18 && direction == 0) return true;
+		else return false;
+	}
 	public boolean isExploring() {
 		return isExploring;
 	}
@@ -163,6 +177,7 @@ public class Robot {
 
 	public void moveForward(int distance){
 		//int distance = 10;
+		boolean isMoved = true;
 		double radians = Math.toRadians(direction);
 		float moveX =  ((distance/10f)*(float)Math.sin(radians));
 		float moveY =  ((distance/10f)*(float)Math.cos(radians));

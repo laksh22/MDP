@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Timer;
 
 import mdp14.mdp14app.bluetooth.BluetoothChatFragment;
+import mdp14.mdp14app.model.IDblock;
 import mdp14.mdp14app.model.Map;
 import mdp14.mdp14app.model.Position;
 import mdp14.mdp14app.model.Robot;
@@ -113,11 +114,12 @@ public class MainActivity extends AppCompatActivity {
     private void setBtnListener(){
         btn_forward.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Robot.getInstance().moveForward(10);
-
-
-                outgoingMessage("MOVE:F");
-                loadGrid();
+                //check if robot is out of bounds
+                if(!Robot.getInstance().isOutOfBounds()) {
+                    Robot.getInstance().moveForward(10);
+                    outgoingMessage("MOVE:F");
+                    loadGrid();
+                }
             }
         });
         btn_left.setOnClickListener(new View.OnClickListener() {
@@ -377,7 +379,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            //receive robot position
+            //receive numbered block
+            if(message[0].equals("BLOCK")) {
+                String posAndDirect[] = message[1].split(",");
+                IDblock input = new IDblock(posAndDirect[2], Integer.parseInt(posAndDirect[0]), Integer.parseInt(posAndDirect[1]));
+                Map.getInstance().addNumberedBlocks(input);
+                if(menu_auto_update_map!=null&&menu_auto_update_map.isChecked()){
+                    loadGrid();
+                }
+            }
+
+                //receive robot position
             if(message[0].equals("ROBOTPOSITION")){
                 String posAndDirect[] = message[1].split(",");
                 r.setPosX(Float.parseFloat(posAndDirect[0]));
@@ -547,9 +559,19 @@ public class MainActivity extends AppCompatActivity {
 
     //method to send out message to rpi thru bluetooth
     public boolean outgoingMessage(String sendMsg) {
+        return fragment.sendMsg("@t" + sendMsg + "!");
+    }
+    public boolean outgoingMessage(String sendMsg, int destination) {
+        //add delimiters
+        // 0=algo, 1=ardu
+        if(destination == 0){
+            sendMsg = "@t" + sendMsg + "!";
+        }else if(destination == 1){
+            sendMsg = "@s" + sendMsg + "!";
+        }
+
         return fragment.sendMsg(sendMsg);
     }
-
     //on the coordinate tapped
     //set waypoint, if menuitem is checked
     //set robot, if menuitem is checked

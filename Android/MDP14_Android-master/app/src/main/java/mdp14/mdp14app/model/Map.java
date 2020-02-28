@@ -1,6 +1,8 @@
 package mdp14.mdp14app.model;
 
 
+import java.util.ArrayList;
+
 public class Map {
 	public static Map map=null;
 	public static Map getInstance(){
@@ -18,12 +20,16 @@ public class Map {
 	private static int exploredTiles [][] = new int[20][15];
 	private static int obstacles [][] = new int[20][15];
 
+	private ArrayList<IDblock> numberedBlocks = new ArrayList<IDblock>();
+
 	public  int[][] getObstacles() {
 		return obstacles;
 	}
 	public int[][] getExploredTiles() {
 		return exploredTiles;
 	}
+	public ArrayList<IDblock> getNumberedBlocks() {return numberedBlocks; }
+	public void addNumberedBlocks(IDblock block) {numberedBlocks.add(block);}
 	public void setExploredTiles(int[][] exploredTiles) {
 		this.exploredTiles = exploredTiles;
 	}
@@ -38,7 +44,7 @@ public class Map {
 	}
 	//in hexdecimal, from map descriptor file to arrays
 
-	public void setMap(String exploredTileHex,String obstacleHex, String exploredObstacleHex) {
+	public void setMap(String exploredTileHex, String obstacleHex, String exploredObstacleHex) {
 		 // System.out.println (exploredTile2);
 		  String exploredTileBinary = HexBin.hexToBin(exploredTileHex);
 		  exploredTileBinary =exploredTileBinary.substring(2, exploredTileBinary.length()-2);
