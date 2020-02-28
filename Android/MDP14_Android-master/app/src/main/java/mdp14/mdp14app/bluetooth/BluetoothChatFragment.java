@@ -351,6 +351,8 @@ public class BluetoothChatFragment extends Fragment {
             return false;
         }
 
+
+
         // Check that there's actually something to send
         if (message.length() > 0) {
             // Get the message bytes and tell the BluetoothChatService to write

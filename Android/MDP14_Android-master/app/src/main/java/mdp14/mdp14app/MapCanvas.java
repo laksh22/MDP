@@ -6,11 +6,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 //import android.support.v4.view.MotionEventCompat;
+import android.graphics.Typeface;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
+import mdp14.mdp14app.model.IDblock;
 import mdp14.mdp14app.model.Map;
 import mdp14.mdp14app.model.Position;
 import mdp14.mdp14app.model.Robot;
@@ -29,6 +33,8 @@ public class MapCanvas extends View implements View.OnTouchListener {
     Paint obstacle = new Paint();       //Obstacles
     Paint waypoint = new Paint();       //Waypoint
     Paint unexploredArea = new Paint(); //Unexplored area
+    Paint numberedObstacle = new Paint();//Numbered obstacle
+
 
     float padding = 50;
     float paddingX = 50;
@@ -56,6 +62,11 @@ public class MapCanvas extends View implements View.OnTouchListener {
         unexploredArea.setColor(Color.parseColor("#458eff"));   //#0696D7
         waypoint.setColor(Color.parseColor("#00E40B"));
         startEndPoint.setColor(Color.parseColor("#FBC02D"));
+        numberedObstacle.setColor(Color.parseColor("#FF0000"));
+        numberedObstacle.setTypeface(Typeface.DEFAULT_BOLD);
+        numberedObstacle.setLetterSpacing(-0.2f);
+        numberedObstacle.setTextAlign(Paint.Align.CENTER);
+        numberedObstacle.setTextSize(30);
 
     }
 
@@ -81,12 +92,17 @@ public class MapCanvas extends View implements View.OnTouchListener {
         cellWidth = w/15f;
         cellHeight = h/20f;
 
+        numberedObstacle.setTextSize(cellHeight);
+
 
         //draw background (unexlpored)
         canvas.drawRect(paddingX,  paddingY, paddingX + w,  paddingY + h, unexploredArea);
 
         //draw explored & obstacle
         drawExploredTile(canvas);
+
+        //draw numbered blocks
+        drawNumberedBlocks(canvas);
 
         //draw waypoint
         drawWaypoint(canvas);
@@ -156,6 +172,20 @@ public class MapCanvas extends View implements View.OnTouchListener {
         }
         for(int i = 0;i<21;i++){
             canvas.drawLine(paddingX, i*(h/20f)+ paddingY, paddingX +w,i*(h/20f)+ paddingY, separator);
+        }
+    }
+
+    private void drawNumberedBlocks(Canvas canvas) {
+        //draw numbered blocks
+        ArrayList<IDblock> numberedBlocks = Map.getInstance().getNumberedBlocks();
+        for(IDblock block:numberedBlocks)
+        {
+            //float posX = (paddingX + block.getPosition().getPosX() * cellWidth);
+            //float posY = (paddingY + (19-block.getPosition().getPosY()) * cellHeight);
+            float posX = paddingX + (block.getPosition().getPosX()+0.5f) * cellWidth;
+            float posY = paddingY + (20-block.getPosition().getPosY()) * cellHeight;
+            canvas.drawText(block.getID(), posX, posY, numberedObstacle);
+
         }
     }
 
