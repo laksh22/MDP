@@ -16,6 +16,8 @@ import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.common.logger.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -352,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String STATUS_FP_HEADER = "FP";
     public static final String STATUS_DONE_DESC = "Stopped";
     public static final String STATUS_DONE_HEADER = "DONE";
-    public static final String STATUS_TERMINATE_HEADER = "TE|||";
+    public static final String STATUS_TERMINATE_HEADER = "TE|||"; //change this
     public static final String STATUS_TERMINATE_DESC = "Terminated";
 
     //method is ran when new message comes in
@@ -469,6 +471,26 @@ public class MainActivity extends AppCompatActivity {
                 updateStatus(STATUS_DONE_DESC);
             }
 
+            if(message[1].equals("F")){
+                updateStatus("Moving Forward");
+            }
+            if(message[1].equals("TR")){
+                updateStatus("Turning Right");
+            }
+            if(message[1].equals("TL")){
+                updateStatus("Turning Left");
+            }
+            if(message[1].equals("FP")){
+                updateStatus("Fastest Path");
+            }
+            if(message[1].equals("EX")){
+                updateStatus("Exploration");
+            }
+            if(message[1].equals("DONE")){
+                updateStatus("Done!");
+            }
+
+
 
 
         }
@@ -563,6 +585,20 @@ public class MainActivity extends AppCompatActivity {
     public void onSwipeTop() {
         if(!Robot.getInstance().rotateToNorth()){
             Robot.getInstance().moveForward(10);
+            outgoingMessage("MOVE:F");
+        }
+        else{
+            Integer count = Robot.getInstance().getCount();
+            if(count==1){
+                outgoingMessage("MOVE:TR");
+            }
+            if(count==2){
+                outgoingMessage("MOVE:TR");
+                outgoingMessage("MOVE:TR");
+            }
+            if(count==-1){
+                outgoingMessage("MOVE:TL");
+            }
         }
         loadGrid();
     }
@@ -570,13 +606,42 @@ public class MainActivity extends AppCompatActivity {
     public void onSwipeLeft() {
         if(!Robot.getInstance().rotateToWest()){
             Robot.getInstance().moveForward(10);
+            outgoingMessage("MOVE:F");
         }
+        else{
+            Integer count = Robot.getInstance().getCount();
+            if(count==1){
+                outgoingMessage("MOVE:TR");
+            }
+            if(count==2){
+                outgoingMessage("MOVE:TR");
+                outgoingMessage("MOVE:TR");
+            }
+            if(count==-1){
+                outgoingMessage("MOVE:TL");
+            }
+        }
+
         loadGrid();
     }
 
     public void onSwipeRight() {
         if(!Robot.getInstance().rotateToEast()){
             Robot.getInstance().moveForward(10);
+            outgoingMessage("MOVE:F");
+        }
+        else{
+            Integer count = Robot.getInstance().getCount();
+            if(count==1){
+                outgoingMessage("MOVE:TR");
+            }
+            if(count==2){
+                outgoingMessage("MOVE:TR");
+                outgoingMessage("MOVE:TR");
+            }
+            if(count==-1){
+                outgoingMessage("MOVE:TL");
+            }
         }
         loadGrid();
     }
@@ -584,6 +649,20 @@ public class MainActivity extends AppCompatActivity {
     public void onSwipeBottom() {
         if(!Robot.getInstance().rotateToSouth()){
             Robot.getInstance().moveForward(10);
+            outgoingMessage("MOVE:F");
+        }
+        else{
+            Integer count = Robot.getInstance().getCount();
+            if(count==1){
+                outgoingMessage("MOVE:TR");
+            }
+            if(count==2){
+                outgoingMessage("MOVE:TR");
+                outgoingMessage("MOVE:TR");
+            }
+            if(count==-1){
+                outgoingMessage("MOVE:TL");
+            }
         }
         loadGrid();
     }

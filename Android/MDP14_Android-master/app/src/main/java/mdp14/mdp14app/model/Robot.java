@@ -1,5 +1,9 @@
 package mdp14.mdp14app.model;
 
+import android.util.Log;
+
+import mdp14.mdp14app.bluetooth.BluetoothChatFragment;
+
 public class Robot {
 	public static Robot robot=null;
 	public static Robot getInstance(){
@@ -8,6 +12,8 @@ public class Robot {
 		}
 		return robot;
 	}
+
+
 
 	public Robot(){
 	}
@@ -23,6 +29,11 @@ public class Robot {
 	public static final float DIRECTION_EAST =90;
 	public static final float DIRECTION_SOUTH =180;
 	public static final float DIRECTION_WEST =270;
+
+	public int count;
+
+
+
 
 	public float getPosX() {
 		return posX;
@@ -71,7 +82,19 @@ public class Robot {
 			return false;
 		}
 		float degree = (int) degreeToRotateToDirection(direction,0);
+		int degree_int = (int) degree;
+		if(degree_int==90){
+			count = 1;
+		}
+		if(degree_int==180){
+
+			count =2;
+		}
+		if(degree_int==-90){
+			count = -1;
+		}
 		rotate(degree);
+
 		return true;
 	}
 	public boolean rotateToSouth(){
@@ -79,6 +102,18 @@ public class Robot {
 			return false;
 		}
 		float degree = (int) degreeToRotateToDirection(direction,180);
+
+		int degree_int = (int) degree;
+		if(degree_int==90){
+			count = 1;
+		}
+		if(degree_int==180){
+
+			count =2;
+		}
+		if(degree_int==-90){
+			count = -1;
+		}
 		rotate(degree);
 		return true;
 	}
@@ -87,15 +122,42 @@ public class Robot {
 			return false;
 		}
 		float degree = (int) degreeToRotateToDirection(direction,90);
+		int degree_int = (int) degree;
+		if(degree_int==90){
+			count = 1;
+		}
+		if(degree_int==180){
+
+			count =2;
+		}
+		if(degree_int==-90){
+			count = -1;
+		}
+		
 		rotate(degree);
+
 		return true;
 	}
+
+
+
 	public boolean rotateToWest(){
 		if(direction == 270){
 			return false;
 		}
 		float degree = (int) degreeToRotateToDirection(direction,270);
 		rotate(degree);
+		int degree_int = (int) degree;
+		if(degree_int==90){
+			count = 1;
+		}
+		if(degree_int==180){
+
+			count =2;
+		}
+		if(degree_int==-90){
+			count = -1;
+		}
 		return true;
 	}
 
@@ -158,6 +220,9 @@ public class Robot {
 	}
 	public void setExploringEndTime(long exploringEndTime) {
 		this.exploringEndTime = exploringEndTime;
+	}
+	public int getCount(){
+		return count;
 	}
 
 
