@@ -1,22 +1,26 @@
 #include <DualVNH5019MotorShield.h>
 #include <ArduinoSort.h>
 #include <PinChangeInt.h>
+#include <PID_v1.h>
 
-// Movement variables
-#define SPEED 400
-#define REVERSE -400
+// Movement constants
+#define LEFT_SPEED 300
+#define LEFT_REVERSE -278
+#define RIGHT_SPEED 297
+#define RIGHT_REVERSE -262
 #define BRAKE 400
 
-// Encoder variables
-#define leftEncoderPinA  3
-#define leftEncoderPinB  5
-#define rightEncoderPinA  11
-#define rightEncoderPinB  13
+// Encoder constants
+#define leftEncoderPinA 3
+#define leftEncoderPinB 5
+#define rightEncoderPinA 11
+#define rightEncoderPinB 13
 #define MOVE_DISTANCE 10 // In cm
 
-// Rotation
+// Rotation constants
 #define wheelDistance 17
-#define ROTATE_DISTANCE 3.14*wheelDistance/4 // + 1.665 
+#define ROTATE_DISTANCE_RIGHT (3.14 * wheelDistance / 4) + 0.3 - 0.648 
+#define ROTATE_DISTANCE_LEFT (3.14 * wheelDistance / 4) - 0.22 + 0.75 
 
 // Sensor pins
 #define LSPIN A0  // PS1
@@ -42,16 +46,31 @@
 // Motor shield | M1 = left, M2 = right
 DualVNH5019MotorShield md;
 
-//Variables
+//Encoder variables
 unsigned long ticksL = 0; //number of times we've seen rising/falling edge in encoder output
-volatile long encoderPosL=0;
+volatile long encoderPosL = 0;
 unsigned long ticksR = 0; //number of times we've seen rising/falling edge in encoder output
-volatile long encoderPosR=0;
+volatile long encoderPosR = 0;
 
 int distanceToMove = 0;
+bool leftDone = false;
+bool rightDone = false;
+
+// Motor variables
+int leftOutputSpeed = LEFT_SPEED;
+int rightOutputSpeed = RIGHT_SPEED;
+int leftSetSpeed = LEFT_SPEED;
+int rightSetSpeed = RIGHT_SPEED;
+
+//PID
+// double leftKp = 2, leftKi = 5, leftKd = 1;
+// double rightKp = 2, rightKi = 5, rightKd = 1;
+// PID leftPID(&Input, &leftOutputSpeed, &leftSetSpeed, leftKp, leftKi, leftKd, DIRECT);
+// PID rightPID(&Input, &rightOutputSpeed, &rightSetSpeed, rightKp, rightKi, rightKd, DIRECT);
 
 void setup()
 {
+  // IR Sensors
   pinMode(LSPIN, INPUT);
   pinMode(LLPIN, INPUT);
   pinMode(RSPIN, INPUT);
@@ -59,24 +78,36 @@ void setup()
   pinMode(FLSPIN, INPUT);
   pinMode(FRSPIN, INPUT);
 
-  pinMode(leftEncoderPinA, INPUT_PULLUP); 
-  pinMode(leftEncoderPinB, INPUT_PULLUP); 
-  pinMode(rightEncoderPinA, INPUT_PULLUP); 
+  // Rotary encoders
+  pinMode(leftEncoderPinA, INPUT_PULLUP);
+  pinMode(leftEncoderPinB, INPUT_PULLUP);
+  pinMode(rightEncoderPinA, INPUT_PULLUP);
   pinMode(rightEncoderPinB, INPUT_PULLUP);
 
-  attachPinChangeInterrupt(rightEncoderPinA,countTicksCalcPosR,RISING);
-  attachPinChangeInterrupt(leftEncoderPinA,countTicksCalcPosL,RISING);
-  
-  Serial.begin(9600);
+  attachPinChangeInterrupt(rightEncoderPinA, countTicksCalcPosR, RISING);
+  attachPinChangeInterrupt(leftEncoderPinA, countTicksCalcPosL, RISING);
 
+  // PID
+  //  leftPID.SetMode(AUTOMATIC);
+  //  rightPID.SetMode(AUTOMATIC);
+
+  // Serial communication
+  Serial.begin(9600);
+  Serial.flush();
+
+  // Motor
   md.init();
 }
 
 void loop()
 {
+  leftDone = false;
+  rightDone = false;
   char command_buffer[10];
   int i = 0, arg = 0, digit = 1;
   char newChar;
+  attachPinChangeInterrupt(rightEncoderPinA, countTicksCalcPosR, RISING);
+  attachPinChangeInterrupt(leftEncoderPinA, countTicksCalcPosL, RISING);
 
   /*---------------------------------------------------------------------------------------------------
                                  Establishing Serial Connection with RPi
@@ -125,25 +156,25 @@ void loop()
   ---------------------------------------------------------------------------------------------------*/
   switch (command)
   {
-    //    String debug = "@t" + command;
-    //    String finalDebug = debug + "!";
-    //    Serial.println(finalDebug);
   case 'W':
   {
     distanceToMove = MOVE_DISTANCE;
     moveFront();
+    move();
     break;
   }
   case 'A':
   {
-    distanceToMove = ROTATE_DISTANCE;
+    distanceToMove = ROTATE_DISTANCE_LEFT;
     turnLeft();
+    move();
     break;
   }
   case 'D':
   {
-    distanceToMove = ROTATE_DISTANCE;
+    distanceToMove = ROTATE_DISTANCE_RIGHT;
     turnRight();
+    move();
     break;
   }
   case 'E':
@@ -154,7 +185,7 @@ void loop()
   case 'C':
   {
     //TODO: frontAlignment();
-    moveFront();
+    sendAck();
     break;
   }
   case 'L':
@@ -183,36 +214,45 @@ void loop()
 
 void countTicksCalcPosL()
 {
+  if(leftDone == true) {return;}
   ticksL++;
 
-  int maxDistance = distanceToMove*10*11.93/4;
+  int maxDistance = distanceToMove * 10 * 11.93 / 4;
 
-  if(ticksL>maxDistance && ticksR>maxDistance){
+  noInterrupts();
+  if (ticksL > maxDistance && ticksR > maxDistance)
+  {
     stopMotors();
     ticksL = 0;
+    leftDone = true;
     sendAck();
+    detachPinChangeInterrupt(rightEncoderPinA);
+  } else {
+    move();
   }
-
-  if (digitalRead(leftEncoderPinA) == digitalRead(leftEncoderPinB)) encoderPosL++;
-  else encoderPosL--;
+  interrupts(); 
 }
 
 void countTicksCalcPosR()
 {
+  if(rightDone == true) {return;}
   ticksR++;
 
-  int maxDistance = distanceToMove*10*11.93/4;
+  int maxDistance = distanceToMove * 10 * 11.93 / 4;
 
-  if(ticksR>maxDistance && ticksR>maxDistance){
+  noInterrupts();
+  if (ticksL > maxDistance && ticksR > maxDistance)
+  {
     stopMotors();
     ticksR = 0;
+    rightDone = true;
     sendAck();
+    detachPinChangeInterrupt(leftEncoderPinA);
+  } else {
+    move();
   }
-
-  if (digitalRead(rightEncoderPinA) == digitalRead(rightEncoderPinB)) encoderPosR++;
-  else encoderPosR--;
+  interrupts();
 }
-
 
 void sendAck()
 {
@@ -248,7 +288,7 @@ void sendSensors()
   Serial.print(distanceInGrids(FLSDistance, SR));
   Serial.print(":");
   Serial.print(distanceInGrids(FRSDistance, SR));
-  Serial.println("|!");
+  Serial.println("!");
 }
 
 //This function converts the cm readings into grids based on sensor type
@@ -338,28 +378,42 @@ int getShortIRDistance(int pin)
   return findMedian(sensorValues, BUFFER);
 }
 
+void move()
+{
+  md.setSpeeds(leftOutputSpeed, rightOutputSpeed);
+  stopIfFault();
+}
+
 void moveFront()
 {
-  md.setSpeeds(SPEED, REVERSE);
-  stopIfFault();
+  leftSetSpeed = LEFT_SPEED;
+  rightSetSpeed = RIGHT_SPEED;
+  leftOutputSpeed = LEFT_SPEED;
+  rightOutputSpeed = RIGHT_SPEED;
 }
 
 void moveBack()
 {
-  md.setSpeeds(REVERSE, SPEED);
-  stopIfFault();
+  leftSetSpeed = LEFT_REVERSE;
+  rightSetSpeed = RIGHT_REVERSE;
+  leftOutputSpeed = LEFT_REVERSE;
+  rightOutputSpeed = RIGHT_REVERSE;
 }
 
 void turnLeft()
 {
-  md.setSpeeds(REVERSE, REVERSE);
-  stopIfFault();
+  leftSetSpeed = LEFT_REVERSE;
+  rightSetSpeed = RIGHT_SPEED;
+  leftOutputSpeed = LEFT_REVERSE;
+  rightOutputSpeed = RIGHT_SPEED;
 }
 
 void turnRight()
 {
-  md.setSpeeds(SPEED, SPEED);
-  stopIfFault();
+  leftSetSpeed = LEFT_SPEED;
+  rightSetSpeed = RIGHT_REVERSE;
+  leftOutputSpeed = LEFT_SPEED;
+  rightOutputSpeed = RIGHT_REVERSE;
 }
 
 void stopMotors()
