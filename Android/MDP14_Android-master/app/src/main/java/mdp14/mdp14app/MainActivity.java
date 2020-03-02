@@ -382,7 +382,7 @@ public class MainActivity extends AppCompatActivity {
             if(message[0].equals("DATA")){
                 String data[] = message[1].split(",");
 
-                Map.getInstance().setMap(data[0], data[1],"");
+                Map.getInstance().setMap(data[0],"", data[1]);
 
                 r.setPosX(Float.parseFloat(data[2]));
                 r.setPosY(Float.parseFloat(data[3]));
