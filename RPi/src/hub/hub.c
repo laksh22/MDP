@@ -9,33 +9,6 @@
 #include "../tcp/tcp.h"
 
 rpa_queue_t *b_queue, *s_queue, *t_queue;
-//pthread_mutex_t lock;
-
-// // Non-blocking queue implementation
-//void distribute_command(char *buf, char source) {
-//  const char s[2] = "!";
-//  char *point;
-//
-//  point = strtok(buf, s);
-//
-//  if (!point) {
-//    perror(
-//            "[distribute_command]: Error encountered when splitting received data");
-//  } else {
-//    while (point != NULL) {
-//      pthread_mutex_lock(&lock);
-//      if (source == 't') {
-//        enqueue(t_queue, point);
-//      } else if (source == 'b') {
-//        enqueue(b_queue, point);
-//      } else if (source == 's') {
-//        enqueue(s_queue, point);
-//      }
-//      pthread_mutex_unlock(&lock);
-//      point = strtok(NULL, s);
-//    }
-//  }
-//}
 
 // Blocking rpa_queue implementation
 void distribute_command(char *buf, char source) {
@@ -47,6 +20,7 @@ void distribute_command(char *buf, char source) {
   if (!point) {
     perror(
             "[distribute_command]: Error encountered when splitting received data");
+    fflush(stdout);
   } else {
     while (point != NULL) {
       if (source == 't') {
@@ -76,7 +50,15 @@ void write_hub(char *wpointer, char source) {
       } else if (tolower(wpointer[1]) == 'b') {
         bt_send((void *) wpointer + 2);
       } else if (tolower(wpointer[1]) == 's') {
-        serial_send((void *) wpointer + 2);
+
+        if (source == 't') {
+          *(wpointer + 1) = 't';
+        } else if (source == 'b') {
+          *(wpointer + 1) = 'b';
+        }
+
+        serial_send((void *) wpointer + 1);
+
 //      } else if (tolower(wpointer[1]) == 'r') {
 //
 //        while (1) {
@@ -90,10 +72,12 @@ void write_hub(char *wpointer, char source) {
       } else {
         printf("[write_hub]: Incorrect format provided, message [%s] will be dropped!\n",
                wpointer);
+        fflush(stdout);
       }
     }
   } else {
     perror("[write_hub]: Error encountered when receiving data to be routed");
+    fflush();
   }
 
 }
@@ -101,6 +85,7 @@ void write_hub(char *wpointer, char source) {
 void all_disconnect(int sig) {
   printf("[all_disconnect]: %d signal received, terminating all connection ports!\n",
          sig);
+  fflush(stdout);
   tcp_disconnect(tcp_sockfd);
   bt_disconnect();
   serial_disconnect();

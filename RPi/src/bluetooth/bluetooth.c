@@ -42,6 +42,7 @@ sdp_session_t *register_service(uint8_t rfcomm_channel) {
   sdp_set_service_id(&record, svc_uuid);
   sdp_uuid2strn(&svc_uuid, str, 256);
   printf("[register_service]: Registering UUID %s\n", str);
+  fflush(stdout);
 
   // Set the service class
   sdp_uuid16_create(&svc_class_uuid, SERIAL_PORT_SVCLASS_ID);
@@ -114,26 +115,32 @@ int bt_connect() {
   bt_sock = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
   if (bt_sock == -1) {
     perror("[bt_connect]: Error encountered when creating BT socket");
+    fflush(stdout);
     return 0;
   } else {
     printf("[bt_connect]: Creation of BT socket successful...\n");
+    fflush(stdout);
   }
 
   // Binds socket to port 1 of the first available local bluetooth adapter
   if ((bind(bt_sock, (struct sockaddr *) &loc_addr, sizeof(loc_addr))) != 0) {
     perror("[bt_connect]: Error encountered when trying to bind BT socket");
+    fflush(stdout);
     return 0;
   } else {
     printf("[bt_connect]: Binding of BT socket successful..\n");
+    fflush(stdout);
   }
 
   // Configure server to listen for incoming connections
   if (listen(bt_sock, 1) != 0) {
     perror("[bt_connect]: Error encountered when listing for BT connections");
+    fflush(stdout);
     return 0;
   } else {
     printf(
         "[bt_connect]: Bluetooth Server is now listening for connections...\n");
+    fflush(stdout);
   }
 
   // Accepts the incoming data packet from client
@@ -141,13 +148,16 @@ int bt_connect() {
   if (client < 0) {
     perror(
         "[bt_connect]: Error encountered when trying to accept BT clients...: ");
+    fflush(stdout);
     return 0;
   } else {
     printf("[bt_connect]: BT Server has accepted the client successfully...\n");
+    fflush(stdout);
   }
 
   ba2str(&rem_addr.rc_bdaddr, buf);
   fprintf(stderr, "[bt_connect]: Accepted connection from %s\n", buf);
+  fflush(stdout);
   memset(buf, 0, sizeof(buf));
 
   return 1;
@@ -156,9 +166,11 @@ int bt_connect() {
 void bt_disconnect() {
   if (!close(client) && !close(bt_sock)) {
     printf("[bt_disconnect]: Bluetooth connection is closed successfully!\n");
+    fflush(stdout);
   } else {
     perror(
         "[bt_disconnect]: Error encountered when trying to close Bluetooth connection");
+    fflush(stdout);
   }
 }
 
@@ -175,6 +187,7 @@ void *bt_reader_create(void *args) {
     } else {
       perror(
           "[bt_reader_create]: Error encountered when receiving data from bt_read:  ");
+      fflush(stdout);
     }
   }
 }
@@ -197,6 +210,7 @@ char *bt_read() {
         } else {
           printf("[bt_read]: Received [%s] from Bluetooth client connection\n",
                  bt_buf);
+          fflush(stdout);
           bt_buf[count] = '\0';
           p = bt_buf;
           return p;
@@ -205,10 +219,12 @@ char *bt_read() {
         printf(
             "[bt_read]: Invalid string [%s] received, please send a new command\n",
             bt_buf);
+        fflush(stdout);
         return '\0';
       }
     } else {
       perror("[bt_read]: Error encountered when trying to read from Bluetooth");
+      fflush(stdout);
       bt_reconnect();
       return '\0';
     }
@@ -221,6 +237,7 @@ void bt_reconnect() {
 
   while (!conn) {
     printf("[bt_reconnect]: Attempting to restart Bluetooth server...\n");
+    fflush(stdout);
     bt_disconnect();
     conn = bt_connect();
     sleep(1);
@@ -228,6 +245,7 @@ void bt_reconnect() {
 
   printf(
       "[bt_reconnect]: Bluetooth services have been successfully reconnected!\n");
+  fflush(stdout);
 }
 
 //// Non-blocking queue implementation
@@ -270,6 +288,7 @@ int bt_send(char *msg) {
       return 1;
     } else {
       perror("[bt_send]: Encountered error when RPi tried to send to BT");
+      fflush(stdout);
     }
   }
   return 0;
