@@ -1,7 +1,7 @@
 #include <DualVNH5019MotorShield.h>
-#include <ArduinoSort.h>
 #include <PinChangeInt.h>
 #include <PID_v1.h>
+#include "SharpIR.h"
 
 // Movement constants
 #define LEFT_SPEED 300
@@ -26,22 +26,19 @@
 #define LSPIN A0  // PS1
 #define LLPIN A1  // PS2
 #define RSPIN A2  // PS3
-#define FLPIN A3  // PS4
+#define FSPIN A3  // PS4
 #define FLSPIN A4 // PS5
 #define FRSPIN A5 // PS6
 
-// Sensor types
-#define SR -1000
-#define LR -1001
+#define SRmodel 1080
+#define LRmodel 20150
 
-// Buffer for sensor values
-#define BUFFER 30
-
-// Sensor calculation parameters
-#define LCONST 60.374
-#define SCONST 29.988
-#define L_EXP -1.16
-#define S_EXP -1.173
+SharpIR sr1 = SharpIR(LSPIN, SRmodel);
+SharpIR sr2 = SharpIR(LLPIN, LRmodel);
+SharpIR sr3 = SharpIR(RSPIN, SRmodel);
+SharpIR sr4 = SharpIR(FSPIN, SRmodel);
+SharpIR sr5 = SharpIR(FLSPIN, SRmodel);
+SharpIR sr6 = SharpIR(FRSPIN, SRmodel);
 
 // Motor shield | M1 = left, M2 = right
 DualVNH5019MotorShield md;
@@ -72,14 +69,6 @@ String source = "t";
 
 void setup()
 {
-  // IR Sensors
-  pinMode(LSPIN, INPUT);
-  pinMode(LLPIN, INPUT);
-  pinMode(RSPIN, INPUT);
-  pinMode(FLPIN, INPUT);
-  pinMode(FLSPIN, INPUT);
-  pinMode(FRSPIN, INPUT);
-
   // Rotary encoders
   pinMode(leftEncoderPinA, INPUT_PULLUP);
   pinMode(leftEncoderPinB, INPUT_PULLUP);
@@ -88,10 +77,6 @@ void setup()
 
   attachPinChangeInterrupt(rightEncoderPinA, countTicksCalcPosR, RISING);
   attachPinChangeInterrupt(leftEncoderPinA, countTicksCalcPosL, RISING);
-
-  // PID
-  //  leftPID.SetMode(AUTOMATIC);
-  //  rightPID.SetMode(AUTOMATIC);
 
   // Serial communication
   Serial.begin(9600);
@@ -114,19 +99,19 @@ void loop()
   /*---------------------------------------------------------------------------------------------------
                                  Establishing Serial Connection with RPi
   ---------------------------------------------------------------------------------------------------*/
-  while (1)
-  {
-    if (Serial.available())
-    {
-      newChar = Serial.read();
-      command_buffer[i] = newChar;
-      i++;
-      if (newChar == '|')
-      {
-        break;
-      }
-    }
-  }
+   while (1)
+   {
+     if (Serial.available())
+     {
+       newChar = Serial.read();
+       command_buffer[i] = newChar;
+       i++;
+       if (newChar == '|')
+       {
+         break;
+       }
+     }
+   }
 
   //First character is the source
   source = command_buffer[0];
@@ -267,33 +252,33 @@ void sendAck()
 //This function sends the sensor data to the RPi
 void sendSensors()
 {
-  int LSDistance = getShortIRDistance(LSPIN);
-  int LLDistance = getLongIRDistance(LLPIN);
-  int RSDistance = getShortIRDistance(RSPIN);
-  int FLDistance = getLongIRDistance(FLPIN);
-  int FLSDistance = getLongIRDistance(FLSPIN);
-  int FRSDistance = getLongIRDistance(FRSPIN);
+  int LSDistance = sr1.distance();
+  int LLDistance = sr2.distance();
+  int RSDistance = sr3.distance();
+  int FSDistance = sr4.distance();
+  int FLSDistance = sr5.distance();
+  int FRSDistance = sr6.distance();
 
   Serial.flush();
   Serial.print("@");
   Serial.print(source);
-  if (LSDistance <= 40)
+  if (LSDistance < 35 )
   {
-    Serial.print(distanceInGrids(LSDistance, SR));
+    Serial.print(distanceInGrids(LSDistance, SRmodel));
     Serial.print(":");
   }
   else
   {
-    Serial.print(distanceInGrids(LLDistance, LR));
+    Serial.print(distanceInGrids(LLDistance, LRmodel));
     Serial.print(":");
   }
-  Serial.print(distanceInGrids(RSDistance, SR));
+  Serial.print(distanceInGrids(RSDistance, SRmodel));
   Serial.print(":");
-  Serial.print(distanceInGrids(FLDistance, LR));
+  Serial.print(distanceInGrids(FSDistance, SRmodel));
   Serial.print(":");
-  Serial.print(distanceInGrids(FLSDistance, SR));
+  Serial.print(distanceInGrids(FLSDistance, SRmodel));
   Serial.print(":");
-  Serial.print(distanceInGrids(FRSDistance, SR));
+  Serial.print(distanceInGrids(FRSDistance, SRmodel));
   Serial.println("!");
 }
 
@@ -301,7 +286,7 @@ void sendSensors()
 int distanceInGrids(int dis, int sensorType)
 {
   int grids;
-  if (sensorType == SR)
+  if (sensorType == SRmodel)
   { //Short range effective up to 2 grids away
     if (dis > 28)
       grids = 3;
@@ -313,7 +298,7 @@ int distanceInGrids(int dis, int sensorType)
     else
       grids = -1;
   }
-  else if (sensorType == LR)
+  else if (sensorType == LRmodel)
   { //Long range effective up to 5 grids away
     if (dis > 58)
       grids = 6;
@@ -332,56 +317,6 @@ int distanceInGrids(int dis, int sensorType)
   }
 
   return grids;
-}
-
-void printSensors()
-{
-  int LSDistance = getShortIRDistance(LSPIN);
-  int LLDistance = getLongIRDistance(LLPIN);
-  int RSDistance = getShortIRDistance(RSPIN);
-  int FLDistance = getLongIRDistance(FLPIN);
-  int FLSDistance = getLongIRDistance(FLSPIN);
-  int FRSDistance = getLongIRDistance(FRSPIN);
-  Serial.print("LS: ");
-  Serial.print(LSDistance);
-  Serial.print(", LL: ");
-  Serial.print(LLDistance);
-  Serial.print(", RS: ");
-  Serial.print(RSDistance);
-  Serial.print(", FL: ");
-  Serial.println(FLDistance);
-  Serial.print(", FLS: ");
-  Serial.println(FLSDistance);
-  Serial.print(", FRS: ");
-  Serial.println(FRSDistance);
-}
-
-int getLongIRDistance(int pin)
-{
-  int sensorValues[BUFFER];
-  for (int i = 0; i < BUFFER; i++)
-  {
-    int sensorValue = analogRead(pin);
-    float voltage = sensorValue * (5.0 / 1023.0);
-    int distance = LCONST * pow(voltage, L_EXP);
-    sensorValues[i] = distance;
-  }
-  sortArray(sensorValues, BUFFER);
-  return findMedian(sensorValues, BUFFER);
-}
-
-int getShortIRDistance(int pin)
-{
-  int sensorValues[BUFFER];
-  for (int i = 0; i < BUFFER; i++)
-  {
-    int sensorValue = analogRead(pin);
-    float voltage = sensorValue * (5.0 / 1023.0);
-    int distance = SCONST * pow(voltage, S_EXP);
-    sensorValues[i] = distance;
-  }
-  sortArray(sensorValues, BUFFER);
-  return findMedian(sensorValues, BUFFER);
 }
 
 void move()
@@ -439,14 +374,4 @@ void stopIfFault()
     while (1)
       ;
   }
-}
-
-int findMedian(int a[], int n)
-{
-  sortArray(a, n);
-  if (n % 2 != 0)
-  {
-    return a[n / 2];
-  }
-  return (a[(n - 1) / 2] + a[n / 2]) / 2.0;
 }
