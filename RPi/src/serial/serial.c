@@ -38,13 +38,15 @@ void serial_reconnect() {
     printf(
         "[serial_reconnect]: Attempting to re-establish connection to serial port...\n");
     fflush(stdout);
+
+    // Do not need to close serial port
 //    serial_disconnect();
     conn = serial_connect();
     sleep(1);
   }
 
   printf("[serial_reconnect]: Serial connection successfully reconnected!\n");
-  fflush();
+  fflush(stdout);
 }
 
 char *serial_read() {

@@ -160,23 +160,6 @@ char *tcp_read() {
   }
 }
 
-//// Non-blocking queue implementation
-//void *tcp_sender_create(void *args) {
-//  char *q;
-//
-//  // Endless loop
-//  while (1) {
-//    if (!isEmpty(t_queue)) {
-//      pthread_mutex_lock(&lock);
-//      q = dequeue(t_queue);
-//
-//      write_hub(q, 't');
-//      pthread_mutex_unlock(&lock);
-//    }
-//  }
-//}
-
-// Blocking rpa_queue implementation
 void *tcp_sender_create(void *args) {
   char *q;
 

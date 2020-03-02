@@ -40,13 +40,13 @@ void write_hub(char *wpointer, char source) {
     if (strlen(wpointer) > 0) {
       if (tolower(wpointer[1]) == 't') {
 
-        if (source == 's') {
-          *(wpointer + 1) = 's';
-        } else if (source == 'b') {
-          *(wpointer + 1) = 'b';
-        }
+//        if (source == 's') {
+//          *(wpointer + 1) = 's';
+//        } else if (source == 'b') {
+//          *(wpointer + 1) = 'b';
+//        }
 
-        tcp_send(wpointer + 1);
+        tcp_send(wpointer + 2);
       } else if (tolower(wpointer[1]) == 'b') {
         bt_send((void *) wpointer + 2);
       } else if (tolower(wpointer[1]) == 's') {

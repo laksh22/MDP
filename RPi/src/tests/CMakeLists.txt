@@ -4,4 +4,4 @@ macro(make_test target source library)
     target_include_directories(${target} PUBLIC .)
 endmacro(make_test)
 
-make_test(DoTestQueue test_sample.c Queue)
+make_test(DoTestRpaQueue test_rpa_queue.c RpaQueue)

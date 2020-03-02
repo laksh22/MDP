@@ -20,6 +20,7 @@ int main() {
   // Ctrl+C to terminate the entire program properly
   signal(SIGINT, all_disconnect);
   printf("===== Initializing connections =====\n");
+  fflush(stdout);
 
 //  // Create the respective queues for each devices
 //  s_queue = createQueue(QSIZE);
@@ -42,17 +43,20 @@ int main() {
 
   while (!tcp_status || !bt_status || !serial_status) {
     if (!tcp_status) {
-      printf("TCP failed to accept client... Retrying in 2s...");
+      printf("TCP failed to accept client... Retrying in 2s...\n");
+      fflush(stdout);
       sleep(2);
       tcp_disconnect(tcp_sockfd);
       tcp_status = tcp_connect();
     } else if (!bt_status) {
-      printf("BT connection failed... Retrying in 2s...");
+      printf("BT connection failed... Retrying in 2s...\n");
+      fflush(stdout);
       sleep(2);
       bt_disconnect();
       bt_status = bt_connect();
     } else if (!serial_status) {
-      printf("Serial connection failed... Retrying in 2s...");
+      printf("Serial connection failed... Retrying in 2s...\n");
+      fflush(stdout);
       sleep(2);
       serial_disconnect();
       serial_status = serial_connect();
