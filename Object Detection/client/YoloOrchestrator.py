@@ -1,3 +1,4 @@
+
 import os
 import time
 from pathlib import Path
@@ -12,32 +13,27 @@ class Yolo:
             self,
             yolo_asset_dir: str,
             confidence: float = 0.5,
-            threshold: float = 0.3,
+            threshold: float = 0.3
     ):
         """
         Initialise the YoloOrchestrator with the required input parameters.
-
         Args:
             yolo_asset_dir (str):
                 Base path to YOLO directory containing the three files
                 describing the trained model. The three files should have the
                 following file names, yolov3.names, yolov3.weights,
                 and yolov3.cfg.
-
             confidence (float):
                 Minimum confidence level. Only objects with a
                 confidence level that is more than this confidence value will
                 have a bounding box drawn around it. This value will be used
                 to filter out weak detections.
-
             threshold (float):
                 Threshold value that will be used when applying non-maxima
                 suppression (NMS).
-
                 NMS will be used to transform a smooth response map that
                 triggers many imprecise object window hypotheses in, ideally,
                 a single bounding-box for each detected object.
-
                 This threshold represents the overlapping ratio on these
                 imprecise object window hypotheses, and will be used as a
                 gauge by NMS to combine these overlapping object window
@@ -51,7 +47,7 @@ class Yolo:
 
         # Load the class labels to the YOLO model that was trained on
         self.labels_path = os.path.sep.join(
-            [self.yolo_asset_dir, "yolov3.names"]
+            [self.yolo_asset_dir, "rpi.names"]
         )
         self.labels = open(self.labels_path).read().strip().split("\n")
 
@@ -66,9 +62,9 @@ class Yolo:
 
         # Derive the paths to the YOLO weights and model configuration
         self.weight_path = os.path.sep.join(
-            [self.yolo_asset_dir, "yolov3.weights"]
+            [self.yolo_asset_dir, "rpi.weights"]
         )
-        self.config_path = os.path.sep.join([self.yolo_asset_dir, "yolov3.cfg"])
+        self.config_path = os.path.sep.join([self.yolo_asset_dir, "rpi.cfg"])
 
         # Load our YOLO object detector trained on the provided model
         self.net = cv2.dnn.readNetFromDarknet(
@@ -104,19 +100,15 @@ class Yolo:
         an object be detected, a bounding box will be drawn around it,
         annotated with the confidence level, and label id will also be
         annotated on the image.
-
         If an object be detected, the processed image will be created in the
         ~/images/found/image_name. The image file name will follow the
         structure of [timestamp]_[label_ids]_found_[original_file_name].jpg.
-
         If an object is not detected, the processed image will be created in
         the ~/images/not_found/image_name. The image file name will follow the
         structure of [timestamp]_not_found_[original_file_name].jpg.
-
         Args:
             image (Union[str, np.ndarray]):
                 Absolute path to the image to be processed.
-
         Returns:
             None
         """
@@ -182,8 +174,8 @@ class Yolo:
 
                     # Use the center (x, y)-coordinates to derive the top
                     # and and left corner of the bounding box
-                    x = int(center_x - (im_width / 2))
-                    y = int(center_y - (im_height / 2))
+                    x = int(center_x - (box_width / 2))
+                    y = int(center_y - (box_height / 2))
 
                     # Update our list of bounding box coordinates,
                     # confidences, and class IDs
@@ -214,6 +206,7 @@ class Yolo:
                 cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
                 text = "{}: {:.4f}".format(self.labels[class_ids[i]],
                                            confidences[i])
+                print(text)
                 cv2.putText(
                     image,
                     text,
@@ -238,14 +231,15 @@ class Yolo:
         else:
             # No objects detected
             # Write image with nothing detected to not_found directory
-            cv2.imwrite(
-                self.output_image_found_path +
-                "{timestamp}_not_found_{original_file_name}.jpg".format(
-                    timestamp=int(time.time()),
-                    original_file_name=image_file_name
-                ),
-                image
-            )
+            # cv2.imwrite(
+            #     self.output_image_not_found_path +
+            #     "{timestamp}_not_found_{original_file_name}.jpg".format(
+            #         timestamp=int(time.time()),
+            #         original_file_name=image_file_name
+            #     ),
+            #     image
+            # )
+            pass
 
     def process_video(self, video_path: str, reconstruct_vid: bool):
         """
@@ -253,28 +247,22 @@ class Yolo:
         performing object detection on each of the frames. Should an object
         be detected, a bounding box will be drawn around it, annotated with
         the confidence level, and label id will also be annotated on the image.
-
         If an object be detected, the processed frame will be created in the
         ~/images/found/path. The image file name will follow the structure of
         [timestamp]_[label_id]_found_[original_file_name].jpg.
-
         If an object is not detected, the processed frame will be created in
         the ~/images/not_found/path. The image file name will follow the
         structure of [timestamp]_not_found_[original_file_name].jpg.
-
         Args:
             video_path (str):
                 Absolute path to the video to be processed.
-
             reconstruct_vid (bool):
                 Boolean flag to indicate whether a video (based on the
                 original provided video) with the bounding boxes (with
                 confidence level, and label id) drawn around detected objects
                 should be created.
-
                 If the flag is set (true) the reconstructed video will be
                 saved to ~/videos/[timestamp]_out.avi.
-
         Returns:
             None
         """
@@ -297,11 +285,11 @@ class Yolo:
             # Check if the video writer is None
             if v_writer is None:
                 # Initialize our video writer
-                fourcc = cv2.VideoWriter_fourcc(*"MJPG")
+                fourcc = cv2.VideoWriter_fourcc(*"mp4v")
                 v_writer = cv2.VideoWriter(
-                    "%s/%s_out.avi" % (self.output_video_path, epoch_ts),
+                    "%s/%s_out.mp4" % (self.output_video_path, epoch_ts),
                     fourcc,
-                    30,
+                    3,
                     (frame.shape[1], frame.shape[0]),
                     True
                 )
