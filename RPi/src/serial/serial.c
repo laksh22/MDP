@@ -13,6 +13,7 @@ int serial_connect() {
   if (fd_serial == -1) {
     perror(
         "[serial_connect]: Error encounted when establishing serial port connection");
+    fflush(stdout);
     return 0;
   } else {
     printf(
@@ -27,6 +28,7 @@ int serial_connect() {
 void serial_disconnect() {
   serialClose(fd_serial);
   printf("[serial_disconnect]: Serial port connection closed successfully!\n");
+  fflush(stdout);
 }
 
 void serial_reconnect() {
@@ -57,6 +59,7 @@ char *serial_read() {
     // Use serialDataAvail as an error flag
     if (serialDataAvail(fd_serial) < 0) {
       perror("[serial_read]: Error encountered when trying to read from serial");
+      fflush(stdout);
       serial_reconnect();
       return 0;
     }
@@ -110,6 +113,7 @@ void *serial_reader_create(void *args) {
     } else {
       perror(
           "[serial_reader_create]: Error encountered when receiving data from serial_read");
+      fflush(stdout);
     }
   }
 }

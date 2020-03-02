@@ -28,6 +28,7 @@ int tcp_connect() {
 
   if (tcp_sockfd == -1) {
     perror("[tcp_connect]: Error encountered when creating TCP Socket");
+    fflush(stdout);
   } else {
     printf("[tcp_connect]: TCP socket has been created successfully!\n");
     fflush(stdout);
@@ -44,6 +45,7 @@ int tcp_connect() {
   // Binds the newly created socket to the given IP and verifies binding
   if ((bind(tcp_sockfd, (SA *) &servaddr, sizeof(servaddr))) != 0) {
     perror("[tcp_connect]: Error encountered when binding trying to bind");
+    fflush(stdout);
   } else {
     printf("[tcp_connect]: TCP Socket successfully binded...\n");
     fflush(stdout);
@@ -53,6 +55,7 @@ int tcp_connect() {
   if (listen(tcp_sockfd, 2) != 0) {
     perror(
         "[tcp_connect]: Error encountered when listening for TCP connections");
+    fflush(stdout);
     return 0;
   } else {
     printf("[tcp_connect]: TCP Server is now listening...\n");
@@ -64,6 +67,7 @@ int tcp_connect() {
   clientconn = accept(tcp_sockfd, (SA *) &tcp_client, &tcp_opt);
   if (clientconn < 0) {
     perror("[tcp_connect]: Error encountered when accepting TCP clients");
+    fflush(stdout);
     return 0;
   } else {
     printf("[tcp_connect]: TCP Server has successfully accepted the client...\n");
@@ -80,6 +84,7 @@ void tcp_disconnect(int sock) {
   } else {
     perror(
         "[tcp_disconnect]: Error encountered when trying to close TCP connection: ");
+    fflush(stdout);
   }
 }
 
@@ -111,6 +116,7 @@ void *tcp_reader_create(void *args) {
     } else {
       perror(
           "[tcp_reader_create]: Error encountered when receiving data from tcp_read");
+      fflush(stdout);
     }
   }
 }
@@ -147,29 +153,13 @@ char *tcp_read() {
       }
     } else {
       perror("[tcp_read]: Error encountered when trying to read from TCP");
+      fflush(stdout);
       tcp_reconnect();
       return NULL;
     }
   }
 }
 
-//// Non-blocking queue implementation
-//void *tcp_sender_create(void *args) {
-//  char *q;
-//
-//  // Endless loop
-//  while (1) {
-//    if (!isEmpty(t_queue)) {
-//      pthread_mutex_lock(&lock);
-//      q = dequeue(t_queue);
-//
-//      write_hub(q, 't');
-//      pthread_mutex_unlock(&lock);
-//    }
-//  }
-//}
-
-// Blocking rpa_queue implementation
 void *tcp_sender_create(void *args) {
   char *q;
 
@@ -194,6 +184,7 @@ int tcp_send(char *msg) {
       return 1;
     } else {
       perror("[tcp_send]: Encountered error when RPi tried to send to TCP");
+      fflush(stdout);
     }
     return 0;
   }

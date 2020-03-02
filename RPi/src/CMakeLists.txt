@@ -25,7 +25,3 @@ add_subdirectory(hub)
 add_subdirectory(rpa_queue)
 add_subdirectory(serial)
 add_subdirectory(tcp)
-
-enable_testing()
-
-add_test(NAME DoTestRpaQueue COMMAND TestRpaQueue)

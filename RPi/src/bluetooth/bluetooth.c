@@ -115,6 +115,7 @@ int bt_connect() {
   bt_sock = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
   if (bt_sock == -1) {
     perror("[bt_connect]: Error encountered when creating BT socket");
+    fflush(stdout);
     return 0;
   } else {
     printf("[bt_connect]: Creation of BT socket successful...\n");
@@ -124,6 +125,7 @@ int bt_connect() {
   // Binds socket to port 1 of the first available local bluetooth adapter
   if ((bind(bt_sock, (struct sockaddr *) &loc_addr, sizeof(loc_addr))) != 0) {
     perror("[bt_connect]: Error encountered when trying to bind BT socket");
+    fflush(stdout);
     return 0;
   } else {
     printf("[bt_connect]: Binding of BT socket successful..\n");
@@ -133,6 +135,7 @@ int bt_connect() {
   // Configure server to listen for incoming connections
   if (listen(bt_sock, 1) != 0) {
     perror("[bt_connect]: Error encountered when listing for BT connections");
+    fflush(stdout);
     return 0;
   } else {
     printf(
@@ -145,6 +148,7 @@ int bt_connect() {
   if (client < 0) {
     perror(
         "[bt_connect]: Error encountered when trying to accept BT clients...: ");
+    fflush(stdout);
     return 0;
   } else {
     printf("[bt_connect]: BT Server has accepted the client successfully...\n");
@@ -153,6 +157,7 @@ int bt_connect() {
 
   ba2str(&rem_addr.rc_bdaddr, buf);
   fprintf(stderr, "[bt_connect]: Accepted connection from %s\n", buf);
+  fflush(stdout);
   memset(buf, 0, sizeof(buf));
 
   return 1;
@@ -165,6 +170,7 @@ void bt_disconnect() {
   } else {
     perror(
         "[bt_disconnect]: Error encountered when trying to close Bluetooth connection");
+    fflush(stdout);
   }
 }
 
@@ -181,6 +187,7 @@ void *bt_reader_create(void *args) {
     } else {
       perror(
           "[bt_reader_create]: Error encountered when receiving data from bt_read:  ");
+      fflush(stdout);
     }
   }
 }
@@ -217,6 +224,7 @@ char *bt_read() {
       }
     } else {
       perror("[bt_read]: Error encountered when trying to read from Bluetooth");
+      fflush(stdout);
       bt_reconnect();
       return '\0';
     }
@@ -280,6 +288,7 @@ int bt_send(char *msg) {
       return 1;
     } else {
       perror("[bt_send]: Encountered error when RPi tried to send to BT");
+      fflush(stdout);
     }
   }
   return 0;
