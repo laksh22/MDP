@@ -388,6 +388,10 @@ public class MainActivity extends AppCompatActivity {
                 r.setPosY(Float.parseFloat(data[3]));
                 r.setDirection(data[4]);
 
+                if(menu_auto_update_map!=null&&menu_auto_update_map.isChecked()){
+                    loadGrid();
+                }
+
             }
 
             //receive numbered block
@@ -622,22 +626,16 @@ public class MainActivity extends AppCompatActivity {
         //check if robot is out of bounds
         if(!Robot.getInstance().rotateToNorth()){
             if(!Robot.getInstance().isOutOfBounds()) {
-                Robot.getInstance().moveForward(10);
                 outgoingMessage("MOVE:F");
+                //getack
+                Robot.getInstance().moveForward(10);
             }
         }
         else{
             Integer count = Robot.getInstance().getCount();
-            if(count==1){
-                outgoingMessage("MOVE:TR");
-            }
-            if(count==2){
-                outgoingMessage("MOVE:TR");
-                outgoingMessage("MOVE:TR");
-            }
-            if(count==-1){
-                outgoingMessage("MOVE:TL");
-            }
+            sendMsgOnSwipe(count);
+            //getack
+            Robot.getInstance().rotateRobotToNorth();
         }
         loadGrid();
     }
@@ -645,22 +643,16 @@ public class MainActivity extends AppCompatActivity {
     public void onSwipeLeft() {
         if(!Robot.getInstance().rotateToWest()){
             if(!Robot.getInstance().isOutOfBounds()) {
-                Robot.getInstance().moveForward(10);
                 outgoingMessage("MOVE:F");
+                //getack
+                Robot.getInstance().moveForward(10);
             }
         }
         else{
             Integer count = Robot.getInstance().getCount();
-            if(count==1){
-                outgoingMessage("MOVE:TR");
-            }
-            if(count==2){
-                outgoingMessage("MOVE:TR");
-                outgoingMessage("MOVE:TR");
-            }
-            if(count==-1){
-                outgoingMessage("MOVE:TL");
-            }
+            sendMsgOnSwipe(count);
+            //getack
+            Robot.getInstance().rotateRobotToWest();
         }
 
         loadGrid();
@@ -669,22 +661,16 @@ public class MainActivity extends AppCompatActivity {
     public void onSwipeRight() {
         if(!Robot.getInstance().rotateToEast()){
             if(!Robot.getInstance().isOutOfBounds()) {
-                Robot.getInstance().moveForward(10);
                 outgoingMessage("MOVE:F");
+                //getack
+                Robot.getInstance().moveForward(10);
             }
         }
         else{
             Integer count = Robot.getInstance().getCount();
-            if(count==1){
-                outgoingMessage("MOVE:TR");
-            }
-            if(count==2){
-                outgoingMessage("MOVE:TR");
-                outgoingMessage("MOVE:TR");
-            }
-            if(count==-1){
-                outgoingMessage("MOVE:TL");
-            }
+            sendMsgOnSwipe(count);
+            //getack
+            Robot.getInstance().rotateRobotToEast();
         }
         loadGrid();
     }
@@ -692,24 +678,34 @@ public class MainActivity extends AppCompatActivity {
     public void onSwipeBottom() {
         if(!Robot.getInstance().rotateToSouth()){
             if(!Robot.getInstance().isOutOfBounds()) {
-                Robot.getInstance().moveForward(10);
+
                 outgoingMessage("MOVE:F");
+                //getack
+                Robot.getInstance().moveForward(10);
             }
         }
         else{
             Integer count = Robot.getInstance().getCount();
-            if(count==1){
-                outgoingMessage("MOVE:TR");
-            }
-            if(count==2){
-                outgoingMessage("MOVE:TR");
-                outgoingMessage("MOVE:TR");
-            }
-            if(count==-1){
-                outgoingMessage("MOVE:TL");
-            }
+            sendMsgOnSwipe(count);
+            //getack
+            Robot.getInstance().rotateRobotToSouth();
         }
         loadGrid();
+    }
+
+    public void sendMsgOnSwipe(Integer count){
+
+        if(count==1){
+            outgoingMessage("MOVE:TR");
+        }
+        if(count==2){
+            outgoingMessage("MOVE:TR");
+            outgoingMessage("MOVE:TR");
+        }
+        if(count==-1){
+            outgoingMessage("MOVE:TL");
+        }
+
     }
 
     @Override

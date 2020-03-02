@@ -2,37 +2,37 @@ package mdp14.mdp14app.model;
 
 import android.util.Log;
 
+import mdp14.mdp14app.MainActivity;
 import mdp14.mdp14app.bluetooth.BluetoothChatFragment;
 
 public class Robot {
-	public static Robot robot=null;
-	public static Robot getInstance(){
-		if(robot==null){
-			robot= new Robot();
+	public static Robot robot = null;
+
+	public static Robot getInstance() {
+		if (robot == null) {
+			robot = new Robot();
 		}
 		return robot;
 	}
 
 
-
-	public Robot(){
+	public Robot() {
 	}
 
 	private long exploringStartTime = 0;
 	private long exploringEndTime = 0;
-	private boolean isExploring =false;
-	private boolean isMoving =false;
-	private float posX=-1f;
-	private float posY=-1f;
-	private float direction =0;
-	public static final float DIRECTION_NORTH =0;
-	public static final float DIRECTION_EAST =90;
-	public static final float DIRECTION_SOUTH =180;
-	public static final float DIRECTION_WEST =270;
+	private boolean isExploring = false;
+	private boolean isMoving = false;
+	private float posX = -1f;
+	private float posY = -1f;
+	private float direction = 0;
+	public static final float DIRECTION_NORTH = 0;
+	public static final float DIRECTION_EAST = 90;
+	public static final float DIRECTION_SOUTH = 180;
+	public static final float DIRECTION_WEST = 270;
 
 	public int count;
-
-
+	public String ack;
 
 
 	public float getPosX() {
@@ -50,28 +50,35 @@ public class Robot {
 	public void setPosY(float posY) {
 		this.posY = posY;
 	}
-	public boolean isOutOfBounds(){
-		int posX = (int)getPosX();
-		int posY = (int)getPosY();
-		int direction = (int)getDirection();
 
-		if((posX>=13 && posY <=1 && (direction==180 || direction == 90 || direction == -180 || direction == -270))) return true;
-		else if ((posX<=1 && posY <=1 && (direction==270 || direction == 180 || direction == -90 || direction == -180))) return true;
-		else if ((posX<=1 && posY >=18 && (direction==0 || direction == 270 || direction == -90))) return true;
-		else if ((posX>=13 && posY >=18 && (direction==0 || direction == 90 || direction == -270))) return true;
-		else if (posX <= 1 && (direction == 270 || direction ==-90 )) return true;
+	public boolean isOutOfBounds() {
+		int posX = (int) getPosX();
+		int posY = (int) getPosY();
+		int direction = (int) getDirection();
+
+		if ((posX >= 13 && posY <= 1 && (direction == 180 || direction == 90 || direction == -180 || direction == -270)))
+			return true;
+		else if ((posX <= 1 && posY <= 1 && (direction == 270 || direction == 180 || direction == -90 || direction == -180)))
+			return true;
+		else if ((posX <= 1 && posY >= 18 && (direction == 0 || direction == 270 || direction == -90)))
+			return true;
+		else if ((posX >= 13 && posY >= 18 && (direction == 0 || direction == 90 || direction == -270)))
+			return true;
+		else if (posX <= 1 && (direction == 270 || direction == -90)) return true;
 		else if (posX >= 13 && (direction == 90 || direction == -270)) return true;
-		else if (posY <= 1 && (direction == 180|| direction==-180)) return true;
+		else if (posY <= 1 && (direction == 180 || direction == -180)) return true;
 		else if (posY >= 18 && direction == 0) return true;
 		else return false;
 	}
+
 	public boolean isExploring() {
 		return isExploring;
 	}
+
 	public void setExploring(boolean isExploring) {
-		if(isExploring){
+		if (isExploring) {
 			exploringStartTime = System.currentTimeMillis();
-		}else{
+		} else {
 			exploringEndTime = System.currentTimeMillis();
 		}
 		this.isExploring = isExploring;
@@ -80,124 +87,129 @@ public class Robot {
 	public boolean isMoving() {
 		return isMoving;
 	}
-	public void rotate(float degree){
 
-		direction = (direction + degree)%360;
+	public void rotate(float degree) {
+
+		direction = (direction + degree) % 360;
 	}
-	public void rotateRight(){
+
+	public void rotateRight() {
 		rotate(90);
 	}
-	public void rotateLeft(){
+
+	public void rotateLeft() {
 		rotate(-90);
 	}
 
-	public boolean rotateToNorth(){
-		if(direction == 0){
+	public boolean rotateToNorth() {
+		if (direction == 0) {
 			return false;
 		}
-		float degree = (int) degreeToRotateToDirection(direction,0);
+		float degree = (int) degreeToRotateToDirection(direction, 0);
 		int degree_int = (int) degree;
-		if(degree_int==90){
+		if (degree_int == 90) {
 			count = 1;
 		}
-		if(degree_int==180){
+		if (degree_int == 180) {
 
-			count =2;
+			count = 2;
 		}
-		if(degree_int==-90){
+		if (degree_int == -90) {
 			count = -1;
 		}
 		rotate(degree);
 
 		return true;
 	}
-	public boolean rotateToSouth(){
-		if(direction == 180 || direction == -180){
+
+	public boolean rotateToSouth() {
+		if (direction == 180 || direction == -180) {
 			return false;
 		}
-		float degree = (int) degreeToRotateToDirection(direction,180);
+		float degree = (int) degreeToRotateToDirection(direction, 180);
 
 		int degree_int = (int) degree;
-		if(degree_int==90){
+		if (degree_int == 90) {
 			count = 1;
 		}
-		if(degree_int==180){
+		if (degree_int == 180) {
 
-			count =2;
+			count = 2;
 		}
-		if(degree_int==-90){
+		if (degree_int == -90) {
 			count = -1;
 		}
 		rotate(degree);
 		return true;
 	}
-	public boolean rotateToEast(){
-		if(direction == 90 || direction == -270){
+
+	public boolean rotateToEast() {
+		if (direction == 90 || direction == -270) {
 			return false;
 		}
-		float degree = (int) degreeToRotateToDirection(direction,90);
+		float degree = (int) degreeToRotateToDirection(direction, 90);
 		int degree_int = (int) degree;
-		if(degree_int==90){
+		if (degree_int == 90) {
 			count = 1;
 		}
-		if(degree_int==180){
+		if (degree_int == 180) {
 
-			count =2;
+			count = 2;
 		}
-		if(degree_int==-90){
+		if (degree_int == -90) {
 			count = -1;
 		}
-		
+
+
 		rotate(degree);
 
 		return true;
 	}
 
 
-
-	public boolean rotateToWest(){
-		if(direction == 270 || direction == -90){
+	public boolean rotateToWest() {
+		if (direction == 270 || direction == -90) {
 			return false;
 		}
-		float degree = (int) degreeToRotateToDirection(direction,270);
+		float degree = (int) degreeToRotateToDirection(direction, 270);
 		rotate(degree);
 		int degree_int = (int) degree;
-		if(degree_int==90){
+		if (degree_int == 90) {
 			count = 1;
 		}
-		if(degree_int==180){
+		if (degree_int == 180) {
 
-			count =2;
+			count = 2;
 		}
-		if(degree_int==-90){
+		if (degree_int == -90) {
 			count = -1;
 		}
 		return true;
 	}
 
-	public void moveForward(int distance){
+	public void moveForward(int distance) {
 		//int distance = 10;
 		boolean isMoved = true;
 		double radians = Math.toRadians(direction);
-		float moveX =  ((distance/10f)*(float)Math.sin(radians));
-		float moveY =  ((distance/10f)*(float)Math.cos(radians));
-		if(getPosX()+moveX>13){
+		float moveX = ((distance / 10f) * (float) Math.sin(radians));
+		float moveY = ((distance / 10f) * (float) Math.cos(radians));
+		if (getPosX() + moveX > 13) {
 			setPosX(13);
-		}else{
-			if(getPosX()+moveX<1){
+		} else {
+			if (getPosX() + moveX < 1) {
 				setPosX(1);
-			}else{
-				setPosX(getPosX()+moveX);
+			} else {
+				setPosX(getPosX() + moveX);
 			}
 		}
 
-		if(getPosY()+moveY>18){
+		if (getPosY() + moveY > 18) {
 			setPosY(18);
-		}else{
-			if(getPosY()+moveY<1){
+		} else {
+			if (getPosY() + moveY < 1) {
 				setPosY(1);
-			}else{
-				setPosY(getPosY()+moveY);
+			} else {
+				setPosY(getPosY() + moveY);
 			}
 		}
 	}
@@ -205,11 +217,13 @@ public class Robot {
 	public void setMoving(boolean isMoving) {
 		this.isMoving = isMoving;
 	}
+
 	public float getDirection() {
 		return direction;
 	}
+
 	public void setDirection(String direction) {
-		switch(direction){
+		switch (direction) {
 			case "NORTH":
 				this.direction = 0;
 				break;
@@ -224,39 +238,93 @@ public class Robot {
 				break;
 		}
 	}
+
 	public long getExploringStartTime() {
 		return exploringStartTime;
 	}
+
 	public void setExploringStartTime(long exploringStartTime) {
 		this.exploringStartTime = exploringStartTime;
 	}
+
 	public long getExploringEndTime() {
 		return exploringEndTime;
 	}
+
 	public void setExploringEndTime(long exploringEndTime) {
 		this.exploringEndTime = exploringEndTime;
 	}
-	public int getCount(){
+
+	public int getCount() {
 		return count;
 	}
 
 
-
-	private float degreeToRotateToDirection(float currentDirection, float inDirection){
-		float difference = inDirection-currentDirection;
-		if(Math.abs(Math.round(difference))==180){
+	private float degreeToRotateToDirection(float currentDirection, float inDirection) {
+		float difference = inDirection - currentDirection;
+		if (Math.abs(Math.round(difference)) == 180) {
 			return 180;
 		}
-		if(difference<180){
-			if(Math.abs(difference)>180){
-				return difference+360;
-			}else{
+		if (difference < 180) {
+			if (Math.abs(difference) > 180) {
+				return difference + 360;
+			} else {
 				return difference;
 			}
-		}else{
+		} else {
 			//return (-(currentDirection+360-difference));
 
-			return (-(360-difference));
+			return (-(360 - difference));
 		}
-	};
+	}
+
+	;
+
+	public void rotateRobotToNorth() {
+		if (direction != 0) {
+
+			float degree = (int) degreeToRotateToDirection(direction, 0);
+
+			rotate(degree);
+		}
+
+
+	}
+
+	public void rotateRobotToSouth() {
+		if (direction != 180 && direction != -180) {
+
+			float degree = (int) degreeToRotateToDirection(direction, 180);
+
+
+			rotate(degree);
+		}
+	}
+
+	public void rotateRobotToEast() {
+		if (direction != 90 && direction != -270) {
+
+			float degree = (int) degreeToRotateToDirection(direction, 90);
+
+
+
+			rotate(degree);
+
+
+		}
+	}
+
+
+	public void rotateRobotToWest() {
+		if (direction != 270 && direction != -90) {
+
+			float degree = (int) degreeToRotateToDirection(direction, 270);
+
+			rotate(degree);
+		}
+
+
+	}
+
+
 }
