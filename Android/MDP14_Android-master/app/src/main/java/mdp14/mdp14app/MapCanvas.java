@@ -64,7 +64,7 @@ public class MapCanvas extends View implements View.OnTouchListener {
         startEndPoint.setColor(Color.parseColor("#FBC02D"));
         numberedObstacle.setColor(Color.parseColor("#FF0000"));
         numberedObstacle.setTypeface(Typeface.DEFAULT_BOLD);
-        numberedObstacle.setLetterSpacing(-0.2f);
+        numberedObstacle.setLetterSpacing(-0.15f);
         numberedObstacle.setTextAlign(Paint.Align.CENTER);
         numberedObstacle.setTextSize(30);
 
@@ -177,6 +177,7 @@ public class MapCanvas extends View implements View.OnTouchListener {
 
     private void drawNumberedBlocks(Canvas canvas) {
         //draw numbered blocks
+        int[][]obstacles = Map.getInstance().getObstacles();
         ArrayList<IDblock> numberedBlocks = Map.getInstance().getNumberedBlocks();
         for(IDblock block:numberedBlocks)
         {
@@ -184,7 +185,9 @@ public class MapCanvas extends View implements View.OnTouchListener {
             //float posY = (paddingY + (19-block.getPosition().getPosY()) * cellHeight);
             float posX = paddingX + (block.getPosition().getPosX()+0.5f) * cellWidth;
             float posY = paddingY + (20-block.getPosition().getPosY()) * cellHeight;
-            canvas.drawText(block.getID(), posX, posY, numberedObstacle);
+            if(obstacles[block.getPosition().getPosY()][block.getPosition().getPosX()]==1) {
+                canvas.drawText(block.getID(), posX, posY, numberedObstacle);
+            }
 
         }
     }

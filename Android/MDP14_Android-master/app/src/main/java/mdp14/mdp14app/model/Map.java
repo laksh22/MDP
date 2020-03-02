@@ -29,7 +29,15 @@ public class Map {
 		return exploredTiles;
 	}
 	public ArrayList<IDblock> getNumberedBlocks() {return numberedBlocks; }
-	public void addNumberedBlocks(IDblock block) {numberedBlocks.add(block);}
+	public void addNumberedBlocks(IDblock block) {
+		for (IDblock nb:numberedBlocks) {
+			if(nb.getPosition().equals(block.getPosition())){
+				numberedBlocks.remove(nb);
+				break;
+			}
+		}
+		numberedBlocks.add(block);
+	}
 	public void setExploredTiles(int[][] exploredTiles) {
 		this.exploredTiles = exploredTiles;
 	}
