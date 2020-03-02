@@ -379,6 +379,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+            if(message[0].equals("DATA")){
+                String data[] = message[1].split(",");
+
+                Map.getInstance().setMap(data[0], data[1],"");
+
+                r.setPosX(Float.parseFloat(data[2]));
+                r.setPosY(Float.parseFloat(data[3]));
+                r.setDirection(data[4]);
+
+            }
+
             //receive numbered block
             if(message[0].equals("BLOCK")) {
                 String posAndDirect[] = message[1].split(",");
@@ -479,6 +490,8 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
+
+
             if(message[0].equals(STATUS_DONE_HEADER)){ //done
                 updateStatus(STATUS_DONE_DESC);
             }
