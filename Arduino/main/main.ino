@@ -19,8 +19,8 @@
 
 // Rotation constants
 #define wheelDistance 17
-#define ROTATE_DISTANCE_RIGHT (3.14 * wheelDistance / 4) + 0.3 - 0.648 
-#define ROTATE_DISTANCE_LEFT (3.14 * wheelDistance / 4) - 0.22 + 0.75 
+#define ROTATE_DISTANCE_RIGHT (3.14 * wheelDistance / 4) + 0.3 - 0.648
+#define ROTATE_DISTANCE_LEFT (3.14 * wheelDistance / 4) - 0.22 + 0.75
 
 // Sensor pins
 #define LSPIN A0  // PS1
@@ -67,6 +67,8 @@ int rightSetSpeed = RIGHT_SPEED;
 // double rightKp = 2, rightKi = 5, rightKd = 1;
 // PID leftPID(&Input, &leftOutputSpeed, &leftSetSpeed, leftKp, leftKi, leftKd, DIRECT);
 // PID rightPID(&Input, &rightOutputSpeed, &rightSetSpeed, rightKp, rightKi, rightKd, DIRECT);
+
+String source = "t";
 
 void setup()
 {
@@ -121,25 +123,16 @@ void loop()
       i++;
       if (newChar == '|')
       {
-        i = 1;
         break;
       }
     }
   }
 
-  //First character in array is the command
-  char command = command_buffer[0];
+  //First character is the source
+  source = command_buffer[0];
+  //Second character in array is the command
+  char command = command_buffer[1];
 
-  //Converts subsequent characters in the array into an integer
-  while (command_buffer[i] != '|')
-  {
-    arg = arg + (digit * (command_buffer[i] - 48));
-    digit *= 10;
-    i++;
-  }
-
-  //  command = 'W';
-  //  arg = 0;
   /*---------------------------------------------------------------------------------------------------
                                           Input Commands
                                           --------------
@@ -214,7 +207,10 @@ void loop()
 
 void countTicksCalcPosL()
 {
-  if(leftDone == true) {return;}
+  if (leftDone == true)
+  {
+    return;
+  }
   ticksL++;
 
   int maxDistance = distanceToMove * 10 * 11.93 / 4;
@@ -227,15 +223,20 @@ void countTicksCalcPosL()
     leftDone = true;
     sendAck();
     detachPinChangeInterrupt(rightEncoderPinA);
-  } else {
+  }
+  else
+  {
     move();
   }
-  interrupts(); 
+  interrupts();
 }
 
 void countTicksCalcPosR()
 {
-  if(rightDone == true) {return;}
+  if (rightDone == true)
+  {
+    return;
+  }
   ticksR++;
 
   int maxDistance = distanceToMove * 10 * 11.93 / 4;
@@ -248,7 +249,9 @@ void countTicksCalcPosR()
     rightDone = true;
     sendAck();
     detachPinChangeInterrupt(leftEncoderPinA);
-  } else {
+  }
+  else
+  {
     move();
   }
   interrupts();
@@ -256,7 +259,9 @@ void countTicksCalcPosR()
 
 void sendAck()
 {
-  Serial.println("@tY!");
+  Serial.print("@");
+  Serial.print(source);
+  Serial.println("Y!");
 }
 
 //This function sends the sensor data to the RPi
@@ -270,7 +275,8 @@ void sendSensors()
   int FRSDistance = getLongIRDistance(FRSPIN);
 
   Serial.flush();
-  Serial.print("@t");
+  Serial.print("@");
+  Serial.print(source);
   if (LSDistance <= 40)
   {
     Serial.print(distanceInGrids(LSDistance, SR));
