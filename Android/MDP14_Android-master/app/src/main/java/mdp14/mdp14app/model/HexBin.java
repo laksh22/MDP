@@ -12,7 +12,7 @@ public class HexBin {
 		}
 		return "";
 	}
-	public static String BinTohex(String s) {
+	public static String binToHex(String s) {
 		  return new BigInteger(s, 2).toString(16);
 	}
 }

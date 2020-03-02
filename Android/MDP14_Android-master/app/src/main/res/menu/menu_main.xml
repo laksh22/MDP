@@ -59,6 +59,12 @@
         android:title="@string/swipe_input"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_view_data_strings"
+        android:orderInCategory="100"
+        android:title="@string/show_data_strings"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_show_bluetooth_chat"
         android:checkable="true"
         android:checked="false"

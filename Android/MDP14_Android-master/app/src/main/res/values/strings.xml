@@ -48,6 +48,10 @@
     <string name="set_config1">Set String 1 (C1)</string>
     <string name="set_config2">Set String 2 (C2)</string>
     <string name="swipe_input">Enable Gesture Control</string>
+    <string name="show_data_strings">Show Data Strings</string>
     <string name="show_bluetooth_service">Show Bluetooth Comm</string>
+    <string name="image_recognition_string">Image Recognition String</string>
+    <string name="mdf_string_2_discovered_obstacles">MDF String 2: Discovered Obstacles</string>
+    <string name="mdf_string_1_explored_squares">MDF String 1: Explored Squares</string>
 
 </resources>

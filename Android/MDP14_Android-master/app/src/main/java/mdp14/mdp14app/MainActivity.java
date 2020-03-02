@@ -1,5 +1,6 @@
 package mdp14.mdp14app;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.Timer;
 
 import mdp14.mdp14app.bluetooth.BluetoothChatFragment;
+import mdp14.mdp14app.model.HexBin;
 import mdp14.mdp14app.model.IDblock;
 import mdp14.mdp14app.model.Map;
 import mdp14.mdp14app.model.Position;
@@ -46,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     MenuItem menu_set_config2;
     MenuItem menu_enable_swipe_input;
     MenuItem menu_show_bluetooth_chat;
+    MenuItem menu_show_data_strings;
+
 
     TextView tv_status;
     Button btn_forward;
@@ -117,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 //check if robot is out of bounds
                 if(!Robot.getInstance().isOutOfBounds()) {
                     Robot.getInstance().moveForward(10);
-                    outgoingMessage("MOVE:F");
+                    outgoingMessage("W");
                     loadGrid();
                 }
             }
@@ -125,14 +130,14 @@ public class MainActivity extends AppCompatActivity {
         btn_left.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Robot.getInstance().rotateLeft();
-                outgoingMessage("MOVE:TL");
+                outgoingMessage("A");
                 loadGrid();
             }
         });
         btn_right.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Robot.getInstance().rotateRight();
-                outgoingMessage("MOVE:TR");
+                outgoingMessage("D");
                 loadGrid();
             }
         });
@@ -223,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
         menu_auto_update_map = menu.findItem(R.id.action_auto_update_map);
         menu_set_config1 = menu.findItem(R.id.action_set_config_string1);
         menu_set_config2 = menu.findItem(R.id.action_set_config_string2);
+        menu_show_data_strings = menu.findItem(R.id.action_view_data_strings);
         menu_enable_swipe_input = menu.findItem(R.id.action_enable_swipe_input);
         menu_show_bluetooth_chat = menu.findItem(R.id.action_show_bluetooth_chat);
         return true;
@@ -294,6 +300,11 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        if (id == R.id.action_view_data_strings) {
+            displayDataStrings();
+            return true;
+        }
+
         if (id == R.id.action_enable_swipe_input) {
             boolean checked = item.isChecked();
             clearAllEditableCheckbox();
@@ -342,6 +353,62 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .show();
     }
+
+    private void displayDataStrings(){
+        //final EditText txtField = new EditText(this);
+        //SharedPreferences prefs = getSharedPreferences(String.valueOf(R.string.app_name), MODE_PRIVATE);
+        //String retrievedText = prefs.getString("string"+index, null);
+        //if (retrievedText != null) {
+        //    txtField.setText(retrievedText);
+        //}
+
+        // custom dialog
+
+
+        // create an alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("MDF + Image String");
+
+        // set the custom layout
+        final View customLayout = getLayoutInflater().inflate(R.layout.data_strings, null);
+        builder.setView(customLayout);
+
+        // add a button
+        builder.setPositiveButton("CLOSE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // send data from the AlertDialog to the Activity
+                dialog.dismiss();
+            }
+        });
+
+        // set the custom dialog components - text, image and button
+        EditText text_mdf1 = (EditText) customLayout.findViewById(R.id.textbox_mdf1);
+        String explored = HexBin.binToHex(Map.getInstance().getBinaryExplored());
+        text_mdf1.setText(explored);
+
+        EditText text_mdf2 = (EditText) customLayout.findViewById(R.id.textbox_mdf2);
+        String obstacles = HexBin.binToHex(Map.getInstance().getBinaryExploredObstacle());
+        text_mdf2.setText(obstacles);
+
+        EditText text_imgreg = (EditText) customLayout.findViewById(R.id.textbox_imgreg);
+        String imgreg = "{";
+        ArrayList<IDblock> numberedBlocks = Map.getInstance().getNumberedBlocks();
+        for(IDblock blk : numberedBlocks){
+            imgreg += String.format("(%s, %d, %d)", blk.getID(), blk.getPosition().getPosX(), blk.getPosition().getPosY());
+            imgreg += ", ";
+        }
+        imgreg = imgreg.substring(0, imgreg.length()-2);
+        imgreg += "}";
+        text_imgreg.setText(imgreg);
+
+        // create and show the alert dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
+
 
     //this is to uncheck all the checkable menuitem
     private void clearAllEditableCheckbox(){
