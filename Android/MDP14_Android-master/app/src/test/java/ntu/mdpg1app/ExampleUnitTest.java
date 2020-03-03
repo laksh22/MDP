@@ -1,4 +1,4 @@
-package mdp14.mdp14app;
+package ntu.mdpg1app;
 
 import org.junit.Test;
 

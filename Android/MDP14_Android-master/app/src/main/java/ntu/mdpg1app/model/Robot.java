@@ -1,9 +1,4 @@
-package mdp14.mdp14app.model;
-
-import android.util.Log;
-
-import mdp14.mdp14app.MainActivity;
-import mdp14.mdp14app.bluetooth.BluetoothChatFragment;
+package ntu.mdpg1app.model;
 
 public class Robot {
     public static Robot robot = null;

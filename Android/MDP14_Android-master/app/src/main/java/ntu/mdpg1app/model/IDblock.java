@@ -1,6 +1,4 @@
-package mdp14.mdp14app.model;
-
-import java.io.PipedOutputStream;
+package ntu.mdpg1app.model;
 
 public class IDblock {
 	private String id = "";

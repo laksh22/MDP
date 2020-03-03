@@ -1,6 +1,4 @@
-package mdp14.mdp14app.model;
-
-import java.util.ArrayList;
+package ntu.mdpg1app.model;
 
 public class WayPoint {
 	public static WayPoint wp=null;

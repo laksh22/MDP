@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package mdp14.mdp14app.bluetooth;
+package ntu.mdpg1app.bluetooth;
 
 import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import 	android.support.v4.content.ContextCompat;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -35,7 +33,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -49,18 +46,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.common.logger.Log;
 
-import java.util.ArrayList;
-
-import mdp14.mdp14app.MainActivity;
-import mdp14.mdp14app.MapCanvas;
-import mdp14.mdp14app.R;
+import ntu.mdpg1app.MainActivity;
+import ntu.mdpg1app.R;
 
 /**
  * This fragment controls Bluetooth to communicate with other devices.
