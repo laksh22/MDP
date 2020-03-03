@@ -1,4 +1,4 @@
-package mdp14.mdp14app;
+package ntu.mdpg1app;
 
 import android.app.Activity;
 import android.content.Context;
@@ -16,13 +16,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import mdp14.mdp14app.model.IDblock;
-import mdp14.mdp14app.model.Map;
-import mdp14.mdp14app.model.Position;
-import mdp14.mdp14app.model.Robot;
-import mdp14.mdp14app.model.WayPoint;
-
-import static android.view.MotionEvent.INVALID_POINTER_ID;
+import ntu.mdpg1app.model.IDblock;
+import ntu.mdpg1app.model.Map;
+import ntu.mdpg1app.model.Position;
+import ntu.mdpg1app.model.Robot;
+import ntu.mdpg1app.model.WayPoint;
 
 public class MapCanvas extends View implements View.OnTouchListener {
     final float scale = getResources().getDisplayMetrics().density;

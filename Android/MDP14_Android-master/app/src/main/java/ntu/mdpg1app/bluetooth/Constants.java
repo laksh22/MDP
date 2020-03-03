@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mdp14.mdp14app.bluetooth;
+package ntu.mdpg1app.bluetooth;
 
 /**
  * Defines several constants used between {@link BluetoothChatService} and the UI.

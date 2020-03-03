@@ -1,10 +1,8 @@
-package mdp14.mdp14app;
+package ntu.mdpg1app;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,27 +12,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.common.logger.Log;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
 
-import mdp14.mdp14app.bluetooth.BluetoothChatFragment;
-import mdp14.mdp14app.model.HexBin;
-import mdp14.mdp14app.model.IDblock;
-import mdp14.mdp14app.model.Map;
-import mdp14.mdp14app.model.Position;
-import mdp14.mdp14app.model.Robot;
-import mdp14.mdp14app.model.WayPoint;
+import ntu.mdpg1app.bluetooth.BluetoothChatFragment;
+import ntu.mdpg1app.model.HexBin;
+import ntu.mdpg1app.model.IDblock;
+import ntu.mdpg1app.model.Map;
+import ntu.mdpg1app.model.Position;
+import ntu.mdpg1app.model.Robot;
+import ntu.mdpg1app.model.WayPoint;
 
 public class MainActivity extends AppCompatActivity {
     GridLayout base_layout;
@@ -122,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 //check if robot is out of bounds
                 if(!Robot.getInstance().isOutOfBounds()) {
                     Robot.getInstance().moveForward(10);
-                    outgoingMessage("W");
+                    outgoingMessage("W", 1);
                     loadGrid();
                 }
             }
@@ -130,45 +119,26 @@ public class MainActivity extends AppCompatActivity {
         btn_left.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Robot.getInstance().rotateLeft();
-                outgoingMessage("A");
+                outgoingMessage("A", 1);
                 loadGrid();
             }
         });
         btn_right.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Robot.getInstance().rotateRight();
-                outgoingMessage("D");
+                outgoingMessage("D", 1);
                 loadGrid();
             }
         });
         btn_terminate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                outgoingMessage(STATUS_TERMINATE_HEADER);
+                outgoingMessage("X", 0);
                 updateStatus(STATUS_TERMINATE_DESC);
             }
         });
         btn_explr.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String positionX = String.valueOf(Robot.getInstance().getPosX()) ;
-                String positionY = String.valueOf(Robot.getInstance().getPosY()) ;
-                String direction = String.valueOf(Robot.getInstance().getDirection());
-                String exploringMsg;
-//                if (WayPoint.wp.getPosition() == null) {
-//                    /*/status = "Setting WayPoint";
-//                    updateStatus(status);
-//
-//                    menu_set_robot_position.setChecked(false);
-//                    menu_set_waypoint.setChecked(true);
-//                    Toast toast=Toast.makeText(getApplicationContext(),"Tap the Grid to set WayPoint",Toast.LENGTH_LONG);
-//                    toast.show();/*/
-//                    exploringMsg = STATUS_EX_HEADER.concat("|").concat(positionX).concat(",").concat(positionY).concat(",").concat(direction).concat("||");
-//                }else{
-//                    String wpX = String.valueOf(WayPoint.getInstance().getPosition().getPosX());
-//                    String wpY = String.valueOf(WayPoint.getInstance().getPosition().getPosY());
-//                    exploringMsg = STATUS_EX_HEADER.concat("|").concat(positionX).concat(",").concat(positionY).concat(",").concat(direction).concat("||").concat(wpX).concat(",").concat(wpY);
-//
-//                }
-                outgoingMessage("BEGINEX");
+                outgoingMessage("BEGINEX", 0);
                 updateStatus(STATUS_EX_DESC);
             }
         });
@@ -184,13 +154,7 @@ public class MainActivity extends AppCompatActivity {
                     toast.show();
 
                 }else{
-                    String positionX = String.valueOf(Robot.getInstance().getPosX()) ;
-                    String positionY = String.valueOf(Robot.getInstance().getPosY()) ;
-                    String direction = String.valueOf(Robot.getInstance().getDirection());
-                    String wpX = String.valueOf(WayPoint.getInstance().getPosition().getPosX());
-                    String wpY = String.valueOf(WayPoint.getInstance().getPosition().getPosY());
-                    String FPMsg = STATUS_FP_HEADER.concat("|").concat(positionX).concat(",").concat(positionY).concat(",").concat(direction).concat("||").concat(wpX).concat(",").concat(wpY);
-                    outgoingMessage("BEGINFP");
+                    outgoingMessage("BEGINFP", 0);
                     updateStatus(STATUS_FP_DESC);
                 }
 
@@ -355,15 +319,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayDataStrings(){
-        //final EditText txtField = new EditText(this);
-        //SharedPreferences prefs = getSharedPreferences(String.valueOf(R.string.app_name), MODE_PRIVATE);
-        //String retrievedText = prefs.getString("string"+index, null);
-        //if (retrievedText != null) {
-        //    txtField.setText(retrievedText);
-        //}
-
-        // custom dialog
-
 
         // create an alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -428,7 +383,6 @@ public class MainActivity extends AppCompatActivity {
 
     //method is ran when new message comes in
     public void incomingMessage(String readMsg) {
-        //outgoingMessage(readMsg);
         //update map
 
         final Robot r = Robot.getInstance();
@@ -437,209 +391,81 @@ public class MainActivity extends AppCompatActivity {
             menu_show_bluetooth_chat.setChecked(true);
             fragment.showChat(true);
             final String delimiterPattern = ":";
-            String message []= readMsg.split(delimiterPattern);
-            if(message[0].equals("GRID")){ //receive mapDescriptor from Algo
 
-                Map.getInstance().setMapJson(message[1]);
-                if(menu_auto_update_map!=null&&menu_auto_update_map.isChecked()){
-                    loadGrid();
-                }
-            }
+                String message[] = readMsg.split(delimiterPattern);
 
-            if(message[0].equals("DATA")){
-                String data[] = message[1].split(",");
+                if (message[0].equals("GRID")) { //receive mapDescriptor from Algo
 
-                Map.getInstance().setMap(data[0],"", data[1]);
-
-                r.setPosX(Float.parseFloat(data[2]));
-                r.setPosY(Float.parseFloat(data[3]));
-                r.setDirection(data[4]);
-
-                if(menu_auto_update_map!=null&&menu_auto_update_map.isChecked()){
-                    loadGrid();
+                    Map.getInstance().setMapJson(message[1]);
+                    if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                        loadGrid();
+                    }
                 }
 
-            }
+                else if (message[0].equals("DATA")) {
+                    String data[] = message[1].split(",");
 
-            //receive numbered block
-            if(message[0].equals("BLOCK")) {
-                String posAndDirect[] = message[1].split(",");
-                IDblock input = new IDblock(posAndDirect[2], Integer.parseInt(posAndDirect[0]), Integer.parseInt(posAndDirect[1]));
-                Map.getInstance().addNumberedBlocks(input);
-                if(menu_auto_update_map!=null&&menu_auto_update_map.isChecked()){
-                    loadGrid();
+                    Map.getInstance().setMap(data[0], "", data[1]);
+
+                    r.setPosX(Float.parseFloat(data[2]));
+                    r.setPosY(Float.parseFloat(data[3]));
+                    r.setDirection(data[4]);
+
+                    if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                        loadGrid();
+                    }
                 }
-            }
+
+                //receive numbered block
+                else if (message[0].equals("BLOCK")) {
+                    String posAndDirect[] = message[1].split(",");
+                    IDblock input = new IDblock(posAndDirect[2], Integer.parseInt(posAndDirect[0]), Integer.parseInt(posAndDirect[1]));
+                    Map.getInstance().addNumberedBlocks(input);
+                    if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                        loadGrid();
+                    }
+                }
 
                 //receive robot position
-            if(message[0].equals("ROBOTPOSITION")){
-                String posAndDirect[] = message[1].split(",");
-                r.setPosX(Float.parseFloat(posAndDirect[0]));
-                r.setPosY(Float.parseFloat(posAndDirect[1]));
-                r.setDirection(posAndDirect[2]);
+                else if (message[0].equals("ROBOTPOSITION")) {
+                    String posAndDirect[] = message[1].split(",");
+                    r.setPosX(Float.parseFloat(posAndDirect[0]));
+                    r.setPosY(Float.parseFloat(posAndDirect[1]));
+                    r.setDirection(posAndDirect[2]);
 
-                if(menu_auto_update_map!=null&&menu_auto_update_map.isChecked()){
-                    loadGrid();
+                    if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                        loadGrid();
+                    }
                 }
-
-                // updateStatus(STATUS_FP_DESC);
-
-
-                /*/New animation 2
-                movement = message[4].split(","); //if there are multiple movements
-                final Handler OverallHandler = new Handler();
-                for (int i = 0; i < movement.length; i++){
-                    final int finalI = i;
-
-                    Runnable OverAll = new Runnable() {
-                        @Override
-                        public void run() {
-                            if (movement[finalI].contains("F")) {
-                                String step[] = movement[finalI].split("F");
-                                int noOfSteps = (Integer.parseInt(step[1])/10);
-
-                                Handler ForwardHandler = new Handler();
-                                for (int forward=0; forward < noOfSteps; forward++){
-                                    Runnable MoveForward = new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Robot.getInstance().moveForward(10);
-                                            if(menu_auto_update_map!=null&&menu_auto_update_map.isChecked()) {
-                                                loadGrid();
-                                            }
-                                        }
-                                    };
-                                    ForwardHandler.postDelayed(MoveForward, (forward + 1) * 150);
-                                }
-                            }
-
-                            else if (movement[finalI].contains("L")){
-                                String step[] = movement[finalI].split("L");
-                                int noOfRotation = (Integer.parseInt(step[1])/90);
-                                Handler LeftHandler = new Handler();
-                                for (int rotation=0; rotation < noOfRotation; rotation++){
-                                    Runnable RotateLeft = new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Robot.getInstance().rotateLeft();
-                                            if(menu_auto_update_map!=null&&menu_auto_update_map.isChecked()) {
-                                                loadGrid();
-                                            }
-                                        }
-                                    };
-                                    LeftHandler.postDelayed(RotateLeft, (rotation + 1) * 500);
-                                }
-                            }
-
-                            //else if (movement[i].contains("R")){
-                            else{
-                                String step[] = movement[finalI].split("R");
-                                int noOfRotation = (Integer.parseInt(step[1])/90);
-                                Handler RightHandler = new Handler();
-                                for (int rotation=0; rotation < noOfRotation; rotation++){
-                                    Runnable RotateRight = new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Robot.getInstance().rotateRight();
-                                            if(menu_auto_update_map!=null&&menu_auto_update_map.isChecked()) {
-                                                loadGrid();
-                                            }
-                                        }
-                                    };
-                                    RightHandler.postDelayed(RotateRight, (rotation + 1) * 500);
-                                }
-                            }
-                        }
-                    };
-
-                    OverallHandler.postDelayed(OverAll, (finalI)  * 2700);
-                }/*/
-
-
-                
-
-
-
+                else if(message[0] == "S"){
+                    if (message[1].equals("F")) {
+                        updateStatus("Moving Forward");
+                    }
+                    if (message[1].equals("TR")) {
+                        updateStatus("Turning Right");
+                    }
+                    if (message[1].equals("TL")) {
+                        updateStatus("Turning Left");
+                    }
+                    if (message[1].equals("FP")) {
+                        updateStatus("Fastest Path");
+                    }
+                    if (message[1].equals("EX")) {
+                        updateStatus("Exploration");
+                    }
+                    if (message[1].equals("DONE")) {
+                        updateStatus("Done!");
+                    }
+                }
+                else if(message[0].trim() == "Y"){
+                    updateStatus("Moving");
+                }
+                else {
+                    updateStatus("Invalid Message");
+                }
             }
-
-
-            if(message[0].equals(STATUS_DONE_HEADER)){ //done
-                updateStatus(STATUS_DONE_DESC);
-            }
-
-            if(message[1].equals("F")){
-                updateStatus("Moving Forward");
-            }
-            if(message[1].equals("TR")){
-                updateStatus("Turning Right");
-            }
-            if(message[1].equals("TL")){
-                updateStatus("Turning Left");
-            }
-            if(message[1].equals("FP")){
-                updateStatus("Fastest Path");
-            }
-            if(message[1].equals("EX")){
-                updateStatus("Exploration");
-            }
-            if(message[1].equals("DONE")){
-                updateStatus("Done!");
-            }
-
-
-
-
-        }
-        //setMap is for the actual; setMapJson is for AMD
-
-        /*
-        JSONObject obj = null;
-        try {
-            obj = new JSONObject(readMsg);
-            if(obj.has("grid")){
-                Map.getInstance().setMapJson(obj.getString("grid"));
-            }
-
-            if(obj.has("robotPosition")){
-                JSONArray arr = obj.getJSONArray("robotPosition");
-                double x = arr.getDouble(0);
-                double y = arr.getDouble(1);
-                double dir = arr.getDouble(2);
-                Robot r = Robot.getInstance();
-                r.setDirection((float) dir);
-                r.setPosX((float) x+1);
-                r.setPosY(19-(float) y-1);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        */
-
-        /*if(menu_auto_update_map!=null&&menu_auto_update_map.isChecked()){
-            loadGrid();
-        }*/
-
     }
 
-    /*/public class RunQueue implements Runnable{
-        private List list = new ArrayList();
-
-        public void queue(Runnable task)
-        {
-            list.add(task);
-        }
-
-        public void run()
-        {
-            while(list.size() > 0)
-            {
-                Runnable task = (Runnable) list.get(0);
-
-                list.remove(0);
-                task.run();
-            }
-        }
-    }/*/
 
     //method to send out message to rpi thru bluetooth
     public boolean outgoingMessage(String sendMsg) {
@@ -647,11 +473,11 @@ public class MainActivity extends AppCompatActivity {
     }
     public boolean outgoingMessage(String sendMsg, int destination) {
         //add delimiters
-        // 0=algo, 1=ardu
+        // 0=algo/tcp, 1=ardu/serial
         if(destination == 0){
             sendMsg = "@t" + sendMsg + "!";
         }else if(destination == 1){
-            sendMsg = "@s" + sendMsg + "!";
+            sendMsg = "@s" + sendMsg + "|!";
         }
 
         return fragment.sendMsg(sendMsg);
@@ -665,7 +491,7 @@ public class MainActivity extends AppCompatActivity {
             r.setPosX(posX);
             r.setPosY(posY);
             r.setDirection("NORTH");
-            outgoingMessage("START:"+(int)posX+","+(int)posY);
+            outgoingMessage("START:"+(int)posX+","+(int)posY, 0);
 
             //Make a prompt here to confirm
             menu_set_robot_position.setChecked(false);
@@ -673,7 +499,7 @@ public class MainActivity extends AppCompatActivity {
         if(menu_set_waypoint.isChecked()){
             Position p = new Position(posX,posY);
             WayPoint.getInstance().setPosition(p);
-            outgoingMessage("WP:"+(int)posX+","+(int)posY);
+            outgoingMessage("WP:"+(int)posX+","+(int)posY, 0);
 
             //Make a prompt here to confirm
             menu_set_waypoint.setChecked(false);
@@ -693,7 +519,7 @@ public class MainActivity extends AppCompatActivity {
         //check if robot is out of bounds
         if(!Robot.getInstance().rotateToNorth()){
             if(!Robot.getInstance().isOutOfBounds()) {
-                outgoingMessage("MOVE:F");
+                outgoingMessage("W", 1);
                 //getack
                 Robot.getInstance().moveForward(10);
             }
@@ -710,7 +536,7 @@ public class MainActivity extends AppCompatActivity {
     public void onSwipeLeft() {
         if(!Robot.getInstance().rotateToWest()){
             if(!Robot.getInstance().isOutOfBounds()) {
-                outgoingMessage("MOVE:F");
+                outgoingMessage("W", 1);
                 //getack
                 Robot.getInstance().moveForward(10);
             }
@@ -728,7 +554,7 @@ public class MainActivity extends AppCompatActivity {
     public void onSwipeRight() {
         if(!Robot.getInstance().rotateToEast()){
             if(!Robot.getInstance().isOutOfBounds()) {
-                outgoingMessage("MOVE:F");
+                outgoingMessage("W", 1);
                 //getack
                 Robot.getInstance().moveForward(10);
             }
@@ -746,7 +572,7 @@ public class MainActivity extends AppCompatActivity {
         if(!Robot.getInstance().rotateToSouth()){
             if(!Robot.getInstance().isOutOfBounds()) {
 
-                outgoingMessage("MOVE:F");
+                outgoingMessage("W", 1);
                 //getack
                 Robot.getInstance().moveForward(10);
             }
@@ -763,23 +589,21 @@ public class MainActivity extends AppCompatActivity {
     public void sendMsgOnSwipe(Integer count){
 
         if(count==1){
-            outgoingMessage("MOVE:TR");
+            outgoingMessage("D", 1);
         }
         if(count==2){
-            outgoingMessage("MOVE:TR");
-            outgoingMessage("MOVE:TR");
+            outgoingMessage("D", 1);
+            outgoingMessage("D", 1);
         }
         if(count==-1){
-            outgoingMessage("MOVE:TL");
+            outgoingMessage("A", 1);
         }
-
     }
 
     @Override
     protected void onStop() {
         // call the superclass method first
         super.onStop();
-
     }
 
     @Override

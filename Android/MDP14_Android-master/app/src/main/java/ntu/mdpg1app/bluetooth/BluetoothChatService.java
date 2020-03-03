@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package mdp14.mdp14app.bluetooth;
+package ntu.mdpg1app.bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
