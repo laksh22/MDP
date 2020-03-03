@@ -78,9 +78,7 @@ char *serial_read() {
           serial_buf[(count - 1)] == '\0';
           printf(
               "[serial_read]: Received [");
-	  fflush(stdout);
 	  printf(serial_buf);
-	  fflush(stdout);
 	  printf("from Serial client connection\n");
           fflush(stdout);
           p = serial_buf;
@@ -91,9 +89,7 @@ char *serial_read() {
       } else {
         printf(
             "[serial_read]: Invalid string"); 
-	fflush(stdout);
 	printf(serial_buf);
-	fflush(stdout);
 	printf("received, please send a new command\n");
         fflush(stdout);
         return 0;
@@ -112,8 +108,6 @@ void *serial_reader_create(void *args) {
 
   while (1) {
     rpointer = serial_read();
-    printf("rpointer: [%s]", rpointer);
-    fflush(stdout);
     if (rpointer) {
       strcpy(read_buf, rpointer);
       memset(rpointer, '\0', MAX);
@@ -132,11 +126,11 @@ int serial_send(char *msg) {
     strcpy(send, msg);
 //    strcat(send, "\n");
     serialPuts(fd_serial, send);
-    printf("[serial_send]: RPi send message [");
+    printf("[serial_send]: RPi send message\n");
+    
+printf(msg);
     fflush(stdout);
-    printf(msg);
-    fflush(stdout);
-    printf("] to serial.\n");
+    printf("to serial.\n");
     fflush(stdout);
     return 1;
   }
@@ -166,11 +160,9 @@ void *serial_sender_create(void *args) {
   // Endless loop
   while (1) {
     rpa_queue_pop(s_queue, (void **) &q);
-    printf("[serial_send_create]: ");
-    fflush(stdout);
-    printf(q);
-    fflush(stdout);
-    printf(" dequeued from serial queue\n");
+    printf("[serial_send_create]: \n");
+    println(q);
+    printf("dequeued from serial queue\n");
     fflush(stdout);
     write_hub(q, 's');
   }

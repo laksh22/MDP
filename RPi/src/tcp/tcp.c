@@ -179,7 +179,7 @@ int tcp_send(char *msg) {
     strcat(send, "\n");
     bytes_write = write(clientconn, send, strlen(send));
     if (bytes_write > 0) {
-      printf("[tcp_send]: RPi send message [%s] to PC.\n", send);
+      printf("[tcp_send]: RPi send message [%s] to PC.\n", msg);
       fflush(stdout);
       return 1;
     } else {

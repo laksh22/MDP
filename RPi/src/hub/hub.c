@@ -70,14 +70,20 @@ void write_hub(char *wpointer, char source) {
 //        }
 
       } else {
-        printf("[write_hub]: Incorrect format provided, message [%s] will be dropped!\n",
-               wpointer);
-        fflush(stdout);
+        //printf("[write_hub]: Incorrect format provided, message [");
+	//fflush(stdout);
+	//printf(wpointer);
+	//fflush(stdout);
+	//printf("] will be dropped!\n");
+        //fflush(stdout);
+   	printf(wpointer);
+	fflush(stdout);
+	printf("Incorrect receipient!");
       }
     }
   } else {
     perror("[write_hub]: Error encountered when receiving data to be routed");
-    fflush();
+    fflush(stdout);
   }
 
 }
