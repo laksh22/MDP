@@ -345,7 +345,7 @@ void sendAck()
 void rotate_right(double degree)
 {
   double target_tick = 0;
-  target_tick = 4.3589 * degree - 60;
+  target_tick = 4.3589 * degree - 13;
   //target_tick = 373;
 
   if (FASTEST_PATH)
@@ -403,7 +403,7 @@ void rotate_right(double degree)
 void rotate_left(double degree)
 {
   double target_tick = 0;
-  target_tick = 4.3589 * degree + 8;
+  target_tick = 4.3589 * degree + 5;
   //target_tick = 384;
 
   if (FASTEST_PATH)
@@ -576,7 +576,7 @@ void E2_Pos()
 double rpm_to_speed_1_forward(double RPM)
 {
   if (RPM > 0)
-    return 2.815 * RPM + 64.15;
+    return 2.815 * RPM + 56.85;
   else
     return 0;
 //  else
