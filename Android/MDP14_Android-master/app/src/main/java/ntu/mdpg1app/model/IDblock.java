@@ -3,7 +3,6 @@ package ntu.mdpg1app.model;
 public class IDblock {
 	private String id = "";
 	private Position position = null;
-	//private Position position=new Position(1,10);
 
 	public IDblock(String blockID, Position pos){
 		this.position = pos;

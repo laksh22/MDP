@@ -353,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
             imgreg += String.format("(%s, %d, %d)", blk.getID(), blk.getPosition().getPosX(), blk.getPosition().getPosY());
             imgreg += ", ";
         }
-        imgreg = imgreg.substring(0, imgreg.length()-2);
+        if(imgreg.length()>2)imgreg = imgreg.substring(0, imgreg.length()-2);
         imgreg += "}";
         text_imgreg.setText(imgreg);
 
@@ -437,7 +437,7 @@ public class MainActivity extends AppCompatActivity {
                         loadGrid();
                     }
                 }
-                else if(message[0] == "S"){
+                else if(message[0].equals("S")){
                     if (message[1].equals("F")) {
                         updateStatus("Moving Forward");
                     }
@@ -457,7 +457,7 @@ public class MainActivity extends AppCompatActivity {
                         updateStatus("Done!");
                     }
                 }
-                else if(message[0].trim() == "Y"){
+                else if(message[0].trim().equals("Y")){
                     updateStatus("Moving");
                 }
                 else {

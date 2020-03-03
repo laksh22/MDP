@@ -133,11 +133,6 @@ public class BluetoothChatFragment extends Fragment {
             ActivityCompat.requestPermissions(activity,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     1234);
-
-            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
-
         } else {
             // Permission has already been granted
         }

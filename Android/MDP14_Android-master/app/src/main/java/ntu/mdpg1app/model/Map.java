@@ -45,15 +45,8 @@ public class Map {
 		this.obstacles = obstacles;
 	}
 	
-	private float exploredRate=0;
-	
-	public float getExploredRate() {
-		return exploredRate;
-	}
 	//in hexdecimal, from map descriptor file to arrays
-
 	public void setMap(String exploredTileHex, String obstacleHex, String exploredObstacleHex) {
-		 // System.out.println (exploredTile2);
 		  String exploredTileBinary = HexBin.hexToBin(exploredTileHex);
 		  exploredTileBinary =exploredTileBinary.substring(2, exploredTileBinary.length()-2);
 		  
@@ -86,7 +79,6 @@ public class Map {
 				  if(exploredObstacleBinary!=null){
 					  char exploredObstacleBit = exploredObstacleBinary.charAt(obstacleIndex);
 
-					  //System.out.println(exploredObstacleBit);
 					  if(exploredObstacleBit=='1'){
 						  obstacles[y][x]=1;
 					  }
@@ -97,14 +89,12 @@ public class Map {
 			  if((x==0&&y==0)||(x==1&&y==0)||(x==2&&y==0)||
 				  (x==0&&y==1)||(x==1&&y==1)||(x==2&&y==1)||
 				  (x==0&&y==2)||(x==1&&y==2)||(x==2&&y==2)){
-				//  exploredTiles[y][x]=1;
 				  obstacles[y][x]=0;
 			  }
 
 			  if((x==14&&y==19)||(x==13&&y==19)||(x==12&&y==19)||
 				  (x==14&&y==18)||(x==13&&y==18)||(x==12&&y==18)||
 				  (x==14&&y==17)||(x==13&&y==17)||(x==12&&y==17)){
-				//  exploredTiles[y][x]=1;
 				  obstacles[y][x]=0;
 			  }
 		  }
