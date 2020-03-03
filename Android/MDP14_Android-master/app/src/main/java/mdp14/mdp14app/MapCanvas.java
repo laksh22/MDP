@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 //import android.support.v4.view.MotionEventCompat;
 import android.graphics.Typeface;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,6 +38,7 @@ public class MapCanvas extends View implements View.OnTouchListener {
     Paint numberedObstacle = new Paint();//Numbered obstacle
 
 
+
     float padding = 50;
     float paddingX = 50;
     float paddingY = 0;
@@ -47,7 +50,8 @@ public class MapCanvas extends View implements View.OnTouchListener {
     int lastX;
     int lastY;
     String toastText;
-    Toast mCurrentToast = null;
+    private static Toast mCurrentToast;
+
 
     private GestureDetector  mDetector;
     private Activity mScaleDetector;
@@ -57,10 +61,10 @@ public class MapCanvas extends View implements View.OnTouchListener {
         separator.setColor(Color.parseColor("#ffffff"));
         exploredArea.setColor(Color.parseColor("#ff6500"));
         obstacle.setColor(Color.BLACK);
-        robot.setColor(Color.parseColor("#39e600")); //#fb3958 #A401FD
-        robotEye.setColor((Color.parseColor("#2900a5")));
+        robot.setColor(Color.parseColor("#803399")); //#fb3958 #A401FD
+        robotEye.setColor((Color.parseColor("#ffb6c1")));
         unexploredArea.setColor(Color.parseColor("#ffd400"));   //#0696D7
-        waypoint.setColor(Color.parseColor("#2900a5"));
+        waypoint.setColor(Color.parseColor("#803399"));
         startEndPoint.setColor(Color.parseColor("#ffae62"));
         numberedObstacle.setColor(Color.parseColor("#FF0000"));
         numberedObstacle.setTypeface(Typeface.DEFAULT_BOLD);
@@ -326,17 +330,39 @@ public class MapCanvas extends View implements View.OnTouchListener {
     //Show toast
 
     public void showToast(String text) {
-
+        Context context = getContext();
 
         if (mCurrentToast != null) {
             mCurrentToast.cancel();
         }
-
-        Context context = getContext();
-        mCurrentToast = Toast.makeText(context,text, Toast.LENGTH_SHORT);
-        //mCurrentToast.setText(text);
+        mCurrentToast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
         mCurrentToast.show();
+
+
+
     }
+
+//    public void showToast(String text) {
+//        // Set the toast and duration
+//        int toastDurationInMilliSeconds = 1000;
+//        Context context = getContext();
+//        mCurrentToast = Toast.makeText(context, text, Toast.LENGTH_LONG);
+//
+//        // Set the countdown to display the toast
+//        CountDownTimer toastCountDown;
+//        toastCountDown = new CountDownTimer(toastDurationInMilliSeconds, 100 /*Tick duration*/) {
+//            public void onTick(long millisUntilFinished) {
+//                mCurrentToast.show();
+//            }
+//            public void onFinish() {
+//                mCurrentToast.cancel();
+//            }
+//        };
+//
+//        // Show the toast and starts the countdown
+//        mCurrentToast.show();
+//        toastCountDown.start();
+//    }
 
     /*
     @Override
