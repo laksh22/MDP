@@ -54,14 +54,14 @@ public class MapCanvas extends View implements View.OnTouchListener {
 
     public MapCanvas(Context context) {
         super(context);
-        separator.setColor(Color.parseColor("#212121"));
-        exploredArea.setColor(Color.parseColor("#FFEB3B"));
+        separator.setColor(Color.parseColor("#ffffff"));
+        exploredArea.setColor(Color.parseColor("#ff6500"));
         obstacle.setColor(Color.BLACK);
-        robot.setColor(Color.parseColor("#F03958")); //#fb3958 #A401FD
-        robotEye.setColor((Color.parseColor("#E0E0E0")));
-        unexploredArea.setColor(Color.parseColor("#458eff"));   //#0696D7
-        waypoint.setColor(Color.parseColor("#00E40B"));
-        startEndPoint.setColor(Color.parseColor("#FBC02D"));
+        robot.setColor(Color.parseColor("#39e600")); //#fb3958 #A401FD
+        robotEye.setColor((Color.parseColor("#2900a5")));
+        unexploredArea.setColor(Color.parseColor("#ffd400"));   //#0696D7
+        waypoint.setColor(Color.parseColor("#2900a5"));
+        startEndPoint.setColor(Color.parseColor("#ffae62"));
         numberedObstacle.setColor(Color.parseColor("#FF0000"));
         numberedObstacle.setTypeface(Typeface.DEFAULT_BOLD);
         numberedObstacle.setLetterSpacing(-0.15f);
