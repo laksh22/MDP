@@ -1,1 +1,0 @@
-/usr/bin/cc     CMakeFiles/RPi.dir/main.c.o CMakeFiles/RPi.dir/hub/hub.c.o CMakeFiles/RPi.dir/rpa_queue/rpa_queue.c.o CMakeFiles/RPi.dir/serial/serial.c.o CMakeFiles/RPi.dir/bluetooth/bluetooth.c.o CMakeFiles/RPi.dir/tcp/tcp.c.o  -o RPi /usr/lib/libwiringPi.so /usr/lib/arm-linux-gnueabihf/libbluetooth.so -lpthread 

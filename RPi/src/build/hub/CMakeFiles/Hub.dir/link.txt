@@ -1,2 +1,0 @@
-/usr/bin/ar qc libHub.a  CMakeFiles/Hub.dir/hub.c.o
-/usr/bin/ranlib libHub.a

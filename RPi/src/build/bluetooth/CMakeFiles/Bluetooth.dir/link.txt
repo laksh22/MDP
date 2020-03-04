@@ -1,2 +1,0 @@
-/usr/bin/ar qc libBluetooth.a  CMakeFiles/Bluetooth.dir/bluetooth.c.o
-/usr/bin/ranlib libBluetooth.a

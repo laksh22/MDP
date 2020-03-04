@@ -1,2 +1,0 @@
-/usr/bin/ar qc libRpaQueue.a  CMakeFiles/RpaQueue.dir/rpa_queue.c.o
-/usr/bin/ranlib libRpaQueue.a
