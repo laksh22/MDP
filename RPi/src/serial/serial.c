@@ -12,14 +12,13 @@ int serial_connect() {
   fd_serial = serialOpen(SERIAL_PORT, BAUD);
   if (fd_serial == -1) {
     perror(
-        "[serial_connect]: Error encounted when establishing serial port connection");
+            "[serial_connect]: Error encountered when establishing serial port connection");
     fflush(stdout);
     return 0;
   } else {
-    printf(
-        "[serial_connect]: Serial port connection %s with %d established successfully.\n",
-        SERIAL_PORT,
-        BAUD);
+    printf("[serial_connect]: Serial port connection %s with %d established successfully.\n",
+            SERIAL_PORT,
+            BAUD);
     fflush(stdout);
     return 1;
   }
@@ -35,8 +34,7 @@ void serial_reconnect() {
   int conn = 0;
 
   while (!conn) {
-    printf(
-        "[serial_reconnect]: Attempting to re-establish connection to serial port...\n");
+    printf("[serial_reconnect]: Attempting to re-establish connection to serial port...\n");
     fflush(stdout);
 
     // Do not need to close serial port
@@ -75,10 +73,8 @@ char *serial_read() {
     if (new_char == '\n') {
       if (serial_buf[0] == '@') {
         if (serial_buf[(count - 2)] == '!') {
-          serial_buf[(count - 1)] == '\0';
-          printf(
-              "[serial_read]: Received [%s] from Serial client connection\n",
-              serial_buf);
+          serial_buf[(count - 1)] = '\0';
+          printf("[serial_read]: Received [%s] from Serial client connection\n", serial_buf);
           fflush(stdout);
           p = serial_buf;
           return p;
@@ -87,8 +83,7 @@ char *serial_read() {
         }
       } else {
         printf(
-            "[serial_read]: Invalid string [%s] received, please send a new command\n",
-            serial_buf);
+                "[serial_read]: Invalid string [%s] received, please send a new command\n");
         fflush(stdout);
         return 0;
       }
@@ -106,13 +101,15 @@ void *serial_reader_create(void *args) {
 
   while (1) {
     rpointer = serial_read();
+    printf("[serial_reader_create] rpointer: [%s]\n", rpointer);
+    fflush(stdout);
     if (rpointer) {
       strcpy(read_buf, rpointer);
       memset(rpointer, '\0', MAX);
       distribute_command(read_buf, 's');
     } else {
       perror(
-          "[serial_reader_create]: Error encountered when receiving data from serial_read");
+              "[serial_reader_create]: Error encountered when receiving data from serial_read");
       fflush(stdout);
     }
   }
@@ -131,22 +128,6 @@ int serial_send(char *msg) {
   return 0;
 }
 
-//// Non-blocking queue implementation
-//void *serial_sender_create(void *args) {
-//  char *q;
-//
-//  // Endless loop
-//  while (1) {
-//    if (!isEmpty(s_queue)) {
-//      pthread_mutex_lock(&lock);
-//      q = dequeue(s_queue);
-//      printf("[serial_send_create]: [%s] dequeued from serial queue\n", q);
-//      write_hub(q, 's');
-//      pthread_mutex_unlock(&lock);
-//    }
-//  }
-//}
-
 // Blocking rpa_queue implementation
 void *serial_sender_create(void *args) {
   char *q;
@@ -154,8 +135,6 @@ void *serial_sender_create(void *args) {
   // Endless loop
   while (1) {
     rpa_queue_pop(s_queue, (void **) &q);
-    printf("[serial_send_create]: [%s] dequeued from serial queue\n", q);
-    fflush(stdout);
     write_hub(q, 's');
   }
 }

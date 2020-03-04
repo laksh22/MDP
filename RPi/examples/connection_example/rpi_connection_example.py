@@ -11,7 +11,7 @@ server.connect((ip_address, port))
 while True:
     # Maintains a list of possible input streams
     sockets_list = [sys.stdin, server]
-    read_sockets, write_socket, error_socket = select.select(sockets_list, [],
+    read_sockets, write_sockets, error_socket = select.select(sockets_list, [],
                                                              [])
 
     for socks in read_sockets:
@@ -23,5 +23,4 @@ while True:
             server.send(str.encode(message, encoding="utf-8"))
             sys.stdout.write("Sending: %s" % message)
             sys.stdout.flush()
-
 server.close()

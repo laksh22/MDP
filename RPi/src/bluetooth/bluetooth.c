@@ -248,21 +248,6 @@ void bt_reconnect() {
   fflush(stdout);
 }
 
-//// Non-blocking queue implementation
-//void *bt_sender_create(void *args) {
-//  char *q;
-//
-//  // Endless loop
-//  while (1) {
-//    if (!isEmpty(b_queue)) {
-//      pthread_mutex_lock(&lock);
-//      q = dequeue(b_queue);
-//      write_hub(q, 'b');
-//      pthread_mutex_unlock(&lock);
-//    }
-//  }
-//}
-
 // Blocking rpa_queue implementation
 void *bt_sender_create(void *args) {
   char *q;
