@@ -14,12 +14,12 @@ add_executable(RPi main.c settings.h
         bluetooth/bluetooth.h bluetooth/bluetooth.c
         tcp/tcp.h tcp/tcp.c)
 
-#find_library(wiringPi_LIB wiringPi)
-#find_library(bluez_LIB bluetooth)
+find_library(wiringPi_LIB wiringPi)
+find_library(bluez_LIB bluetooth)
 
 target_link_libraries(RPi Threads::Threads)
-#target_link_libraries(RPi ${wiringPi_LIB})
-#target_link_libraries(RPi ${bluez_LIB})
+target_link_libraries(RPi ${wiringPi_LIB})
+target_link_libraries(RPi ${bluez_LIB})
 
 add_subdirectory(bluetooth)
 add_subdirectory(camera)
