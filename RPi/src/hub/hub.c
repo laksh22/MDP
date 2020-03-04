@@ -77,8 +77,9 @@ void write_hub(char *wpointer, char source) {
 	//printf("] will be dropped!\n");
         //fflush(stdout);
    	printf(wpointer);
-	fflush(stdout);
-	printf("Incorrect receipient!");
+	  fflush(stdout);
+	  printf("Incorrect receipient!\n");
+    fflush(stdout);
       }
     }
   } else {

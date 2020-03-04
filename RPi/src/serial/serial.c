@@ -75,7 +75,7 @@ char *serial_read() {
     if (new_char == '\n') {
       if (serial_buf[0] == '@') {
         if (serial_buf[(count - 2)] == '!') {
-          serial_buf[(count - 1)] == '\0';
+          serial_buf[(count - 1)] = '\0';
           printf(
               "[serial_read]: Received [");
 	  fflush(stdout);
