@@ -9,6 +9,7 @@
 #include "bluetooth/bluetooth.h"
 #include "serial/serial.h"
 #include "tcp/tcp.h"
+#include "camera/camera.h"
 
 int tcp_status, bt_status, serial_status;
 pthread_mutex_t lock;
@@ -16,17 +17,30 @@ pthread_mutex_t lock;
 rpa_queue_t *b_queue, *s_queue, *t_queue;
 
 // Serial "keep-alive" thread
-void *serial_inactivity_prevention_thread(void *arg) {
-  char source = 'p';
-  while(1)
-  {
+void *serial_inactiv_prvt_thread(void *arg) {
+  // Endless loop: Send a keep-alive message every 6 seconds
+  while(1) {
 //    printf("Sending serial inactivity prevention message\n");
-    write_hub("@sK|!", source);
+
+    /* The content will be DISCARDED and replaced if source is invalid.
+     *
+     * For clarity, we are putting a string value that we are using.
+     *
+     * The string clarity is the raw string that needs to be sent from external
+     * programs.
+     *
+     * Not using distribute_command(), as we do not want this message to be
+     * queued.
+     */
+    write_hub("@sK|!", 'p');
     sleep(6);
   }
 }
 
 int main() {
+  // Index for thread closing loop
+  int i = 0;
+
   // Ctrl+C to terminate the entire program properly
   signal(SIGINT, all_disconnect);
   printf("===== Initializing connections =====\n");
@@ -42,6 +56,7 @@ int main() {
   bt_status = 1;
   tcp_status = 1;
 
+  // Chronologically wait for serial, bluetooth and tcp to connect
   serial_status = serial_connect();
   bt_status = bt_connect();
   tcp_status = tcp_connect();
@@ -76,17 +91,13 @@ int main() {
   pthread_create(&thread_group[3], NULL, bt_sender_create, NULL);
   pthread_create(&thread_group[4], NULL, serial_reader_create, NULL);
   pthread_create(&thread_group[5], NULL, serial_sender_create, NULL);
+  pthread_create(&thread_group[6], NULL, serial_inactiv_prvt_thread, NULL);
+  pthread_create(&thread_group[6], NULL, read_img_labels, NULL);
 
-  pthread_t tid;
-  pthread_create(&tid, NULL, serial_inactivity_prevention_thread, NULL);
-
-  // Join the created threads created previously
-  int i;
+  // Join the created threads
   for (i = 0; i < NUM_THREADS; i++) {
     pthread_join(thread_group[i], NULL);
   }
-
-  pthread_join(tid, NULL);
 
   return 0;
 }
