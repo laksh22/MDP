@@ -40,6 +40,7 @@ void write_hub(char *wpointer, char source) {
     if (strlen(wpointer) > 0) {
       if (tolower(wpointer[1]) == 't') {
 
+        // Uncomment if TCP needs to know the source
 //        if (source == 's') {
 //          *(wpointer + 1) = 's';
 //        } else if (source == 'b') {
@@ -53,11 +54,14 @@ void write_hub(char *wpointer, char source) {
 
         if (source == 't') {
           *(wpointer + 1) = 't';
+          serial_send((void *) wpointer + 1);
         } else if (source == 'b') {
           *(wpointer + 1) = 'b';
+          serial_send((void *) wpointer + 1);
+        } else {
+          // Send keep alive message
+          serial_send("pK|")
         }
-
-        serial_send((void *) wpointer + 1);
 
 //      } else if (tolower(wpointer[1]) == 'r') {
 //
@@ -70,16 +74,8 @@ void write_hub(char *wpointer, char source) {
 //        }
 
       } else {
-        //printf("[write_hub]: Incorrect format provided, message [");
-	//fflush(stdout);
-	//printf(wpointer);
-	//fflush(stdout);
-	//printf("] will be dropped!\n");
-        //fflush(stdout);
-   	printf(wpointer);
-	  fflush(stdout);
-	  printf("Incorrect receipient!\n");
-    fflush(stdout);
+        printf("[write_hub]: Incorrect recipient!\n");
+        fflush(stdout);
       }
     }
   } else {
