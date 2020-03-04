@@ -32,11 +32,6 @@ int main() {
   printf("===== Initializing connections =====\n");
   fflush(stdout);
 
-//  // Create the respective queues for each devices
-//  s_queue = createQueue(QSIZE);
-//  b_queue = createQueue(QSIZE);
-//  t_queue = createQueue(QSIZE);
-
   // Create the respective rpa_queue for each communication port
   rpa_queue_create(&s_queue, (uint32_t) QSIZE);
   rpa_queue_create(&b_queue, (uint32_t) QSIZE);
