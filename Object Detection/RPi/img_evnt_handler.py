@@ -10,7 +10,7 @@ from PIL import Image
 COORDS_ORIEN_DIR = "/home/pi/Desktop/coords_orien/"
 IMAGES_TO_SCAN_DIR = "/home/pi/Desktop/images_to_scan/"
 IMAGES_FOUND_DIR = "/home/pi/Desktop/images_found/"
-DONE_FILE = COORDS_ORIEN_DIR + "DONE"
+DONE_FILE = "DONE"
 
 with picamera.PiCamera() as camera:
     # Set the camera's resolution to VGA @80fps and give it a couple of seconds
@@ -30,7 +30,7 @@ with picamera.PiCamera() as camera:
         # No modification of file, creation_time == modified_time
         files.sort(key=lambda x: getmtime(COORDS_ORIEN_DIR + x))
 
-        if files and files[0] == DONE_FILE:
+        if len(files) == 1 and files[0] == DONE_FILE:
             # No more images to be taken, terminate program
             print("All pictures taken, exiting program")
             sys.exit(0)
