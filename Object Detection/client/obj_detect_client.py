@@ -54,17 +54,12 @@ if __name__ == "__main__":
                 if ".jpeg" in img:
                     file_size = ftp.size(img)
 
+                    # Download remote image
                     handle = open(
                         LOCAL_IMAGES_TO_SCAN_DIR.rstrip("/") + "/" + img.lstrip(
                             "/"), 'wb')
-
-                    # Download remote image
-                    while file_size != handle.tell():
-                        if handle.tell() != 0:
-                            ftp.retrbinary('RETR %s' % img, handle.write,
-                                           handle.tell())
-                        else:
-                            ftp.retrbinary('RETR %s' % img, handle.write)
+                    ftp.retrbinary('RETR %s' % img, handle.write)
+                    handle.close()
 
                     # Delete remote image after it has been downloaded
                     ftp.delete(img)
