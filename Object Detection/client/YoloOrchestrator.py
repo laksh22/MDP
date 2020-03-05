@@ -1,4 +1,5 @@
 import os
+import re
 import time
 from pathlib import Path
 from typing import Union, Optional
@@ -82,6 +83,8 @@ class Yolo:
         self.output_video_path = "videos/"
         self.output_image_found_path = "images/found/"
         self.output_image_not_found_path = "images/not_found/"
+        self.file_name_pattern = re.compile(
+            "^\d{1,2}_\d{1,2}_(?:NORTH|SOUTH|EAST|WEST)$")
 
         # Create the required output folders
         if not os.path.exists(self.output_video_path):
@@ -116,7 +119,7 @@ class Yolo:
         # numpy.ndarray type
         if isinstance(image, str):
             image = cv2.imread(image)
-            image_file_name = Path(image).stem
+            # image_file_name = Path(image).stem
         elif isinstance(image, np.ndarray):
             image_file_name = "vid_source"
         else:
@@ -193,53 +196,119 @@ class Yolo:
         )
 
         # Ensure at least one detection exists
-        if len(idxs) > 0:
-            detected_label_ids = []
-            # Loop over the indexes we are keeping
-            for i in idxs.flatten():
-                # Extract the bounding box coordinates
-                (x, y) = (boxes[i][0], boxes[i][1])
-                (w, h) = (boxes[i][2], boxes[i][3])
+        # if len(idxs) > 0:
+        #     detected_label_ids = []
+        #     # Loop over the indexes we are keeping
+        #     for i in idxs.flatten():
+        #         # Extract the bounding box coordinates
+        #         (x, y) = (boxes[i][0], boxes[i][1])
+        #         (w, h) = (boxes[i][2], boxes[i][3])
+        #
+        #         # Draw a bounding box rectangle and label on the frame
+        #         color = [int(c) for c in self.colors[class_ids[i]]]
+        #         cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
+        #         text = "{}: {:.4f}".format(self.labels[class_ids[i]],
+        #                                    confidences[i])
+        #         print(text)
+        #         cv2.putText(
+        #             image,
+        #             text,
+        #             (x, y - 5),
+        #             cv2.FONT_HERSHEY_SIMPLEX,
+        #             0.5,
+        #             color,
+        #             2
+        #         )
+        #         detected_label_ids.append(self.labels[class_ids[i]])
 
-                # Draw a bounding box rectangle and label on the frame
-                color = [int(c) for c in self.colors[class_ids[i]]]
-                cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
-                text = "{}: {:.4f}".format(self.labels[class_ids[i]],
-                                           confidences[i])
-                print(text)
-                cv2.putText(
-                    image,
-                    text,
-                    (x, y - 5),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.5,
-                    color,
-                    2
-                )
-                detected_label_ids.append(self.labels[class_ids[i]])
+        if len(idxs) == 1:
+            # Extract the bounding box coordinates
+            (x, y) = (boxes[0][0], boxes[0][1])
+            (w, h) = (boxes[0][2], boxes[0][3])
 
-            # Determine output directory
-            if not filename:
-                filename = "{timestamp}_{label_id}_found_{" \
-                           "original_file_name}.jpg".format(
+            # Draw a bounding box rectangle and label on the frame
+            color = [int(c) for c in self.colors[class_ids[0]]]
+            cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
+            text = "{}: {:.4f}".format(self.labels[class_ids[0]],
+                                       confidences[0])
+            print(text)
+            cv2.putText(
+                image,
+                text,
+                (x, y - 5),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                color,
+                2
+            )
+
+            detected_label = self.labels[class_ids[0]]
+
+            # Determine output file name
+            if not filename or not self.file_name_pattern.match(filename):
+                new_filename = "{timestamp}_{label_id}_found.jpg".format(
                     timestamp=int(time.time()),
-                    label_id="-".join(detected_label_ids),
-                    original_file_name=image_file_name
+                    label_id=detected_label
                 )
             else:
-                # TODO: Resolve file name over here
-                # Need to determine the coordinates base on the bbox coordinates
-                # (x, y) <- center of bounding box
-                # (x, y) <- dimension of bounding box
-                pass
+                # Filename provided and is in valid format
+                img_meta_dat = filename.split("_")
+
+                # TODO: Calibrate this
+                delim_1 = 213.34
+                delim_2 = 416.67
+
+                # Determine which region the center of bounding box is in
+                if x < delim_1:
+                    region = 0
+                elif delim_1 <= x < delim_2:
+                    region = 1
+                else:
+                    # Case: x >= delim_2
+                    region = 2
+
+                # Determine coordinate of image depending on orientation
+                # Note: Camera is facing right
+                coord_x = img_meta_dat[0]
+                coord_y = img_meta_dat[1]
+
+                if region == 1:
+                    # Center region; x,y coordinates will never change
+                    pass
+                elif region == 0:
+                    # Top region
+                    if img_meta_dat[2] == "NORTH":
+                        coord_y += 1
+                    elif img_meta_dat[2] == "SOUTH":
+                        coord_y -= 1
+                    elif img_meta_dat[2] == "EAST":
+                        coord_x += 1
+                    elif img_meta_dat[2] == "WEST":
+                        coord_x -= 1
+                    else:
+                        print("Invalid orientation: [%s]" % img_meta_dat[2])
+                elif region == 2:
+                    # Bottom region
+                    if img_meta_dat[2] == "NORTH":
+                        coord_y -= 1
+                    elif img_meta_dat[2] == "SOUTH":
+                        coord_y += 1
+                    elif img_meta_dat[2] == "EAST":
+                        coord_x -= 1
+                    elif img_meta_dat[2] == "WEST":
+                        coord_x += 1
+                    else:
+                        print("Invalid orientation: [%s]" % img_meta_dat[2])
+
+                new_filename = "%s,%s,%s" % (detected_label, coord_x, coord_y)
 
             # Write detected image to found directory
             cv2.imwrite(
-                self.output_image_found_path + filename,
+                self.output_image_found_path + new_filename,
                 image
             )
 
-            return filename
+            return new_filename
         else:
             # No objects detected
             # Write image with nothing detected to not_found directory

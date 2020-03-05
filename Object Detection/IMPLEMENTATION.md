@@ -29,6 +29,6 @@ The image is delimited to three zones, hence, it will have 2 delimiters (d1, d2)
 The resulting coordinates of the image should be resolved as such:
 | no. | state                    | coord. of object | robot orient. |
 |-----|--------------------------|------------------|---------------|
-| 1   | bb_center < d1           | id_3_11          | NORTH         |
-| 2   | bb_center >= d1 and < d2 | id_3_10          | NORTH         |
-| 3   | bb_center >= d2          | id_3_9           | NORTH         |
+| 1   | bb_center < d1           | id_2_11          | NORTH         |
+| 2   | bb_center >= d1 and < d2 | id_2_10          | NORTH         |
+| 3   | bb_center >= d2          | id_2_9           | NORTH         |
