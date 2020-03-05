@@ -67,7 +67,7 @@ int count_files_in_dir(char *path) {
   return fileCount;
 }
 
-void files_in_dir(char *path, char **files) {
+void files_in_dir(char *path, char **files, int fileCount) {
   DIR *dir;
   struct dirent *entry;
   int i = 0;
@@ -77,13 +77,11 @@ void files_in_dir(char *path, char **files) {
     while ((entry = readdir(dir)) != NULL) {
       // Do not want ".", ".." and only want regular files
       if (entry->d_type == DT_REG) {
-        printf("%d: %s\n", i, entry->d_name);
-
+        files[i] = entry->d_name;
         i++;
       }
-
-      // Do not want to send more than 5 packets
-      if (i >= 5) {
+      // Do not want to process more than fileCount
+      if (i >= fileCount) {
         break;
       }
     }
@@ -94,7 +92,7 @@ void files_in_dir(char *path, char **files) {
   }
 }
 
-void process_files_in_dir(char *path) {
+void process_files_in_dir(char *path, char** files) {
   DIR *dir;
   struct dirent *entry;
   int i = 0;
@@ -136,6 +134,7 @@ void *read_img_labels() {
   // Thread to check if image recognition is done
   int fileCount;
   char buf[MAX];
+  char **files;
 
   // Ensure required folders are created
   create_work_directories();
@@ -148,7 +147,9 @@ void *read_img_labels() {
     // Check if the DONE file is created
     if (access(DONE_FILE, F_OK) != -1 && fileCount == 1) {
       // DONE file exists and is the only file
-      process_files_in_dir(IMAGES_FOUND_DIR);
+      files = (char **) malloc((fileCount) * sizeof(char *));
+      files_in_dir(IMAGES_FOUND_DIR, files, fileCount);
+      process_files_in_dir(IMAGES_FOUND_DIR, files);
 
       // Breaking out of endless-loop
       break;
