@@ -51,5 +51,5 @@ with picamera.PiCamera() as camera:
             print("All pictures taken, exiting program")
             sys.exit(0)
         else:
-            # Sleep for 30 ms
+            # Sleep for 30ms
             time.sleep(0.03)
