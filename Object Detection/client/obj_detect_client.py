@@ -75,6 +75,9 @@ if __name__ == "__main__":
                     # Run YOLO object detection on image
                     detected_img_name = yolo.process_image(cv2_image, img)
 
+                    # Delete raw image from local images_to_scan
+                    os.remove(LOCAL_IMAGES_TO_SCAN_DIR + img)
+
                     # Write file back to RPi if object is found
                     if detected_img_name:
                         # Navigate to IMAGES_FOUND_DIR
