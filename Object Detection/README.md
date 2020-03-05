@@ -70,8 +70,6 @@ elif region == 2:
         x += 1
     else:
         print("Invalid orientation")
-
-new_filename = "%s,%s,%s" % (detected_label, coord_x, coord_y)
 ```
 
 # 3. How to run
