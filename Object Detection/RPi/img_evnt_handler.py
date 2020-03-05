@@ -49,7 +49,7 @@ with picamera.PiCamera() as camera:
                     "%s.jpeg" % (IMAGES_TO_SCAN_DIR + files[0]))
 
                 # Remove COORD_ORIEN file
-                remove(files[0])
+                remove(COORDS_ORIEN_DIR + files[0])
 
         # Sleep for 30ms
         time.sleep(0.03)
