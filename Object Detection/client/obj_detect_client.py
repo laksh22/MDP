@@ -96,7 +96,7 @@ if __name__ == "__main__":
             # Navigate back to REMOTE_COORDS_ORIEN_DIR
             ftp.cwd(REMOTE_COORDS_ORIEN_DIR)
 
-            # Check the REMOTE_IMAGES_TO_SCAN_DIR
+            # Check the REMOTE_COORDS_ORIEN_DIR
             coords = sorted(ftp.nlst(),
                             key=lambda x: ftp.voidcmd("MDTM {}".format(x)))
 
@@ -106,6 +106,9 @@ if __name__ == "__main__":
                     and len(coords) == 1 and coords[0] == "DONE":
                 print("No more images to scan")
                 break
+
+            # Navigate back to REMOTE_IMAGES_TO_SCAN_DIR
+            ftp.cwd(REMOTE_IMAGES_TO_SCAN_DIR)
 
             # Sleep for 1s
             time.sleep(1)
@@ -117,8 +120,8 @@ if __name__ == "__main__":
                           if isfile(join(LOCAL_IMAGES_FOUND_DIR, f))
                           if not f.startswith(".")]
 
-    cv2_imgs_to_disp = [cv2.imread(images_to_scan) for image_to_disp_dir in
-                        image_to_disp_dirs]
+    cv2_imgs_to_disp = [cv2.imread(LOCAL_IMAGES_FOUND_DIR + images_to_scan) for
+                        image_to_disp_dir in image_to_disp_dirs]
 
     h_stacks = []
     # Start from index 1 instead of 0
