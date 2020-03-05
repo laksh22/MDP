@@ -151,7 +151,7 @@ void *read_img_labels() {
 //      files_in_dir(IMAGES_FOUND_DIR, files, fileCount);
 
       // process file in dir
-      process_files_in_dir(IMAGES_FOUND_DIR, files);
+      process_files_in_dir(IMAGES_FOUND_DIR);
 
       // Breaking out of endless-loop
       break;
