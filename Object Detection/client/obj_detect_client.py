@@ -134,11 +134,12 @@ if __name__ == "__main__":
 
     all_detected_obj_name = "%s_all_detected" % int(time.time())
 
+    # Write the image out
+    print("Saving all images in a single window...")
+    cv2.imwrite(all_detected_obj_name + ".jpeg")
+
     # Display the image
     cv2.imshow(all_detected_obj_name, v_stack)
     cv2.waitKey(0)
-
-    # Write the image out
-    cv2.imwrite(all_detected_obj_name + ".jpeg")
 
     print("Terminating YOLO object detection client...")
