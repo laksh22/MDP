@@ -1,4 +1,4 @@
-# Description of implementation
+# 1. Description of implementation
 
 1. Whenever RPi receives a take picture command from TCP `@r_x_y_orientation!`. 
 The coordinates and orientation will be saved as a file in a folder (**coords_orien**) with filename (`x_y_orientation`). 
@@ -19,7 +19,7 @@ Once it has finish scanning an image, it will delete the image that was scanned 
 
 7. RPi will then read all the image filenames in the **images_found** folder and send it to Bluetooth as separate packets for each image in **images_found** with the filename of the images as packet contents.
 
-# Object Position
+# 2. Object Position
 Depending on the position of the bounding box, the **coord_orien** in the form of `x_y_orientation` needs to be resolved.
 `x_y_orientation` is the center of the obstacle detected by the robot.
 
@@ -73,3 +73,62 @@ elif region == 2:
 
 new_filename = "%s,%s,%s" % (detected_label, coord_x, coord_y)
 ```
+
+# 3. How to run
+Included in this section are the instructions to run object detection.
+
+## 3.1 Dependencies
+The Python code requires the RPi to have FTP. 
+FTP was preferred over SFTP as Python's FTPlib does not support SFTP.
+
+To enable FTP on the Raspberry Pi (RPi), run the following commands below in terminal, while connected to the RPi.
+
+```shell script
+sudo apt-get update
+sudo apt-get install vsftpd
+```
+
+Open up the config file by entering the following command.
+```shell script
+sudo nano /etc/vsftpd.conf
+```
+
+Add or uncomment (Remove the #) for the following settings:
+```shell script
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+chroot_local_user=YES
+user_sub_token=$USER
+local_root=/home/$USER/
+```
+
+If you try to copy to FTP, it will not work but FTP/files will. Replace <user> with the relevant user, for example
+Create the FTP directory so transfering of files is permitted. 
+The root directory is not allowed to have write permissions so a subfolder called files is needed.
+
+```shell script
+mkdir /home/<user>/FTP
+mkdir /home/<user>/FTP/files
+chmod a-w /home/<user>/FTP
+```
+
+Restart the service by entering the following command.
+```shell script
+sudo service vsftpd restart
+```
+
+Connect over plain FTP (Port 21) should be enabled after all the steps above are performed.
+
+
+## 3.2 Performing Object Detection / Running
+
+1. Ensure that all required devices (Serial, Bluetooth, Serial) are connected after running the `RPi` communication hub binary.
+2. In a separate terminal window with the RPi connected, run the `Object\ detection/rpi/img_event_handler.py` Python script.
+3. On a preferred laptop with the required `opencv2` and `darknet/yolov3` dependencies installed, run the `Object\ detection/client/obj_detect_client.py` Python script.
+ 
+ 
+
+
+
