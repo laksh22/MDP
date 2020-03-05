@@ -31,11 +31,11 @@ The image is delimited to three zones, hence, it will have 2 delimiters (d1, d2)
 3. Center of bounding box of detected object >= d2
 
 The resulting coordinates of the image should be resolved as such:
-| no. | state                    | coord. of object | robot orient. |
-|-----|--------------------------|------------------|---------------|
-| 1   | bb_center < d1           | id_2_11          | NORTH         |
-| 2   | bb_center >= d1 and < d2 | id_2_10          | NORTH         |
-| 3   | bb_center >= d2          | id_2_9           | NORTH         |
+| no. | state                    | region | coord. of object | robot orient. |
+|-----|--------------------------|--------|------------------|---------------|
+| 1   | bb_center < d1           | 0      | id,2,11          | NORTH         |
+| 2   | bb_center >= d1 and < d2 | 1      | id,2,10          | NORTH         |
+| 3   | bb_center >= d2          | 2      | id,2,9           | NORTH         |
 
 As such, if the camera is facing rightwards, the generalisation below holds:
 
