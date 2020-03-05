@@ -84,17 +84,26 @@ if __name__ == "__main__":
                         ftp.storbinary("STOR {}".format(detected_img_name),
                                        file_to_send)
 
-                        # Navigate back to IMAGES_TO_SCAN_DIR
+                        # Navigate back to REMOTE_IMAGES_TO_SCAN_DIR
                         ftp.cwd(REMOTE_IMAGES_TO_SCAN_DIR)
                     else:
                         print("No object detected")
 
-            # Check the IMAGES_TO_SCAN_DIR directory again
+            # Check the REMOTE_IMAGES_TO_SCAN_DIR
             images_to_scan = sorted(ftp.nlst(), key=lambda x: ftp.voidcmd(
                 "MDTM {}".format(x)))
 
-            # Check if all images has been scanned
-            if len(images_to_scan) == 1 and images_to_scan[0] == "DONE":
+            # Navigate back to REMOTE_COORDS_ORIEN_DIR
+            ftp.cwd(REMOTE_IMAGES_TO_SCAN_DIR)
+
+            # Check the REMOTE_IMAGES_TO_SCAN_DIR
+            coords = sorted(ftp.nlst(),
+                            key=lambda x: ftp.voidcmd("MDTM {}".format(x)))
+
+            # Make sure there are no more images to scan
+            # Make sure that DONE file is the only file there
+            if len(images_to_scan) == 0 \
+                    and len(coords) == 1 and coords[0] == "DONE":
                 print("No more images to scan")
                 break
 
