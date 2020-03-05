@@ -92,7 +92,7 @@ int main() {
   pthread_create(&thread_group[4], NULL, serial_reader_create, NULL);
   pthread_create(&thread_group[5], NULL, serial_sender_create, NULL);
   pthread_create(&thread_group[6], NULL, serial_inactiv_prvt_thread, NULL);
-  pthread_create(&thread_group[6], NULL, read_img_labels, NULL);
+  pthread_create(&thread_group[7], NULL, read_img_labels, NULL);
 
   // Join the created threads
   for (i = 0; i < NUM_THREADS; i++) {
