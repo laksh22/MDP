@@ -94,7 +94,7 @@ if __name__ == "__main__":
                 "MDTM {}".format(x)))
 
             # Navigate back to REMOTE_COORDS_ORIEN_DIR
-            ftp.cwd(REMOTE_IMAGES_TO_SCAN_DIR)
+            ftp.cwd(REMOTE_COORDS_ORIEN_DIR)
 
             # Check the REMOTE_IMAGES_TO_SCAN_DIR
             coords = sorted(ftp.nlst(),
