@@ -96,7 +96,8 @@ if __name__ == "__main__":
                 "MDTM {}".format(x)))
 
             # Check if all images has been scanned
-            if len(images_to_scan) == 1 and "DONE" in images_to_scan:
+            if len(images_to_scan) == 1 and images_to_scan[0] == "DONE":
+                print("No more images to scan")
                 break
 
             # Sleep for 1s
