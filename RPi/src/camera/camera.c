@@ -133,7 +133,6 @@ void *read_img_labels() {
   // Thread to check if image recognition is done
   int fileCount;
   char buf[MAX];
-  char command[50]; // For "sudo rm -rf DONE_FILE" command
 
   // Ensure required folders are created
   create_work_directories();
@@ -148,14 +147,7 @@ void *read_img_labels() {
       // DONE file exists and is the only file
       process_files_in_dir(IMAGES_FOUND_DIR);
 
-      // Delete the DONE file
-      strcpy(command, "sudo rm -rf ");
-      strcat(command, DONE_FILE);
-
-      // Execute delete command
-      system(command);
-
-      // Breaking out of endless-loop (Just to be safe)
+      // Breaking out of endless-loop
       break;
     }
 
