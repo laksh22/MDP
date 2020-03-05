@@ -23,7 +23,6 @@ PASS = "raspberry"
 REMOTE_COORDS_ORIEN_DIR = "/Desktop/coords_orien/"
 REMOTE_IMAGES_TO_SCAN_DIR = "/Desktop/images_to_scan/"
 REMOTE_IMAGES_FOUND_DIR = "/Desktop/images_found/"
-REMOTE_DONE_FILE = REMOTE_COORDS_ORIEN_DIR + "DONE"
 
 LOCAL_IMAGES_TO_SCAN_DIR = "images/images_to_scan/"
 LOCAL_IMAGES_FOUND_DIR = "images/found/"
