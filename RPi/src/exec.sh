@@ -20,4 +20,5 @@ cd ../../../Object\ Detection/RPi/
 python img_evnt_handler.py &
 
 # Start communication hub binary
+cd ../../RPi/src/build
 ./RPi
