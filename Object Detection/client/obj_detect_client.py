@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
                     # Run YOLO object detection on image
                     detected_img_name = yolo.process_image(
-                        filename=LOCAL_IMAGES_TO_SCAN_DIR + img)
+                        filename=img, parent_dir=LOCAL_IMAGES_TO_SCAN_DIR)
 
                     # Delete raw image from local images_to_scan
                     os.remove(LOCAL_IMAGES_TO_SCAN_DIR + img)

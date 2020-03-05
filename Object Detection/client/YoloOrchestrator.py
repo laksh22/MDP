@@ -96,7 +96,7 @@ class Yolo:
         if not os.path.exists(self.output_image_not_found_path):
             os.makedirs(self.output_image_not_found_path)
 
-    def process_image(self, filename: str) -> str:
+    def process_image(self, filename: str, parent_dir: str) -> str:
         """
         Processes a given image by performing object detection on it. Should
         an object be detected, a bounding box will be drawn around it,
@@ -114,7 +114,7 @@ class Yolo:
         Returns:
             None
         """
-        image = cv2.imread(filename)
+        image = cv2.imread(parent_dir.rstrip("/") + "/" + filename)
         # Get the image width and height
         (im_height, im_width) = image.shape[:2]
 

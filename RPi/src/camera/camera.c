@@ -71,6 +71,33 @@ void files_in_dir(char *path, char **files) {
   DIR *dir;
   struct dirent *entry;
   int i = 0;
+
+  if ((dir = opendir(path)) != NULL) {
+    printf("[process_files_in_dir] Files in folder [%s]: ", path);
+    while ((entry = readdir(dir)) != NULL) {
+      // Do not want ".", ".." and only want regular files
+      if (entry->d_type == DT_REG) {
+        printf("%d: %s\n", i, entry->d_name);
+
+        i++;
+      }
+
+      // Do not want to send more than 5 packets
+      if (i >= 5) {
+        break;
+      }
+    }
+    closedir(dir);
+  } else {
+    // Could not open directory
+    perror("[process_files_in_dir] Could not open directory");
+  }
+}
+
+void process_files_in_dir(char *path) {
+  DIR *dir;
+  struct dirent *entry;
+  int i = 0;
   char buf[MAX];
 
   if ((dir = opendir(path)) != NULL) {
@@ -105,33 +132,6 @@ void files_in_dir(char *path, char **files) {
   }
 }
 
-void process_files_in_dir(char *path) {
-  DIR *dir;
-  struct dirent *entry;
-  int i = 0;
-
-  if ((dir = opendir(path)) != NULL) {
-    printf("[process_files_in_dir] Files in folder [%s]: ", path);
-    while ((entry = readdir(dir)) != NULL) {
-      // Do not want ".", ".." and only want regular files
-      if (entry->d_type == DT_REG) {
-        printf("%d: %s\n", i, entry->d_name);
-
-        i++;
-      }
-
-      // Do not want to send more than 5 packets
-      if (i >= 5) {
-        break;
-      }
-    }
-    closedir(dir);
-  } else {
-    // Could not open directory
-    perror("[process_files_in_dir] Could not open directory");
-  }
-}
-
 void *read_img_labels() {
   // Thread to check if image recognition is done
   int fileCount;
@@ -148,7 +148,7 @@ void *read_img_labels() {
     // Check if the DONE file is created
     if (access(DONE_FILE, F_OK) != -1 && fileCount == 1) {
       // DONE file exists and is the only file
-      process_files_in_dir(IMAGES_FOUND_DIR);
+      files_in_dir(IMAGES_FOUND_DIR);
 
       // Breaking out of endless-loop
       break;
