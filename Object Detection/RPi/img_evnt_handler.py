@@ -30,7 +30,7 @@ with picamera.PiCamera() as camera:
         # No modification of file, creation_time == modified_time
         files.sort(key=lambda x: getmtime(COORDS_ORIEN_DIR + x))
 
-        if not files and files[0] == DONE_FILE:
+        if files and files[0] == DONE_FILE:
             # No more images to be taken, terminate program
             print("All pictures taken, exiting program")
             sys.exit(0)
