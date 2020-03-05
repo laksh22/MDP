@@ -67,20 +67,68 @@ int count_files_in_dir(char *path) {
   return fileCount;
 }
 
-void files_in_dir(char *path, char **files) {
+int files_in_dir(char *path, char ***files) {
+  DIR *dir;
+  struct dirent *ent;
+  int n = 0;
+
+  if ((dir = opendir(path)) != NULL) {
+    printf("[files_in_dir] Files in folder [%s]: ", path);
+    while ((ent = readdir(dir)) != NULL) {
+      if (ent->d_type == DT_REG) {
+        *files = realloc(*files, sizeof(**files) * (n + 1));
+        // Remember to free from calling function
+        (*files)[n] = malloc(ent->d_namlen);
+        strcpy((*files)[n], ent->d_name);
+        n++;
+      }
+    }
+    closedir(dir);
+    return n;
+  } else {
+    // Could not open directory
+    perror("[files_in_dir] Could not open directory");
+    return 0;
+  }
+}
+
+void process_files_in_dir(char *path) {
+  /* Be careful when using strtok as it is destructive of the input, it
+   * will zero out the delimiter, which is the file extension.
+   *
+   * This is okay in our case as we will not use the file extension
+   * downstream in any of our code.
+   */
   DIR *dir;
   struct dirent *entry;
   int i = 0;
+  char buf[MAX];
+  char *file;
 
   if ((dir = opendir(path)) != NULL) {
-    printf("[process_files_in_dir] Files in folder [%s]: ", path);
+    printf("[process_files_in_dir] Printing files in folder [%s]\n", path);
     while ((entry = readdir(dir)) != NULL) {
       // Do not want ".", ".." and only want regular files
       if (entry->d_type == DT_REG) {
-        files[i] = entry->d_name;
+        printf("%d: %s\n", i, entry->d_name);
+
+        // Do not want to modify entry->d_name
+        file = malloc(entry->d_namlen);
+        strcpy(file, entry->d_name);
+
+        strcpy(buf, "@bBLOCK");
+        strcat(buf, strtok(file, strrchr(file, '.')));
+        strcat(buf, "!");
+
+        /* Bluetooth is insensitive to source, source does not matter.
+         * Put the message into the Bluetooth queue.
+         */
+        distribute_command(buf, 'b');
+        free(file)
         i++;
       }
     }
+    printf("[process_files_in_dir] Done printing files in folder [%s]\n", path);
     closedir(dir);
   } else {
     // Could not open directory
@@ -88,49 +136,10 @@ void files_in_dir(char *path, char **files) {
   }
 }
 
-void process_files_in_dir(char *path) {
-  DIR *dir;
-  struct dirent *entry;
-  int i = 0;
-  char buf[MAX];
-
-  if ((dir = opendir(path)) != NULL) {
-    printf("[files_in_dir] Printing files in folder [%s]\n", path);
-    while ((entry = readdir(dir)) != NULL) {
-      // Do not want ".", ".." and only want regular files
-      if (entry->d_type == DT_REG) {
-        printf("%d: %s\n", i, entry->d_name);
-
-        /* Be careful when using strtok as it is destructive of the input, it
-         * will zero out the delimiter, which is the file extension.
-         *
-         * This is okay in our case as we will not use the file extension
-         * downstream in any of our code.
-         */
-        strcpy(buf, "@bBLOCK");
-        strcat(buf, strtok(entry->d_name, strrchr(entry->d_name, '.')));
-        strcat(buf, "!");
-
-        /* Bluetooth is insensitive to source, source does not matter.
-         * Put the message into the Bluetooth queue.
-         */
-        distribute_command(buf, 'b');
-        i++;
-      }
-    }
-    printf("[files_in_dir] Done printing files in folder [%s]\n", path);
-    closedir(dir);
-  } else {
-    // Could not open directory
-    perror("[files_in_dir] Could not open directory");
-  }
-}
-
 void *read_img_labels() {
   // Thread to check if image recognition is done
   int fileCount;
   char buf[MAX];
-  char **files;
 
   // Ensure required folders are created
   create_work_directories();
@@ -144,13 +153,7 @@ void *read_img_labels() {
     if (access(DONE_FILE, F_OK) != -1 && fileCount == 1) {
       // DONE file exists and is the only file
 
-      // Creating an array of 5 strings
-      files = (char **) malloc((5) * sizeof(char *));
-
-      // Get the files in directory
-//      files_in_dir(IMAGES_FOUND_DIR, files, fileCount);
-
-      // process file in dir
+      // Process file in dir
       process_files_in_dir(IMAGES_FOUND_DIR);
 
       // Breaking out of endless-loop
