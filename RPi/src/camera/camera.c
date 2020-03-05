@@ -9,7 +9,10 @@
 #include "../hub/hub.h"
 
 int save_coord_orientation(char *coord_orientation) {
+  char emptyDir[50];
   FILE *fp;
+  strcpy(emptyDir, COORDS_ORIENT_DIR);
+  strcat(emptyDir, coord_orientation);
   fp = fopen(coord_orientation, "w");
   fclose(fp);
   return 1;
