@@ -120,8 +120,8 @@ if __name__ == "__main__":
                           if isfile(join(LOCAL_IMAGES_FOUND_DIR, f))
                           if not f.startswith(".")]
 
-    cv2_imgs_to_disp = [cv2.imread(LOCAL_IMAGES_FOUND_DIR + images_to_scan) for
-                        image_to_disp_dir in image_to_disp_dirs]
+    cv2_imgs_to_disp = [cv2.imread(image_to_disp_dir) for image_to_disp_dir in
+                        image_to_disp_dirs]
 
     h_stacks = []
     # Start from index 1 instead of 0
