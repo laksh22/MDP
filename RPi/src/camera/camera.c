@@ -13,7 +13,7 @@ int save_coord_orientation(char *coord_orientation) {
   FILE *fp;
   strcpy(emptyDir, COORDS_ORIENT_DIR);
   strcat(emptyDir, coord_orientation);
-  fp = fopen(coord_orientation, "w");
+  fp = fopen(emptyDir, "w");
   fclose(fp);
   return 1;
 }
