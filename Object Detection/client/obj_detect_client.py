@@ -142,7 +142,7 @@ if __name__ == "__main__":
 
     # Write the image out
     print("Saving all images in a single window...")
-    cv2.imwrite(all_detected_obj_name + ".jpeg")
+    cv2.imwrite(all_detected_obj_name + ".jpeg", v_stack)
 
     # Display the image
     cv2.imshow(all_detected_obj_name, v_stack)
