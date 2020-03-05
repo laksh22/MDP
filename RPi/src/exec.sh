@@ -17,7 +17,7 @@ fi
 
 # Start RPi camera streamer and send it to background
 cd ../../../Object\ Detection/RPi/
-python .py &
+python img_evnt_handler.py &
 
 # Start communication hub binary
 ./RPi
