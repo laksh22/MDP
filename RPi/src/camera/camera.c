@@ -67,7 +67,7 @@ int count_files_in_dir(char *path) {
   return fileCount;
 }
 
-void files_in_dir(char *path, char **files, int fileCount) {
+void files_in_dir(char *path, char **files) {
   DIR *dir;
   struct dirent *entry;
   int i = 0;
@@ -80,10 +80,6 @@ void files_in_dir(char *path, char **files, int fileCount) {
         files[i] = entry->d_name;
         i++;
       }
-      // Do not want to process more than fileCount
-      if (i >= fileCount) {
-        break;
-      }
     }
     closedir(dir);
   } else {
@@ -92,7 +88,7 @@ void files_in_dir(char *path, char **files, int fileCount) {
   }
 }
 
-void process_files_in_dir(char *path, char** files) {
+void process_files_in_dir(char *path) {
   DIR *dir;
   struct dirent *entry;
   int i = 0;
@@ -112,7 +108,7 @@ void process_files_in_dir(char *path, char** files) {
          * downstream in any of our code.
          */
         strcpy(buf, "@bBLOCK");
-        strcat(buf, strtok(files[i], strrchr(files[i], '.')));
+        strcat(buf, strtok(entry->d_name, strrchr(entry->d_name, '.')));
         strcat(buf, "!");
 
         /* Bluetooth is insensitive to source, source does not matter.
@@ -147,8 +143,14 @@ void *read_img_labels() {
     // Check if the DONE file is created
     if (access(DONE_FILE, F_OK) != -1 && fileCount == 1) {
       // DONE file exists and is the only file
-      files = (char **) malloc((fileCount) * sizeof(char *));
-      files_in_dir(IMAGES_FOUND_DIR, files, fileCount);
+
+      // Creating an array of 5 strings
+      files = (char **) malloc((5) * sizeof(char *));
+
+      // Get the files in directory
+//      files_in_dir(IMAGES_FOUND_DIR, files, fileCount);
+
+      // process file in dir
       process_files_in_dir(IMAGES_FOUND_DIR, files);
 
       // Breaking out of endless-loop

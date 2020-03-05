@@ -10,11 +10,11 @@ int create_work_directories();
 // Count the number of files in a directory
 int count_files_in_dir(char *path);
 
-// Get all file names in directory
-void files_in_dir(char *path, char **files, int fileCount);
+// Get all file names in directory and file count
+void files_in_dir(char *path, char **files);
 
 // Read all files in directory and send relevant image data to Bluetooth
-void process_files_in_dir(char *path, char** files);
+void process_files_in_dir(char *path);
 
 // Thread to reads the labels containing id,x,y to be sent to Bluetooth
 void *read_img_labels();
