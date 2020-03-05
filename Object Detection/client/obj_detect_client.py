@@ -68,7 +68,7 @@ if __name__ == "__main__":
                     cv2_image = cv2.imread(LOCAL_IMAGES_TO_SCAN_DIR + img)
 
                     # Run YOLO object detection on image
-                    detected_img_name = yolo.process_image(cv2_image, img)
+                    detected_img_name = yolo.process_image(filename=img)
 
                     # Delete raw image from local images_to_scan
                     os.remove(LOCAL_IMAGES_TO_SCAN_DIR + img)

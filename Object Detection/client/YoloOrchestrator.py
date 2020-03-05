@@ -96,8 +96,7 @@ class Yolo:
         if not os.path.exists(self.output_image_not_found_path):
             os.makedirs(self.output_image_not_found_path)
 
-    def process_image(self, image: Union[str, np.ndarray],
-                      filename: Optional[str]) -> str:
+    def process_image(self, filename: str) -> str:
         """
         Processes a given image by performing object detection on it. Should
         an object be detected, a bounding box will be drawn around it,
@@ -115,17 +114,7 @@ class Yolo:
         Returns:
             None
         """
-        # Determine the image input type and ensure that it is of the
-        # numpy.ndarray type
-        if isinstance(image, str):
-            image = cv2.imread(image)
-            # image_file_name = Path(image).stem
-        elif isinstance(image, np.ndarray):
-            image_file_name = "vid_source"
-        else:
-            print("Invalid image input type detected. Exiting...")
-            exit(2)
-
+        image = cv2.imread(filename)
         # Get the image width and height
         (im_height, im_width) = image.shape[:2]
 
@@ -245,7 +234,8 @@ class Yolo:
             detected_label = self.labels[class_ids[0]]
 
             # Determine output file name
-            if not filename or not self.file_name_pattern.match(filename):
+            if not self.file_name_pattern.match(filename):
+                # Invalid format
                 new_filename = "{timestamp}_{label_id}_found.jpg".format(
                     timestamp=int(time.time()),
                     label_id=detected_label
@@ -303,6 +293,7 @@ class Yolo:
                 new_filename = "%s,%s,%s.jpeg" % (
                 detected_label, coord_x, coord_y)
 
+            print("Saving file [%s]" % new_filename)
             # Write detected image to found directory
             cv2.imwrite(
                 self.output_image_found_path + new_filename,
@@ -324,65 +315,65 @@ class Yolo:
 
             return None
 
-    def process_video(self, video_path: str, reconstruct_vid: bool):
-        """
-        Processes a given video by segmenting the video into frames and
-        performing object detection on each of the frames. Should an object
-        be detected, a bounding box will be drawn around it, annotated with
-        the confidence level, and label id will also be annotated on the image.
-        If an object be detected, the processed frame will be created in the
-        ~/images/found/path. The image file name will follow the structure of
-        [timestamp]_[label_id]_found_[original_file_name].jpg.
-        If an object is not detected, the processed frame will be created in
-        the ~/images/not_found/path. The image file name will follow the
-        structure of [timestamp]_not_found_[original_file_name].jpg.
-        Args:
-            video_path (str):
-                Absolute path to the video to be processed.
-            reconstruct_vid (bool):
-                Boolean flag to indicate whether a video (based on the
-                original provided video) with the bounding boxes (with
-                confidence level, and label id) drawn around detected objects
-                should be created.
-                If the flag is set (true) the reconstructed video will be
-                saved to ~/videos/[timestamp]_out.avi.
-        Returns:
-            None
-        """
-        v_writer = None
-        epoch_ts = int(time.time())
-
-        v_cap = cv2.VideoCapture(video_path)
-        while v_cap.isOpened():
-            # Read the next frame from the file
-            (grabbed, frame) = v_cap.read()
-
-            # If the frame was not grabbed, then we have reached the end of
-            # the stream
-            if not grabbed:
-                break
-
-            # Proccess frame as image
-            self.process_image(frame)
-
-            # Check if the video writer is None
-            if v_writer is None:
-                # NOTE: This might not be working properly yet
-                # Initialize our video writer
-                fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                v_writer = cv2.VideoWriter(
-                    "%s/%s_out.mp4" % (self.output_video_path, epoch_ts),
-                    fourcc,
-                    3,
-                    (frame.shape[1], frame.shape[0]),
-                    True
-                )
-
-            # Check if video should be reconstructed
-            if reconstruct_vid:
-                v_writer.write(frame)
-
-        # Release the file pointers
-        print("[INFO] cleaning up...")
-        v_writer.release()
-        v_cap.release()
+    # def process_video(self, video_path: str, reconstruct_vid: bool):
+    #     """
+    #     Processes a given video by segmenting the video into frames and
+    #     performing object detection on each of the frames. Should an object
+    #     be detected, a bounding box will be drawn around it, annotated with
+    #     the confidence level, and label id will also be annotated on the image.
+    #     If an object be detected, the processed frame will be created in the
+    #     ~/images/found/path. The image file name will follow the structure of
+    #     [timestamp]_[label_id]_found_[original_file_name].jpg.
+    #     If an object is not detected, the processed frame will be created in
+    #     the ~/images/not_found/path. The image file name will follow the
+    #     structure of [timestamp]_not_found_[original_file_name].jpg.
+    #     Args:
+    #         video_path (str):
+    #             Absolute path to the video to be processed.
+    #         reconstruct_vid (bool):
+    #             Boolean flag to indicate whether a video (based on the
+    #             original provided video) with the bounding boxes (with
+    #             confidence level, and label id) drawn around detected objects
+    #             should be created.
+    #             If the flag is set (true) the reconstructed video will be
+    #             saved to ~/videos/[timestamp]_out.avi.
+    #     Returns:
+    #         None
+    #     """
+    #     v_writer = None
+    #     epoch_ts = int(time.time())
+    #
+    #     v_cap = cv2.VideoCapture(video_path)
+    #     while v_cap.isOpened():
+    #         # Read the next frame from the file
+    #         (grabbed, frame) = v_cap.read()
+    #
+    #         # If the frame was not grabbed, then we have reached the end of
+    #         # the stream
+    #         if not grabbed:
+    #             break
+    #
+    #         # Proccess frame as image
+    #         self.process_image(frame)
+    #
+    #         # Check if the video writer is None
+    #         if v_writer is None:
+    #             # NOTE: This might not be working properly yet
+    #             # Initialize our video writer
+    #             fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    #             v_writer = cv2.VideoWriter(
+    #                 "%s/%s_out.mp4" % (self.output_video_path, epoch_ts),
+    #                 fourcc,
+    #                 3,
+    #                 (frame.shape[1], frame.shape[0]),
+    #                 True
+    #             )
+    #
+    #         # Check if video should be reconstructed
+    #         if reconstruct_vid:
+    #             v_writer.write(frame)
+    #
+    #     # Release the file pointers
+    #     print("[INFO] cleaning up...")
+    #     v_writer.release()
+    #     v_cap.release()
