@@ -16,8 +16,8 @@ else
 fi
 
 # Start RPi camera streamer and send it to background
-cd ../../../Object\ Detection/server/
-python streamer.py &
+cd ../../../Object\ Detection/RPi/
+python .py &
 
 # Start communication hub binary
 ./RPi
