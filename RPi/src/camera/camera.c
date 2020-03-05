@@ -148,7 +148,7 @@ void *read_img_labels() {
     // Check if the DONE file is created
     if (access(DONE_FILE, F_OK) != -1 && fileCount == 1) {
       // DONE file exists and is the only file
-      files_in_dir(IMAGES_FOUND_DIR);
+      process_files_in_dir(IMAGES_FOUND_DIR);
 
       // Breaking out of endless-loop
       break;
