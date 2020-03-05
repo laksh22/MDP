@@ -300,7 +300,8 @@ class Yolo:
                     else:
                         print("Invalid orientation: [%s]" % img_meta_dat[2])
 
-                new_filename = "%s,%s,%s" % (detected_label, coord_x, coord_y)
+                new_filename = "%s,%s,%s.jpeg" % (
+                detected_label, coord_x, coord_y)
 
             # Write detected image to found directory
             cv2.imwrite(

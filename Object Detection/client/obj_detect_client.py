@@ -52,11 +52,19 @@ if __name__ == "__main__":
 
             for img in images_to_scan:
                 if ".jpeg" in img:
-                    # Download remote image
+                    file_size = ftp.size(img)
+
                     handle = open(
                         LOCAL_IMAGES_TO_SCAN_DIR.rstrip("/") + "/" + img.lstrip(
                             "/"), 'wb')
-                    ftp.retrbinary('RETR %s' % img, handle.write)
+
+                    # Download remote image
+                    while file_size != handle.tell():
+                        if handle.tell() != 0:
+                            ftp.retrbinary('RETR %s' % img, handle.write,
+                                           handle.tell())
+                        else:
+                            ftp.retrbinary('RETR %s' % img, handle.write)
 
                     # Delete remote image after it has been downloaded
                     ftp.delete(img)
@@ -82,6 +90,8 @@ if __name__ == "__main__":
 
                         # Navigate back to IMAGES_TO_SCAN_DIR
                         ftp.cwd(REMOTE_IMAGES_TO_SCAN_DIR)
+                    else:
+                        print("No object detected")
 
             # Check the IMAGES_TO_SCAN_DIR directory again
             images_to_scan = sorted(ftp.nlst(), key=lambda x: ftp.voidcmd(
