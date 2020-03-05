@@ -69,17 +69,17 @@ int count_files_in_dir(char *path) {
 
 int files_in_dir(char *path, char ***files) {
   DIR *dir;
-  struct dirent *ent;
+  struct dirent *entry;
   int n = 0;
 
   if ((dir = opendir(path)) != NULL) {
     printf("[files_in_dir] Files in folder [%s]: ", path);
-    while ((ent = readdir(dir)) != NULL) {
-      if (ent->d_type == DT_REG) {
+    while ((entry = readdir(dir)) != NULL) {
+      if (entry->d_type == DT_REG) {
         *files = realloc(*files, sizeof(**files) * (n + 1));
         // Remember to free from calling function
-        (*files)[n] = malloc(ent->d_namlen);
-        strcpy((*files)[n], ent->d_name);
+        (*files)[n] = malloc(entry->d_namlen);
+        strcpy((*files)[n], entry->d_name);
         n++;
       }
     }
