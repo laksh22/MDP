@@ -1,8 +1,7 @@
-
 import os
 import time
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 import cv2
 import numpy as np
@@ -94,7 +93,8 @@ class Yolo:
         if not os.path.exists(self.output_image_not_found_path):
             os.makedirs(self.output_image_not_found_path)
 
-    def process_image(self, image: Union[str, np.ndarray]):
+    def process_image(self, image: Union[str, np.ndarray],
+                      filename: Optional[str]) -> str:
         """
         Processes a given image by performing object detection on it. Should
         an object be detected, a bounding box will be drawn around it,
@@ -218,16 +218,28 @@ class Yolo:
                 )
                 detected_label_ids.append(self.labels[class_ids[i]])
 
-            # Write detected image to found directory
-            cv2.imwrite(
-                self.output_image_found_path +
-                "{timestamp}_{label_id}_found_{original_file_name}.jpg".format(
+            # Determine output directory
+            if not filename:
+                filename = "{timestamp}_{label_id}_found_{" \
+                           "original_file_name}.jpg".format(
                     timestamp=int(time.time()),
                     label_id="-".join(detected_label_ids),
                     original_file_name=image_file_name
-                ),
+                )
+            else:
+                # TODO: Resolve file name over here
+                # Need to determine the coordinates base on the bbox coordinates
+                # (x, y) <- center of bounding box
+                # (x, y) <- dimension of bounding box
+                pass
+
+            # Write detected image to found directory
+            cv2.imwrite(
+                self.output_image_found_path + filename,
                 image
             )
+
+            return filename
         else:
             # No objects detected
             # Write image with nothing detected to not_found directory
@@ -239,7 +251,8 @@ class Yolo:
             #     ),
             #     image
             # )
-            pass
+
+            return None
 
     def process_video(self, video_path: str, reconstruct_vid: bool):
         """
@@ -284,6 +297,7 @@ class Yolo:
 
             # Check if the video writer is None
             if v_writer is None:
+                # NOTE: This might not be working properly yet
                 # Initialize our video writer
                 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
                 v_writer = cv2.VideoWriter(
