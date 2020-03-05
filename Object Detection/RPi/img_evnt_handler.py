@@ -30,7 +30,12 @@ with picamera.PiCamera() as camera:
         # No modification of file, creation_time == modified_time
         files.sort(key=lambda x: getmtime(COORDS_ORIEN_DIR + x))
 
-        print(files)
+        if not files and files[0] == DONE_FILE:
+            # No more images to be taken, terminate program
+            print("All pictures taken, exiting program")
+            sys.exit(0)
+
+        # print(files)
 
         if files:
             # Capture an image to memory
@@ -41,15 +46,10 @@ with picamera.PiCamera() as camera:
             for image in outputs:
                 image.seek(0)
                 Image.open(image).save(
-                    "%s.jpeg" % IMAGES_TO_SCAN_DIR + files[0])
+                    "%s.jpeg" % (IMAGES_TO_SCAN_DIR + files[0]))
 
                 # Remove COORD_ORIEN file
                 remove(files[0])
 
-        if files[0] == DONE_FILE:
-            # No more images to be taken, terminate program
-            print("All pictures taken, exiting program")
-            sys.exit(0)
-        else:
-            # Sleep for 30ms
-            time.sleep(0.03)
+        # Sleep for 30ms
+        time.sleep(0.03)
