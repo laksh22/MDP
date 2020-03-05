@@ -71,7 +71,7 @@ void files_in_dir(char *path, char **files) {
   char buf[MAX];
 
   if ((dir = opendir(path)) != NULL) {
-    printf("[files_in_dir] Priting files in folder [%s]\n", path);
+    printf("[files_in_dir] Printing files in folder [%s]\n", path);
     while ((entry = readdir(dir)) != NULL) {
       // Do not want ".", ".." and only want regular files
       if (entry->d_type == DT_REG) {

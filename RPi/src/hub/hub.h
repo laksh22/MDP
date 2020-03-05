@@ -2,7 +2,6 @@
 #define RPI_RPI_HUB_HUB_H_
 
 #include <pthread.h>
-//#include "../queue/queue.h"
 #include "../rpa_queue/rpa_queue.h"
 
 //extern Queue *b_queue;
