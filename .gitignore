@@ -1,2 +1,4 @@
 .vscode
 .idea
+*.weights
+Object Detection/client/images/found/
