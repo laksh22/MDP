@@ -113,7 +113,7 @@ void process_files_in_dir(char *path) {
         printf("%d: %s\n", i, entry->d_name);
 
         // Do not want to modify entry->d_name
-        file = malloc(entry->d_namlen);
+        file = malloc(strlen(entry->d_name));
         strcpy(file, entry->d_name);
 
         strcpy(buf, "@bBLOCK");
