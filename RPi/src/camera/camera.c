@@ -78,7 +78,7 @@ int files_in_dir(char *path, char ***files) {
       if (entry->d_type == DT_REG) {
         *files = realloc(*files, sizeof(**files) * (n + 1));
         // Remember to free from calling function
-        (*files)[n] = malloc(entry->d_namlen);
+        (*files)[n] = malloc(strlen(entry->d_name));
         strcpy((*files)[n], entry->d_name);
         n++;
       }
