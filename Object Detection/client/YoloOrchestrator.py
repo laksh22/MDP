@@ -245,8 +245,8 @@ class Yolo:
                 img_meta_dat = filename.split("_")
 
                 # TODO: Calibrate this
-                delim_1 = 213.34
-                delim_2 = 416.67
+                delim_1 = 198
+                delim_2 = 420
 
                 # Determine which region the center of bounding box is in
                 if x < delim_1:
