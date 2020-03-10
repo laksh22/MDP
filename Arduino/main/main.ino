@@ -6,16 +6,21 @@
 
 // For calibrating movement
 // Change to make robot go straight
-#define FORWARD_RPM_LEFT 71
-#define FORWARD_RPM_RIGHT 83
+#define FORWARD_RPM_LEFT 67
+#define FORWARD_RPM_RIGHT 93
 // Change to make robot stay in the same position while rotating
 #define ROTATE_RPM_LEFT 51.582
 #define ROTATE_RPM_RIGHT 83
 // Change to make robot move exactly one block
-#define FORWARD_TARGET_TICKS 264
+#define FORWARD_TARGET_TICKS 0
 // Change to make robot move exactly 90 degrees
-#define LEFT_TARGET_TICKS 2
-#define RIGHT_TARGET_TICKS -9
+#define LEFT_TARGET_TICKS 6
+#define RIGHT_TARGET_TICKS -4
+
+// For Calibration
+#define FRONT_CALIBRATE_DISTANCE_LOWER 11
+#define FRONT_CALIBRATE_DISTANCE_UPPER 11.5
+bool initialCalibrationFlag = true;
 
 // For communication
 char source = 't';
@@ -23,9 +28,9 @@ char source = 't';
 // For Sensor data
 #define BUFFER 20
 
-#define LSPIN A0  // PS1
+#define RBPIN A0  // PS1
 #define LLPIN A1  // PS2
-#define RSPIN A2  // PS3
+#define RFPIN A2  // PS3
 #define FSPIN A3  // PS4
 #define FLSPIN A4 // PS5
 #define FRSPIN A5 // PS6
@@ -33,9 +38,9 @@ char source = 't';
 #define SRmodel 1080
 #define LRmodel 20150
 
-SharpIR sr1 = SharpIR(LSPIN, SRmodel);
+SharpIR sr1 = SharpIR(RBPIN, SRmodel);
 SharpIR sr2 = SharpIR(LLPIN, LRmodel);
-SharpIR sr3 = SharpIR(RSPIN, SRmodel);
+SharpIR sr3 = SharpIR(RFPIN, SRmodel);
 SharpIR sr4 = SharpIR(FSPIN, SRmodel);
 SharpIR sr5 = SharpIR(FLSPIN, SRmodel);
 SharpIR sr6 = SharpIR(FRSPIN, SRmodel);
@@ -140,7 +145,7 @@ void loop()
   {
   case 'W':
   {
-    moveForward(10);
+    moveForward(10.0);
     sendAck();
     break;
   }
@@ -163,26 +168,15 @@ void loop()
   }
   case 'C':
   {
-    //TODO: frontAlignment();
-    sendAck();
-    break;
-  }
-  case 'L':
-  {
-    rotateLeft(90);
-    sendAck();
-    break;
-  }
-  case 'R':
-  {
-    rotateLeft(10);
-    sendAck();
-    break;
-  }
-  case 'F':
-  {
-    //TODO: MazeRunner_Flag = true;
-    moveForward(1);
+    if (initialCalibrationFlag == true)
+    {
+      initialCalibration();
+      initialCalibrationFlag = false;
+    }
+    else
+    {
+      recurringCalibration();
+    }
     sendAck();
     break;
   }
@@ -210,16 +204,16 @@ void sendAck()
 // Send the sensor data to the RPi
 void sendSensors()
 {
-  int LSDistance = getSensorMedian(LSPIN);
-  int RSDistance = getSensorMedian(RSPIN);
+  int RBDistance = getSensorMedian(RBPIN);
+  int RFDistance = getSensorMedian(RFPIN);
   int FSDistance = getSensorMedian(FSPIN);
   int FLSDistance = getSensorMedian(FLSPIN);
   int FRSDistance = getSensorMedian(FRSPIN);
   Serial.print("@");
   Serial.print(source);
-  if (LSDistance < 40)
+  if (RBDistance < 40)
   {
-    Serial.print(leftShortToGrids(LSDistance));
+    Serial.print(rightBackToGrids(RBDistance));
     Serial.print(":");
   }
   else
@@ -228,7 +222,7 @@ void sendSensors()
     Serial.print(leftLongToGrids(LLDistance));
     Serial.print(":");
   }
-  Serial.print(rightShortToGrids(RSDistance));
+  Serial.print(rightFrontToGrids(RFDistance));
   Serial.print(":");
   Serial.print(frontToGrids(FSDistance));
   Serial.print(":");
@@ -242,7 +236,7 @@ void sendSensors()
 // ===========================================================================
 // ============================SENSOR SECTION=================================
 // ===========================================================================
-int rightShortToGrids(int dis)
+int rightFrontToGrids(int dis)
 {
   if (dis <= 19)
     return 1;
@@ -254,7 +248,7 @@ int rightShortToGrids(int dis)
     return 3;
 }
 
-int leftShortToGrids(int dis)
+int rightBackToGrids(int dis)
 {
   if (dis <= 21)
     return 1;
@@ -321,7 +315,7 @@ int getSensorMedian(int pin)
   int sensorValues[BUFFER];
   switch (pin)
   {
-  case LSPIN:
+  case RBPIN:
     for (int i = 0; i < BUFFER; i++)
     {
       int sensorValue = sr1.distance();
@@ -335,7 +329,7 @@ int getSensorMedian(int pin)
       sensorValues[i] = sensorValue;
     }
     break;
-  case RSPIN:
+  case RFPIN:
     for (int i = 0; i < BUFFER; i++)
     {
       int sensorValue = sr3.distance();
@@ -490,14 +484,14 @@ void rotateRight(double degree)
 }
 
 // Move robot forward by distance (in cm)
-void moveForward(byte distance)
+void moveForward(float distance)
 {
   //at 6.10v to 6.20v
   double rpm1, rpm2;
   double target_tick = 0;
 
-  target_tick = FORWARD_TARGET_TICKS; //289 // EDITED
-  //target_tick = 26.85 * distance + 407.53;
+  //target_tick = FORWARD_TARGET_TICKS; //289 // EDITED
+  target_tick = 26.85 * distance + FORWARD_TARGET_TICKS;
   double tick_travelled = 0;
 
   if (target_tick < 0)
@@ -522,6 +516,73 @@ void moveForward(byte distance)
   }
   speed1 = rpmToSpeed1Forward(rpm1); //70.75 //74.9  100
   speed2 = rpmToSpeed2Forward(rpm2); //70.5 //74.5 99.5
+
+  //Set Final ideal speed and accomodate for the ticks we used in acceleration
+  md.setSpeeds(speed1, speed2);
+  tick_travelled = (double)tick2;
+  PIDControlStraight.SetSampleTime(6.5); //Controller is called every 25ms
+
+  if (FASTEST_PATH)
+  { //turn on PID tuning if fastest path
+    PIDControlStraight.SetTunings(10, 0, 1);
+    PIDControlStraight.SetSampleTime(8);
+  }
+  PIDControlStraight.SetMode(AUTOMATIC); //Controller is invoked automatically using default value for PID
+
+  while (tick_travelled < target_tick)
+  {
+    // if not reach destination ticks yet
+    currentTick1 = tick1 - oldTick1; //calculate the ticks travelled in this sample interval of 50ms
+    currentTick2 = tick2 - oldTick2;
+
+    PIDControlStraight.Compute();
+
+    oldTick2 += currentTick2; //update ticks
+    oldTick1 += currentTick1;
+    tick_travelled += currentTick2;
+  }
+
+  //md.setBrakes(370,400);
+  md.setBrakes(350, 350);
+  PIDControlStraight.SetMode(MANUAL);
+  delay(delayExplore);
+  if (FASTEST_PATH)
+    delay(delayFastestPath);
+}
+
+// Move robot backward by distance (in cm)
+void moveBackward(float distance)
+{
+  //at 6.10v to 6.20v
+  double rpm1, rpm2;
+  double target_tick = 0;
+
+  //target_tick = FORWARD_TARGET_TICKS; //289 // EDITED
+  target_tick = 26.85 * distance + FORWARD_TARGET_TICKS;
+  double tick_travelled = 0;
+
+  if (target_tick < 0)
+    return;
+
+  // Init values
+  tick1 = tick2 = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
+  currentTick1 = currentTick2 = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
+  oldTick1 = oldTick2 = 0;
+
+  //Speed in rpm for motor 1 and 2
+  if (FASTEST_PATH)
+  {
+    rpm1 = 100.5;
+    // rpm1 = 99.8;
+    rpm2 = 100;
+  }
+  else
+  {
+    rpm1 = 84.5;
+    rpm2 = 84.5;
+  }
+  speed1 = -1 * rpmToSpeed1Forward(rpm1); //70.75 //74.9  100
+  speed2 = -1 * rpmToSpeed2Forward(rpm2); //70.5 //74.5 99.5
 
   //Set Final ideal speed and accomodate for the ticks we used in acceleration
   md.setSpeeds(speed1, speed2);
@@ -610,4 +671,70 @@ double rpmToSpeed2(double RPM)
     return 0;
   else
     return -2.8109 * (-1) * RPM - 54.221;
+}
+
+// ===========================================================================
+// ============================MOVEMENT SECTION===============================
+// ===========================================================================
+// Calibrate in the starting of exploration
+void initialCalibration()
+{
+  rotateLeft(90);
+  calibrateDistance();
+  calibrateRotation();
+  calibrateDistance();
+  rotateLeft(90);
+  calibrateDistance();
+  calibrateRotation();
+  calibrateDistance();
+  rotateLeft(90);
+  delay(100);
+  rotateLeft(90);
+}
+
+void recurringCalibration()
+{
+  calibrateRotation();
+  calibrateDistance();
+  calibrateRotation();
+  calibrateDistance();
+}
+
+void calibrateRotation()
+{
+
+  float LLower = 15.2, LUpper = 15.4;
+  float RLower = 15.2, RUpper = 15.4;
+
+  while (!(sr5.distance() < LUpper && sr5.distance() > LLower) || !(sr6.distance() < RUpper && sr6.distance() > RLower))
+  {
+    if (sr5.distance() < LLower && sr6.distance() > RUpper)
+    {
+      rotateLeft(1);
+    }
+    else if (sr5.distance() > LUpper && sr6.distance() < RLower)
+    {
+      rotateRight(1);
+    }
+    else
+    {
+      return;
+    }
+  }
+}
+
+void calibrateDistance()
+{
+  float lower = 10.78, upper = 10.91;
+  while (sr4.distance() < lower || sr4.distance() > upper)
+  {
+    if (sr4.distance() > upper)
+    {
+      moveForward(0.01);
+    }
+    if (sr4.distance() < lower)
+    {
+      moveBackward(0.01);
+    }
+  }
 }
