@@ -5,28 +5,19 @@
 #include "ArduinoSort.h"
 
 // For calibrating movement
-// Change to make robot go straight
-#define FORWARD_RPM_LEFT 67
-#define FORWARD_RPM_RIGHT 93
-// Change to make robot stay in the same position while rotating
-#define ROTATE_RPM_LEFT 51.582
-#define ROTATE_RPM_RIGHT 83
-// Change to make robot move exactly one block
-#define FORWARD_TARGET_TICKS 0
-// Change to make robot move exactly 90 degrees
-#define LEFT_TARGET_TICKS 6
-#define RIGHT_TARGET_TICKS -4
 
-// For Calibration
-#define FRONT_CALIBRATE_DISTANCE_LOWER 11
-#define FRONT_CALIBRATE_DISTANCE_UPPER 11.5
-bool initialCalibrationFlag = true;
+// Move 1 block
+#define FORWARD_TARGET_TICKS 0
+
+// Move 90 degrees
+#define LEFT_ROTATE_DEGREES 87
+#define RIGHT_ROTATE_DEGREES 89
 
 // For communication
 char source = 't';
 
 // For Sensor data
-#define BUFFER 20
+#define BUFFER 15
 
 #define RBPIN A0  // PS1
 #define LLPIN A1  // PS2
@@ -54,7 +45,6 @@ byte encoder1B = 5;
 byte encoder2A = 11;
 byte encoder2B = 13;
 
-double distance_cm;
 double speed1, speed2; // In PWM
 
 // For operation mode
@@ -68,10 +58,15 @@ volatile word tick1 = 0;
 volatile word tick2 = 0;
 word ticks_moved = 0;
 double currentTick1, currentTick2, oldTick1, oldTick2;
+double a = 0;
 
-PID PIDControlStraight(&currentTick1, &speed1, &currentTick2, 3.5, 0, 0.75, DIRECT);
-PID PIDControlLeft(&currentTick1, &speed1, &currentTick2, 3, 0, 0.5, DIRECT);
-PID PIDControlRight(&currentTick1, &speed1, &currentTick2, 3, 0, 0.5, DIRECT);
+//PID PIDControlStraight(&currentTick1, &speed1, &currentTick2, 3.5, 0, 0.75, DIRECT);
+//PID PIDControlLeft(&currentTick1, &speed1, &currentTick2, 3, 0, 0.5, DIRECT);
+//PID PIDControlRight(&currentTick1, &speed1, &currentTick2, 3, 0, 0.5, DIRECT);
+
+PID PIDControlStraight(&a, &a, &a, a, a, a, DIRECT);
+PID PIDControlLeft(&a, &a, &a, a, a, a, DIRECT);
+PID PIDControlRight(&a, &a, &a, a, a, a, DIRECT);
 
 /*
  * ==============================
@@ -97,6 +92,12 @@ void setup()
 }
 
 void loop()
+{
+  //Serial.println(sr5.distance() - sr6.distance());
+  runCommands();
+}
+
+void runCommands()
 {
   Serial.flush();
   char command_buffer[10];
@@ -151,13 +152,13 @@ void loop()
   }
   case 'A':
   {
-    rotateLeft(90);
+    rotateLeft(LEFT_ROTATE_DEGREES);
     sendAck();
     break;
   }
   case 'D':
   {
-    rotateRight(90);
+    rotateRight(RIGHT_ROTATE_DEGREES);
     sendAck();
     break;
   }
@@ -168,17 +169,14 @@ void loop()
   }
   case 'C':
   {
-    if (initialCalibrationFlag == true)
-    {
-      initialCalibration();
-      initialCalibrationFlag = false;
-    }
-    else
-    {
-      recurringCalibration();
-    }
+    calibrateRotation();
+    //liveCalibration();
     sendAck();
     break;
+  }
+  case 'P':
+  {
+    calibrateDistanceMiddle();
   }
   default:
   {
@@ -204,24 +202,16 @@ void sendAck()
 // Send the sensor data to the RPi
 void sendSensors()
 {
-  int RBDistance = getSensorMedian(RBPIN);
   int RFDistance = getSensorMedian(RFPIN);
   int FSDistance = getSensorMedian(FSPIN);
   int FLSDistance = getSensorMedian(FLSPIN);
   int FRSDistance = getSensorMedian(FRSPIN);
+  int LLDistance = getSensorMedian(LLPIN);
+
   Serial.print("@");
   Serial.print(source);
-  if (RBDistance < 40)
-  {
-    Serial.print(rightBackToGrids(RBDistance));
-    Serial.print(":");
-  }
-  else
-  {
-    int LLDistance = getSensorMedian(LLPIN);
-    Serial.print(leftLongToGrids(LLDistance));
-    Serial.print(":");
-  }
+  Serial.print(leftLongToGrids(LLDistance));
+  Serial.print(":");
   Serial.print(rightFrontToGrids(RFDistance));
   Serial.print(":");
   Serial.print(frontToGrids(FSDistance));
@@ -262,10 +252,19 @@ int rightBackToGrids(int dis)
 
 int leftLongToGrids(int dis)
 {
-  if (dis <= 47)
+  if (dis <= 19)
+    return 1;
+
+  else if (dis > 19 && dis <= 25)
+    return 2;
+
+  else if (dis > 25 && dis <= 34)
+    return 3;
+
+  else if (dis > 34 && dis <= 44)
     return 4;
 
-  else if (dis > 47 && dis <= 57)
+  else if (dis > 44 && dis <= 57)
     return 5;
 
   else
@@ -378,7 +377,7 @@ int findMedian(int a[], int n)
 // Rotate left by given degrees. Using 360 degree as a base line
 void rotateLeft(double degree)
 {
-  double target_tick = 4.3589 * degree + LEFT_TARGET_TICKS;
+  double target_tick = 4.3589 * degree;
   //double target_tick = 384;
 
   if (FASTEST_PATH)
@@ -395,8 +394,8 @@ void rotateLeft(double degree)
   tick1 = tick2 = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
   currentTick1 = currentTick2 = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
   oldTick1 = oldTick2 = 0;
-  speed1 = rpmToSpeed1(-70);
-  speed2 = rpmToSpeed2(69);
+  speed1 = rpmToSpeed1(-84.9);
+  speed2 = rpmToSpeed2(84.9);
   //speed1 = -210;
   //speed2 = 210;
 
@@ -433,7 +432,7 @@ void rotateLeft(double degree)
 // Rotate right by given degrees. Using 360 degree as a base line
 void rotateRight(double degree)
 {
-  double target_tick = 4.3589 * degree + RIGHT_TARGET_TICKS;
+  double target_tick = 4.3589 * degree;
   //double target_tick = 373;
 
   if (FASTEST_PATH)
@@ -449,8 +448,8 @@ void rotateRight(double degree)
   tick1 = tick2 = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
   currentTick1 = currentTick2 = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
   oldTick1 = oldTick2 = 0;
-  speed1 = rpmToSpeed1(70);
-  speed2 = rpmToSpeed2(-69);
+  speed1 = rpmToSpeed1(84.9);
+  speed2 = rpmToSpeed2(-84.9);
 
   md.setSpeeds(speed1, speed2);
   tick_travelled = (double)tick2;
@@ -511,8 +510,8 @@ void moveForward(float distance)
   }
   else
   {
-    rpm1 = 84.5;
-    rpm2 = 84.5;
+    rpm1 = 84.9;
+    rpm2 = 84.9;
   }
   speed1 = rpmToSpeed1Forward(rpm1); //70.75 //74.9  100
   speed2 = rpmToSpeed2Forward(rpm2); //70.5 //74.5 99.5
@@ -578,11 +577,11 @@ void moveBackward(float distance)
   }
   else
   {
-    rpm1 = 84.5;
-    rpm2 = 84.5;
+    rpm1 = -84.9;
+    rpm2 = -84.9;
   }
-  speed1 = -1 * rpmToSpeed1Forward(rpm1); //70.75 //74.9  100
-  speed2 = -1 * rpmToSpeed2Forward(rpm2); //70.5 //74.5 99.5
+  speed1 = rpmToSpeed1Forward(rpm1); //70.75 //74.9  100
+  speed2 = rpmToSpeed2Forward(rpm2); //70.5 //74.5 99.5
 
   //Set Final ideal speed and accomodate for the ticks we used in acceleration
   md.setSpeeds(speed1, speed2);
@@ -632,109 +631,276 @@ void E2Pos()
 // RPM to speed conversion when going forward (left motor)
 double rpmToSpeed1Forward(double RPM)
 {
-  if (RPM > 0)
-    return 2.815 * RPM + FORWARD_RPM_LEFT;
-  else
+  if (RPM == 0)
     return 0;
-  //  else
-  //    return -2.9117 * (-1) * RPM - 45.197;
+  else
+    return 3.5336 * RPM;
 }
 
 // RPM to speed conversion when going forward (right motor)
 double rpmToSpeed2Forward(double RPM)
 {
-  if (RPM > 0)
-    return 2.7845 * RPM + FORWARD_RPM_RIGHT;
-  else
+  if (RPM == 0)
     return 0;
-  //  else
-  //    return -2.8109 * (-1) * RPM - 54.221;
+  else
+    return 3.8869 * RPM;
 }
 
 // RPM to speed conversion when rotating (left motor)
 double rpmToSpeed1(double RPM)
 {
-  if (RPM > 0)
-    return 2.8598 * RPM + ROTATE_RPM_LEFT;
-  else if (RPM == 0)
+  if (RPM == 0)
     return 0;
   else
-    return -2.9117 * (-1) * RPM - 45.197;
+    return 3.5336 * RPM;
 }
 
 // RPM to speed conversion when rotating (right motor)
 double rpmToSpeed2(double RPM)
 {
-  if (RPM > 0)
-    return 2.7845 * RPM + ROTATE_RPM_RIGHT;
-  else if (RPM == 0)
+  if (RPM == 0)
     return 0;
   else
-    return -2.8109 * (-1) * RPM - 54.221;
+    return 3.8869 * RPM;
 }
 
 // ===========================================================================
 // ============================MOVEMENT SECTION===============================
 // ===========================================================================
 // Calibrate in the starting of exploration
-void initialCalibration()
+//void calibrateRobot()
+//{
+//  calibrateRotation();
+//  calibrateDistance();
+//  calibrateRotation();
+//  calibrateDistance();
+//  calibrateRotation();
+//  calibrateRotation();
+//  calibrateDistance();
+//  calibrateRotation();
+//  calibrateDistance();
+//  calibrateRotation();
+//}
+
+//void calibrateRotation() {
+//
+//  float LLower = 15.3, LUpper = 15.45;
+//  float RLower = 14.65, RUpper = 14.8;
+//
+//  while(!(sr5.distance() < LUpper && sr5.distance() > LLower) || !(sr6.distance() < RUpper && sr6.distance() > RLower))
+//  {
+//    if(sr5.distance() < LLower && sr6.distance() > RUpper)
+//    {
+//      rotateLeft(1);
+////      Serial.print("ROTATING LEFT: ");
+////      Serial.print(sr4.distance());
+////      Serial.print(" : ");
+////      Serial.print(sr5.distance());
+////      Serial.print(" : ");
+////      Serial.println(sr6.distance());
+//    }
+//    else if(sr5.distance() > LUpper && sr6.distance() < RLower)
+//    {
+//      rotateRight(5);
+////      Serial.print("ROTATING RIGHT: ");
+////      Serial.print(sr4.distance());
+////      Serial.print(" : ");
+////      Serial.print(sr5.distance());
+////      Serial.print(" : ");
+////      Serial.println(sr6.distance());
+//
+//    }
+//    else
+//    {
+////      Serial.print("RETURNING: ");
+////      Serial.print(sr4.distance());
+////      Serial.print(" : ");
+////      Serial.print(sr5.distance());
+////      Serial.print(" : ");
+////      Serial.println(sr6.distance());
+//      return;
+//
+//    }
+//  }
+//}
+//
+//void calibrateDistance() {
+//  float lower = 10.8, upper = 11.1;
+//  while(sr4.distance() <= lower || sr4.distance() >= upper)
+//  {
+//    if(sr4.distance() >= upper)
+//    {
+//      moveForward(0.01);
+//
+//    }
+//    else if(sr4.distance() <= lower) {
+//      moveBackward(0.01);
+//
+//    }
+//  }
+//}
+
+void calibrateDistanceMiddle()
 {
-  rotateLeft(90);
-  calibrateDistance();
-  calibrateRotation();
-  calibrateDistance();
-  rotateLeft(90);
-  calibrateDistance();
-  calibrateRotation();
-  calibrateDistance();
-  rotateLeft(90);
-  delay(100);
-  rotateLeft(90);
-}
-
-void recurringCalibration()
-{
-  calibrateRotation();
-  calibrateDistance();
-  calibrateRotation();
-  calibrateDistance();
-}
-
-void calibrateRotation()
-{
-
-  float LLower = 15.2, LUpper = 15.4;
-  float RLower = 15.2, RUpper = 15.4;
-
-  while (!(sr5.distance() < LUpper && sr5.distance() > LLower) || !(sr6.distance() < RUpper && sr6.distance() > RLower))
+  int SPEEDL = 70;
+  int SPEEDR = 70;
+  float lower = 10.8, upper = 11.1;
+  while (sr4.distance() < 30) //30
   {
-    if (sr5.distance() < LLower && sr6.distance() > RUpper)
+    if ((sr4.distance() >= lower && sr4.distance() <= upper)) //10.6,11.5 //10.95,11.05
     {
-      rotateLeft(1);
+      md.setBrakes(100, 100);
+      break;
     }
-    else if (sr5.distance() > LUpper && sr6.distance() < RLower)
+    else if (sr4.distance() < lower)
     {
-      rotateRight(1);
+      moveBackward(0.1);
     }
     else
     {
-      return;
+      moveForward(0.1);
     }
   }
+  md.setBrakes(100, 100);
+}
+
+void calibrateDistanceLeft()
+{
+  int SPEEDL = 70;
+  int SPEEDR = 70;
+  float lower = 15.2, upper = 15.35;
+  while (sr5.distance() < 30) //30
+  {
+    if ((sr5.distance() >= lower && sr5.distance() <= upper)) //10.6,11.5 //10.95,11.05
+    {
+      md.setBrakes(100, 100);
+      break;
+    }
+    else if (sr5.distance() < lower)
+    {
+      moveBackward(0.1);
+    }
+    else
+    {
+      moveForward(0.1);
+    }
+  }
+  md.setBrakes(100, 100);
+}
+
+void calibrateDistanceRight()
+{
+  int SPEEDL = 70;
+  int SPEEDR = 70;
+  float lower = 14.55, upper = 14.7;
+  while (sr6.distance() < 30) //30
+  {
+    if ((sr6.distance() >= lower && sr6.distance() <= upper)) //10.6,11.5 //10.95,11.05
+    {
+      md.setBrakes(100, 100);
+      break;
+    }
+    else if (sr6.distance() < lower)
+    {
+      moveBackward(0.1);
+    }
+    else
+    {
+      moveForward(0.1);
+    }
+  }
+  md.setBrakes(100, 100);
 }
 
 void calibrateDistance()
 {
-  float lower = 10.78, upper = 10.91;
-  while (sr4.distance() < lower || sr4.distance() > upper)
+  int SPEEDL = 70;
+  int SPEEDR = 70;
+  float LLower = 15.20, LUpper = 15.35;
+  float RLower = 14.55, RUpper = 14.70;
+  while (sr5.distance() < 30 && sr6.distance() < 30) //30
   {
-    if (sr4.distance() > upper)
+    if ((sr5.distance() >= LLower && sr5.distance() < LUpper) || (sr6.distance() >= RLower && sr6.distance() < RUpper)) //10.6,11.5 //10.95,11.05
     {
-      moveForward(0.01);
+      md.setBrakes(100, 100);
+      break;
     }
-    if (sr4.distance() < lower)
+    else if (sr5.distance() < LLower || sr6.distance() < RLower)
     {
-      moveBackward(0.01);
+      moveBackward(0.1);
+    }
+    else
+    {
+      moveForward(0.1);
+    }
+  }
+  md.setBrakes(100, 100);
+}
+
+void calibrateRotation()
+{
+  double targetDist = 15.3;
+  double targetDiff = 1.1;
+  int SPEEDL = 70;
+  int SPEEDR = 70;
+  int count = 0;
+  while (sr5.distance() < 30 && sr6.distance() < 30)
+  {
+    double distDiff = sr5.distance() - sr6.distance();
+    Serial.println(distDiff);
+    if (distDiff >= targetDiff || distDiff <= targetDiff - 0.1)
+    {
+      if ((distDiff >= targetDiff && distDiff < 7) && (sr5.distance() >= targetDist))
+      {
+        md.setSpeeds(SPEEDL, 0);
+        count++;
+      }
+      else if ((distDiff <= targetDiff - 0.1 && distDiff > -7) && (sr5.distance() < targetDist))
+      {
+        md.setSpeeds(-SPEEDL, 0);
+        count++;
+      }
+      else if ((distDiff >= targetDiff && distDiff < 7) && (sr5.distance() < targetDist))
+      {
+        md.setSpeeds(0, -SPEEDR);
+        count++;
+      }
+      else if ((distDiff <= targetDiff - 0.1 && distDiff > -7) && (sr5.distance() >= targetDist))
+      {
+        md.setSpeeds(0, SPEEDR);
+        count++;
+      }
+    }
+    else
+    {
+      md.setBrakes(100, 100);
+      calibrateDistance();
+      break;
     }
   }
 }
+
+//void liveCalibration()
+//{
+//  // sr1 is right back
+//  // sr3 is right front
+//
+//  double targetDist = 15.3;
+//  double targetDiff = 1;
+//  int SPEEDL = 110;
+//  int SPEEDR = 110;
+//  int count = 0;
+//  while (sr1.distance() < 30 && sr3.distance() < 30)
+//  {
+//    double distDiff = sr3.distance() - sr1.distance();
+//    Serial.println(distDiff);
+//
+//    if(distDiff < 0){
+//      rotateLeft(0.5);
+//    } else if (distDiff > 0) {
+//      rotateRight(0.5);
+//    } else {
+//      break;
+//    }
+//  }
+//}
