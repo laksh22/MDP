@@ -102,7 +102,8 @@ void process_files_in_dir(char *path) {
   DIR *dir;
   struct dirent *entry;
   int i = 0;
-  char buf[MAX];
+  char *file;
+  char *file_extension;
 
   if ((dir = opendir(path)) != NULL) {
     printf("[process_files_in_dir] Printing files in folder [%s]\n", path);
@@ -111,15 +112,21 @@ void process_files_in_dir(char *path) {
       if (entry->d_type == DT_REG) {
         printf("%d: %s\n", i, entry->d_name);
 
-        memset(&buf[0], 0, sizeof(buf));
-        strcpy(buf, "@bBLOCK:");
-        strcat(buf, strtok(entry->d_name, strrchr(entry->d_name, '.')));
-        strcat(buf, "!");
+        file = malloc(512);
+        file_extension = malloc(20);
+
+        strcpy(file_extension, strrchr(entry->d_name, '.'));
+        strcpy(file, "@bBLOCK:");
+        strcat(file, entry->d_name);
+
+        // Remove file extension
+        file[strlen(file) - strlen(file_extension)] = '\0';
+        strcat(file, "!");
 
         /* Bluetooth is insensitive to source, source does not matter.
          * Put the message into the Bluetooth queue.
          */
-        distribute_command(buf, 'b');
+        distribute_command(file, 'b');
         i++;
       }
     }
