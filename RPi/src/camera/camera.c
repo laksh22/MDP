@@ -116,7 +116,7 @@ void process_files_in_dir(char *path) {
         file = malloc(strlen(entry->d_name));
         strcpy(file, entry->d_name);
 
-        strcpy(buf, "@bBLOCK");
+        strcpy(buf, "@bBLOCK:");
         strcat(buf, strtok(file, strrchr(file, '.')));
         strcat(buf, "!");
 
