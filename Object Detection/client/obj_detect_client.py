@@ -128,11 +128,11 @@ if __name__ == "__main__":
     for idx in range(1, len(cv2_imgs_to_disp)):
         if idx % 2 == 1:
             h_stacks.append(
-                np.hstack((cv2_imgs_to_disp[idx - 1], cv2_imgs_to_disp[idx])))
-        elif idx % 2 == 0 and idx == len(cv2_imgs_to_disp):
+                np.hstack((cv2_imgs_to_disp[idx-1], cv2_imgs_to_disp[idx])))
+        elif idx % 2 == 0 and idx == len(cv2_imgs_to_disp)-1:
             # Odd number of images to stitch together
             # Handle last image
-            h_stacks.append(cv2_imgs_to_disp)
+            h_stacks.append(np.hstack((cv2_imgs_to_disp[idx], np.zeros((480, 640, 3)))))
 
     # Vertically stack the images together
     v_stack = np.vstack(tuple(h_stacks))
@@ -143,8 +143,10 @@ if __name__ == "__main__":
     print("Saving all images in a single window...")
     cv2.imwrite(all_detected_obj_name + ".jpeg", v_stack)
 
+    wrt_img = cv2.imread(all_detected_obj_name + ".jpeg")
+    dis_img = cv2.resize(wrt_img, (int(wrt_img.shape[1]/2), int(wrt_img.shape[0]/2)))
     # Display the image
-    cv2.imshow(all_detected_obj_name, v_stack)
+    cv2.imshow(all_detected_obj_name, dis_img)
     cv2.waitKey(0)
 
     print("Terminating YOLO object detection client...")
