@@ -21,7 +21,7 @@ int save_coord_orientation(char *coord_orientation) {
 int create_work_directories() {
   // Create all required working directories
   char dirList[3][35] =
-      {COORDS_ORIENT_DIR, IMAGES_TO_SCAN_DIR, IMAGES_FOUND_DIR};
+          {COORDS_ORIENT_DIR, IMAGES_TO_SCAN_DIR, IMAGES_FOUND_DIR};
   char emptyDir[1024];
   DIR *dir;
   int i;
@@ -103,7 +103,6 @@ void process_files_in_dir(char *path) {
   struct dirent *entry;
   int i = 0;
   char buf[MAX];
-  char *file;
 
   if ((dir = opendir(path)) != NULL) {
     printf("[process_files_in_dir] Printing files in folder [%s]\n", path);
@@ -112,19 +111,16 @@ void process_files_in_dir(char *path) {
       if (entry->d_type == DT_REG) {
         printf("%d: %s\n", i, entry->d_name);
 
-        // Do not want to modify entry->d_name
-        file = malloc(strlen(entry->d_name));
         strcpy(file, entry->d_name);
 
         strcpy(buf, "@bBLOCK:");
-        strcat(buf, strtok(file, strrchr(file, '.')));
+        strcat(buf, strtok(entry->d_name, strrchr(entry->d_name, '.')));
         strcat(buf, "!");
 
         /* Bluetooth is insensitive to source, source does not matter.
          * Put the message into the Bluetooth queue.
          */
         distribute_command(buf, 'b');
-        free(file);
         i++;
       }
     }
