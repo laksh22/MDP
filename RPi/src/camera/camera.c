@@ -92,56 +92,49 @@ int files_in_dir(char *path, char ***files) {
   }
 }
 
-void process_files_in_dir(char *path) {
-  /* Be careful when using strtok as it is destructive of the input, it
-   * will zero out the delimiter, which is the file extension.
-   *
-   * This is okay in our case as we will not use the file extension
-   * downstream in any of our code.
-   */
+int process_file_in_dir(char *path, char ***files) {
   DIR *dir;
   struct dirent *entry;
-  int i = 0;
-  char *file;
   char *file_extension;
+  size_t n = 0;
 
   if ((dir = opendir(path)) != NULL) {
     printf("[process_files_in_dir] Printing files in folder [%s]\n", path);
     while ((entry = readdir(dir)) != NULL) {
-      // Do not want ".", ".." and only want regular files
       if (entry->d_type == DT_REG) {
-        printf("%d: %s\n", i, entry->d_name);
+        *files = realloc(*files, sizeof(**files) * (n + 1));
 
-        file = malloc(512);
-        file_extension = malloc(20);
-
+        // Get file extension
+        file_extension = malloc(16);
         strcpy(file_extension, strrchr(entry->d_name, '.'));
-        strcpy(file, "@bBLOCK:");
-        strcat(file, entry->d_name);
 
-        // Remove file extension
-        file[strlen(file) - strlen(file_extension)] = '\0';
-        strcat(file, "!");
+        (*files)[n] = malloc(strlen(entry->d_name) + 10);
+        strcpy((*files)[n], "@bBLOCK:");
+        strcat((*files)[n], entry->d_name);
+        (*files)[n][strlen((const char *) (*files)[n])
+            - strlen(file_extension)] = '\0';
+        strcat((*files)[n], "!");
+        printf("Constructed string: %s\n", (*files)[n]);
 
-        /* Bluetooth is insensitive to source, source does not matter.
-         * Put the message into the Bluetooth queue.
-         */
-        distribute_command(file, 'b');
-        i++;
+        free(file_extension);
+        n++;
       }
     }
     printf("[process_files_in_dir] Done printing files in folder [%s]\n", path);
     closedir(dir);
+    return n;
   } else {
     // Could not open directory
-    perror("[process_files_in_dir] Could not open directory");
+    perror("");
+    return 0;
   }
 }
 
 void *read_img_labels() {
   // Thread to check if image recognition is done
   int fileCount;
-  char buf[MAX];
+  char **files = NULL;
+  int i = 0;
 
   // Ensure required folders are created
   create_work_directories();
@@ -156,7 +149,15 @@ void *read_img_labels() {
       // DONE file exists and is the only file
 
       // Process file in dir
-      process_files_in_dir(IMAGES_FOUND_DIR);
+      fileCount = process_file_in_dir(COORDS_ORIENT_DIR, &files);
+
+      // Ensure messages are sent before free-ing
+      sleep(10);
+      for (i = 0; i < fileCount; i++) {
+        printf("Freeing: %s\n", files[i]);
+        free(files[i]);
+      }
+      free(files);
 
       // Breaking out of endless-loop
       break;
