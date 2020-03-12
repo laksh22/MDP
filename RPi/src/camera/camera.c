@@ -111,6 +111,7 @@ void process_files_in_dir(char *path) {
       if (entry->d_type == DT_REG) {
         printf("%d: %s\n", i, entry->d_name);
 
+        memset(&buf[0], 0, sizeof(buf));
         strcpy(buf, "@bBLOCK:");
         strcat(buf, strtok(entry->d_name, strrchr(entry->d_name, '.')));
         strcat(buf, "!");
