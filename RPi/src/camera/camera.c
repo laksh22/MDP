@@ -127,6 +127,8 @@ void process_files_in_dir(char *path) {
          * Put the message into the Bluetooth queue.
          */
         distribute_command(file, 'b');
+        free(file);
+        free(file_extension);
         i++;
       }
     }
