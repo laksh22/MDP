@@ -2,3 +2,5 @@
 .idea
 *.weights
 Object Detection/client/images/found/
+*.jpeg
+__pycache__
