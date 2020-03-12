@@ -245,22 +245,28 @@ class Yolo:
                 img_meta_dat = filename.split("_")
 
                 # TODO: Calibrate this
-                delim_1 = 198
+                delim_1 = 200
                 delim_2 = 420
 
                 # Determine which region the center of bounding box is in
-                if x < delim_1:
+                if center_x < delim_1:
                     region = 0
-                elif delim_1 <= x < delim_2:
+                elif delim_1 <= center_x < delim_2:
                     region = 1
                 else:
                     # Case: x >= delim_2
                     region = 2
 
+                print("Center at {}, {} @ Region: {}".format(center_x, center_y,
+                                                             region))
+
                 # Determine coordinate of image depending on orientation
                 # Note: Camera is facing right
-                coord_x = img_meta_dat[0]
-                coord_y = img_meta_dat[1]
+                coord_x = int(img_meta_dat[0])
+                coord_y = int(img_meta_dat[1])
+
+                # Remove file format
+                img_meta_dat[2] = (img_meta_dat[2]).split(".")[0]
 
                 if region == 1:
                     # Center region; x,y coordinates will never change
@@ -291,7 +297,7 @@ class Yolo:
                         print("Invalid orientation: [%s]" % img_meta_dat[2])
 
                 new_filename = "%s,%s,%s.jpeg" % (
-                detected_label, coord_x, coord_y)
+                    detected_label, coord_x, coord_y)
 
             print("Saving file [%s]" % new_filename)
             # Write detected image to found directory

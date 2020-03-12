@@ -38,7 +38,8 @@ def main():
 
     yolo = Yolo(yolo_asset_dir="../model", confidence=.5, threshold=.3)
 
-    yolo.process_video("http://192.168.101.1:8000/stream.mjpg", True)
+    # yolo.process_video("http://192.168.101.1:8000/stream.mjpg", True)
+    yolo.process_image("fixed.jpg", parent_dir="../client/images/not_found/")
 
 
 if __name__ == "__main__":
