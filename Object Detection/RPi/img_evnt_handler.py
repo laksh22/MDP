@@ -18,7 +18,7 @@ with picamera.PiCamera() as camera:
     # Set the camera's resolution to VGA @80fps and give it a couple of seconds
     # to warm up so that it can measure exposure, etc.
     camera.resolution = (640, 480)
-    camera.framerate = 30
+    camera.framerate = 40
     camera.brightness = 60
     time.sleep(3)
 
