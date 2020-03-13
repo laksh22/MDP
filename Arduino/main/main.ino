@@ -4,8 +4,6 @@
 #include "PID_v1.h"
 #include "ArduinoSort.h"
 
-// For calibrating movement
-
 // Move 1 block
 #define FORWARD_TARGET_TICKS 0
 
@@ -17,7 +15,7 @@
 char source = 't';
 
 // For Sensor data
-#define BUFFER 15
+#define BUFFER 10
 
 #define RBPIN A0  // PS1
 #define LLPIN A1  // PS2
@@ -49,7 +47,7 @@ double speed1, speed2; // In PWM
 
 // For operation mode
 bool FASTEST_PATH = false;
-bool DEBUG = false;
+bool DEBUG = true;
 byte delayExplore = 2.5;
 byte delayFastestPath = 1;
 
@@ -169,8 +167,19 @@ void runCommands()
   }
   case 'C':
   {
+    // Custom
     calibrateRotation();
-    //liveCalibration();
+
+    // Harvey
+    // harveyAlignment();
+
+    // AnhTu
+    // anhTuCalibrate();
+    // anhTuRightWallCalibrate();
+
+    // Old code
+    // oldCalibration();
+
     sendAck();
     break;
   }
@@ -422,7 +431,7 @@ void rotateLeft(double degree)
     tick_travelled += currentTick2;
   }
 
-  md.setBrakes(400, 400);
+  md.setBrakes(300, 300);
   PIDControlLeft.SetMode(MANUAL); //turn off PID
   delay(delayExplore);
   if (FASTEST_PATH)
@@ -474,7 +483,7 @@ void rotateRight(double degree)
     tick_travelled += currentTick2;
   }
 
-  md.setBrakes(400, 400);
+  md.setBrakes(300, 300);
   PIDControlRight.SetMode(MANUAL);
 
   delay(delayExplore);
@@ -513,8 +522,8 @@ void moveForward(float distance)
     rpm1 = 84.9;
     rpm2 = 84.9;
   }
-  speed1 = rpmToSpeed1Forward(rpm1); //70.75 //74.9  100
-  speed2 = rpmToSpeed2Forward(rpm2); //70.5 //74.5 99.5
+  speed1 = rpmToSpeed1(rpm1); //70.75 //74.9  100
+  speed2 = rpmToSpeed2(rpm2); //70.5 //74.5 99.5
 
   //Set Final ideal speed and accomodate for the ticks we used in acceleration
   md.setSpeeds(speed1, speed2);
@@ -542,7 +551,7 @@ void moveForward(float distance)
   }
 
   //md.setBrakes(370,400);
-  md.setBrakes(350, 350);
+  md.setBrakes(300, 300);
   PIDControlStraight.SetMode(MANUAL);
   delay(delayExplore);
   if (FASTEST_PATH)
@@ -580,8 +589,8 @@ void moveBackward(float distance)
     rpm1 = -84.9;
     rpm2 = -84.9;
   }
-  speed1 = rpmToSpeed1Forward(rpm1); //70.75 //74.9  100
-  speed2 = rpmToSpeed2Forward(rpm2); //70.5 //74.5 99.5
+  speed1 = rpmToSpeed1(rpm1); //70.75 //74.9  100
+  speed2 = rpmToSpeed2(rpm2); //70.5 //74.5 99.5
 
   //Set Final ideal speed and accomodate for the ticks we used in acceleration
   md.setSpeeds(speed1, speed2);
@@ -628,25 +637,7 @@ void E2Pos()
   tick2++;
 }
 
-// RPM to speed conversion when going forward (left motor)
-double rpmToSpeed1Forward(double RPM)
-{
-  if (RPM == 0)
-    return 0;
-  else
-    return 3.5336 * RPM;
-}
-
-// RPM to speed conversion when going forward (right motor)
-double rpmToSpeed2Forward(double RPM)
-{
-  if (RPM == 0)
-    return 0;
-  else
-    return 3.8869 * RPM;
-}
-
-// RPM to speed conversion when rotating (left motor)
+// RPM to speed conversion (left motor)
 double rpmToSpeed1(double RPM)
 {
   if (RPM == 0)
@@ -655,7 +646,7 @@ double rpmToSpeed1(double RPM)
     return 3.5336 * RPM;
 }
 
-// RPM to speed conversion when rotating (right motor)
+// RPM to speed conversion (right motor)
 double rpmToSpeed2(double RPM)
 {
   if (RPM == 0)
@@ -812,6 +803,10 @@ void calibrateDistanceRight()
   md.setBrakes(100, 100);
 }
 
+/*
+/ https://github.com/bryantkhoo/CZ3004-MDP-Arduino/blob/master/Arduino_Exploration_Our_Best_Run.ino
+*/
+
 void calibrateDistance()
 {
   int SPEEDL = 70;
@@ -880,6 +875,310 @@ void calibrateRotation()
   }
 }
 
+/*
+/ https://github.com/HarveyLeo/cz3004-mdp-grp2/blob/master/Arduino/Arduino%20Workspace/MazerunnerWeek12_12V/MazerunnerWeek12_12V.ino
+*/
+
+void harveyAlignment()
+{
+  harveyCalibrateAngle();
+  delay(100);
+}
+
+void harveyCalibrateAngle()
+{
+  int offset = 10; // TODO
+  while (1)
+  {
+    int LFreading = getSensorMedian(FLSPIN);
+    int RFreading = getSensorMedian(FRSPIN);
+    int error = LFreading - (RFreading - offset); //Higher to the left, Lower to the right
+
+    if (error > 2) // TODO
+      rotateLeft(1);
+    else if (error < -2)
+      rotateRight(1);
+    else
+      break;
+  }
+  delay(100);
+  int LFdistance = getSensorMedian(FLSPIN);
+  if (LFdistance > 15 || LFdistance < 15) // TODO, should be fine
+    harveyCalibrateDistance();
+}
+
+void harveyCalibrateDistance()
+{
+  while (1)
+  {
+
+    int LFdistance = getSensorMedian(FLSPIN);
+
+    if (LFdistance > 19)
+      moveForward(2);
+    else if (LFdistance > 15)
+      moveForward(1);
+    else if (LFdistance < 15)
+      moveBackward(1);
+    else
+      break;
+  }
+  md.setBrakes(400, 400);
+  delay(50);
+  md.setBrakes(0, 0);
+
+  //Recursive call if angle is misaligned after distance alignment.
+  int angleError = getSensorMedian(FLSPIN) - getSensorMedian(FRSPIN);
+  if (angleError > 3 || angleError < -3)
+    harveyAlignment();
+}
+
+/*
+/ https://github.com/AnhTuDo1998/CE3004---Mdp-Group-14-Arduino/blob/master/Integration/IntegrationV4_-_Optimised_For_Memory/IntegrationV4_-_Optimised_For_Memory.ino
+*/
+
+void anhTuCalibrate()
+{
+  double distance_left = 0;
+  double distance_right = 0;
+  double difference = 0;
+  double ideal = 11; // TODO
+  byte k = 50;
+  byte j = 4;
+  bool only_distance_calibrate = false;
+
+  if (getSensorMedian(FRSPIN) > 30 && getSensorMedian(FLSPIN) > 30)
+    return;
+
+  else if (getSensorMedian(FRSPIN) > 30 || getSensorMedian(FLSPIN) > 30)
+  {
+    //Only calibrate distance if there is an empty block in front on either side
+    if (DEBUG)
+      Serial.println("Not enough objects, distance calibration kickinng in!");
+    only_distance_calibrate = true;
+    k = 0;
+  }
+  else
+  { //when both has obstacle in front, check how far is the obstacle
+    if (getSensorMedian(FSPIN) != getSensorMedian(FRSPIN) || getSensorMedian(FSPIN) != getSensorMedian(FLSPIN))
+    {
+      only_distance_calibrate = true;
+      k = 0;
+    }
+  }
+
+  if (DEBUG)
+    Serial.println("Front calibrating");
+
+  while (j > 0)
+  {
+    while (k > 0 && only_distance_calibrate == false)
+    {
+      //calibrate in term of angles first
+
+      //Step1: Collecting Data
+      distance_left = getSensorMedian(FLSPIN);
+      distance_right = getSensorMedian(FRSPIN);
+
+      //Step 2: Calculate the difference
+      difference = distance_left - (distance_right);
+
+      //Some debug prints
+      if (DEBUG)
+      {
+        Serial.print(distance_left);
+        Serial.print("|");
+        Serial.print(distance_right);
+        Serial.print("|");
+        Serial.println(difference);
+      }
+      k--;
+      delay(1);
+      //calibrate the angle by rotate left/right
+      if (difference > 0.03) //TODO
+      {
+        //k++;
+        md.setSpeeds(rpmToSpeed1(-100), rpmToSpeed2(100));
+        delay(2.5);
+        md.setBrakes(400, 400);
+      }
+      else if (difference < -0.03) //TODO
+      {
+        //k++;
+        md.setSpeeds(rpmToSpeed1(100), rpmToSpeed2(-100));
+        delay(2.5);
+        md.setBrakes(400, 400);
+      }
+
+      else
+        break;
+    }
+
+    Serial.print("K: ");
+    Serial.println(k);
+    Serial.print("J: ");
+    Serial.println(j);
+
+    if (DEBUG && only_distance_calibrate == false)
+      Serial.println("Done calibrating angle front");
+
+    k = 50;
+
+    //calibrating distance
+    while (k > 0)
+    {
+      //collect data
+      distance_left = getSensorMedian(FLSPIN);
+      distance_right = getSensorMedian(FRSPIN);
+      if (DEBUG)
+      {
+        Serial.print(distance_left);
+        Serial.print("|");
+        Serial.println(distance_right);
+      }
+      k--;
+      if (distance_left < ideal || distance_right < ideal) // TODO
+      {
+        md.setSpeeds(rpmToSpeed1(-100), rpmToSpeed2(-100));
+        delay(2.5);
+        md.setBrakes(200, 200);
+      }
+
+      else if (distance_left > ideal || distance_right > ideal) // TODO
+      {
+        md.setSpeeds(rpmToSpeed1(100), rpmToSpeed2(100));
+        delay(2.5);
+        md.setBrakes(200, 200);
+      }
+      else
+        break;
+    }
+    if (DEBUG)
+    {
+      Serial.println("Done with distance front calibration");
+    }
+    j--;
+    k = 15;
+
+    Serial.print("K: ");
+    Serial.println(k);
+    Serial.print("J: ");
+    Serial.println(j);
+  }
+
+  Serial.print("K: ");
+  Serial.println(k);
+  Serial.print("J: ");
+  Serial.println(j);
+  if (DEBUG)
+  {
+    Serial.println("Done front calibration!");
+  }
+  delay(10);
+}
+
+void anhTuRightWallCalibrate()
+{
+  double difference = 0;
+  double distance_front = 0;
+  double distance_back = 0;
+  boolean distance_calibrate_only = false;
+  byte i = 80;
+
+  //calibrate distance first by front calibrate
+  if (getSensorMedian(RBPIN) > 30 && getSensorMedian(RFPIN) > 30)
+  {
+    if (DEBUG)
+      Serial.println("No Wall");
+    return;
+  }
+  else if (getSensorMedian(RBPIN) > 30 || getSensorMedian(RFPIN) > 30)
+  {
+    if (getSensorMedian(RBPIN) != getSensorMedian(RFPIN))
+    {
+      distance_calibrate_only = true;
+      i = 0;
+    }
+  }
+  Serial.println(distance_calibrate_only);
+  if (DEBUG)
+    Serial.println("Right Wall distance calibration");
+  distance_front = getSensorMedian(RFPIN);
+  distance_back = getSensorMedian(RBPIN);
+
+  if (distance_front < 10.5 || distance_back < 10.5) // TODO
+  {
+    //If robot is too close to the rightwall
+    rotateRight(RIGHT_ROTATE_DEGREES); // TODO
+    delay(10);
+    anhTuCalibrate();
+    delay(20);
+    rotateLeft(LEFT_ROTATE_DEGREES); // TODO
+    delay(20);
+  }
+
+  else if (distance_front > 12 || distance_back > 12)
+  {
+    rotateRight(RIGHT_ROTATE_DEGREES); // TODO
+    delay(10);
+    anhTuCalibrate();
+    delay(20);
+    rotateLeft(LEFT_ROTATE_DEGREES); // TODO
+    delay(20);
+  }
+
+  //otherwise only need to calibrate angle
+  if (DEBUG)
+  {
+    Serial.println("Right Wall Angle Calibration");
+    Serial.println("Distance calibrate only");
+    Serial.println(distance_calibrate_only);
+  }
+  while (i > 0 && distance_calibrate_only == false)
+  {
+    distance_front = getSensorMedian(RFPIN);
+    distance_back = getSensorMedian(RBPIN);
+
+    difference = (distance_front + 0.95 - distance_back); // TODO
+
+    if (DEBUG)
+    {
+      Serial.println(" ");
+      Serial.print("distance_front: ");
+      Serial.print(distance_front);
+      Serial.print("distance_back: ");
+      Serial.println(distance_back);
+      Serial.print("difference");
+      Serial.println(difference);
+    }
+    delay(1);
+    i--;
+
+    if (difference >= 0.01)
+    { //&& distance_back < 25){ //If the robot tilts to the right
+      md.setSpeeds(rpmToSpeed1(-100), rpmToSpeed2(100));
+      delay(2.5);
+      md.setBrakes(400, 400);
+    }
+
+    else if (difference <= -0.01)
+    { //&& distance_back  < 25){ //If the robot tilts to the left
+      md.setSpeeds(rpmToSpeed1(100), rpmToSpeed2(-100));
+      delay(2.5);
+      md.setBrakes(400, 400);
+    }
+
+    else
+    { // If difference is in between 0.035 to -0.035
+      break;
+    }
+  }
+  md.setBrakes(100, 100);
+  if (DEBUG)
+    Serial.println("Done Side calibration");
+  delay(10);
+}
+
 //void liveCalibration()
 //{
 //  // sr1 is right back
@@ -904,3 +1203,48 @@ void calibrateRotation()
 //    }
 //  }
 //}
+
+void oldCalibration()
+{
+  calibrateDistanceOld();
+  calibrateRotationOld();
+}
+
+void calibrateRotationOld()
+{
+
+  float LLower = 15.2, LUpper = 15.4;
+  float RLower = 15.2, RUpper = 15.4;
+
+  while (!(sr5.distance() < LUpper && sr5.distance() > LLower) || !(sr6.distance() < RUpper && sr6.distance() > RLower))
+  {
+    if (sr5.distance() < LLower && sr6.distance() > RUpper)
+    {
+      rotateLeft(1);
+    }
+    else if (sr5.distance() > LUpper && sr6.distance() < RLower)
+    {
+      rotateRight(1);
+    }
+    else
+    {
+      return;
+    }
+  }
+}
+
+void calibrateDistanceOld()
+{
+  float lower = 10.78, upper = 10.91;
+  while (sr4.distance() < lower || sr4.distance() > upper)
+  {
+    if (sr4.distance() > upper)
+    {
+      moveForward(0.01);
+    }
+    if (sr4.distance() < lower)
+    {
+      moveBackward(0.01);
+    }
+  }
+}
