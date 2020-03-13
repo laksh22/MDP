@@ -14,7 +14,7 @@ int count_files_in_dir(char *path);
 int files_in_dir(char *path, char ***files);
 
 // Read all files in directory and send relevant image data to Bluetooth
-void process_files_in_dir(char *path);
+int process_file_in_dir(char *path, char ***files);
 
 // Thread to reads the labels containing id,x,y to be sent to Bluetooth
 void *read_img_labels();
