@@ -4,6 +4,7 @@ import time
 from os import listdir
 from os.path import isfile, join
 
+import shutil
 import cv2
 import numpy as np
 
@@ -72,16 +73,23 @@ if __name__ == "__main__":
 
                     # Write file back to RPi if object is found
                     if detected_img_name:
+                        # Copy the file with the send string as name
+                        block_name = "@bBLOCK" + detected_img_name.split(".jpeg")[0] + "!"
+                        shutil.copy(LOCAL_IMAGES_FOUND_DIR + detected_img_name, LOCAL_IMAGES_FOUND_DIR + block_name)
+
                         # Navigate to IMAGES_FOUND_DIR
                         ftp.cwd(REMOTE_IMAGES_FOUND_DIR)
 
                         # Open file to send
                         file_to_send = open(
-                            LOCAL_IMAGES_FOUND_DIR + detected_img_name, "rb")
+                            LOCAL_IMAGES_FOUND_DIR + block_name, "rb")
 
                         # Send the file
-                        ftp.storbinary("STOR {}".format(detected_img_name),
+                        ftp.storbinary("STOR {}".format(block_name),
                                        file_to_send)
+
+                        # Remove the file
+                        os.remove(LOCAL_IMAGES_FOUND_DIR + block_name)
 
                         # Navigate back to REMOTE_IMAGES_TO_SCAN_DIR
                         ftp.cwd(REMOTE_IMAGES_TO_SCAN_DIR)

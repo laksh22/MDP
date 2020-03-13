@@ -102,21 +102,22 @@ int process_file_in_dir(char *path, char ***files) {
     printf("[process_files_in_dir] Printing files in folder [%s]\n", path);
     while ((entry = readdir(dir)) != NULL) {
       if (entry->d_type == DT_REG) {
-        *files = realloc(*files, sizeof(**files) * (n + 1));
+//        *files = realloc(*files, sizeof(**files) * (n + 1));
 
         // Get file extension
-        file_extension = malloc(16);
-        strcpy(file_extension, strrchr(entry->d_name, '.'));
+//        file_extension = malloc(16);
+//        strcpy(file_extension, strrchr(entry->d_name, '.'));
 
-        (*files)[n] = malloc(strlen(entry->d_name) + 10);
-        strcpy((*files)[n], "@bBLOCK:");
-        strcat((*files)[n], entry->d_name);
-        (*files)[n][strlen((const char *) (*files)[n])
-            - strlen(file_extension)] = '\0';
-        strcat((*files)[n], "!");
-        printf("Constructed string: %s\n", (*files)[n]);
-
-        free(file_extension);
+//        (*files)[n] = malloc(strlen(entry->d_name) + 10);
+//        strcpy((*files)[n], "@bBLOCK:");
+//        strcat((*files)[n], entry->d_name);
+//        (*files)[n][strlen((const char *) (*files)[n])
+//            - strlen(file_extension)] = '\0';
+//        strcat((*files)[n], "!");
+//        printf("Constructed string: %s\n", (*files)[n]);
+//
+//        free(file_extension);
+        distribute_command(entry->d_name, 'b');
         n++;
       }
     }
@@ -149,15 +150,15 @@ void *read_img_labels() {
       // DONE file exists and is the only file
 
       // Process file in dir
-      fileCount = process_file_in_dir(COORDS_ORIENT_DIR, &files);
+      fileCount = process_file_in_dir(IMAGES_FOUND_DIR, &files);
 
       // Ensure messages are sent before free-ing
       sleep(10);
-      for (i = 0; i < fileCount; i++) {
-        printf("Freeing: %s\n", files[i]);
-        free(files[i]);
-      }
-      free(files);
+//      for (i = 0; i < fileCount; i++) {
+//        printf("Freeing: %s\n", files[i]);
+//        free(files[i]);
+//      }
+//      free(files);
 
       // Breaking out of endless-loop
       break;
