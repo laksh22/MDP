@@ -391,8 +391,12 @@ public class MainActivity extends AppCompatActivity {
             menu_show_bluetooth_chat.setChecked(true);
             fragment.showChat(true);
             final String delimiterPattern = ":";
-
-                String message[] = readMsg.split(delimiterPattern);
+                String message[];
+                if(readMsg.contains(":")) {
+                    message = readMsg.split(delimiterPattern);
+                }else{
+                    message = readMsg.split("-");
+                }
 
                 if (message[0].equals("GRID")) { //receive mapDescriptor from Algo
 

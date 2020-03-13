@@ -34,7 +34,7 @@ public class MapCanvas extends View implements View.OnTouchListener {
     Paint waypoint = new Paint();       //Waypoint
     Paint unexploredArea = new Paint(); //Unexplored area
     Paint numberedObstacle = new Paint();//Numbered obstacle
-
+    Paint coords = new Paint();          //coordinates
 
 
     float padding = 50;
@@ -70,6 +70,11 @@ public class MapCanvas extends View implements View.OnTouchListener {
         numberedObstacle.setTextAlign(Paint.Align.CENTER);
         numberedObstacle.setTextSize(30);
 
+        coords.setColor(Color.parseColor("#000000"));
+        coords.setLetterSpacing(-0.05f);
+        coords.setTextAlign(Paint.Align.CENTER);
+        coords.setTextSize(15);
+
     }
 
     public void setGesture(Context context){
@@ -99,6 +104,7 @@ public class MapCanvas extends View implements View.OnTouchListener {
 
         //draw background (unexlpored)
         canvas.drawRect(paddingX,  paddingY, paddingX + w,  paddingY + h, unexploredArea);
+        drawCoords(canvas);
 
         //draw explored & obstacle
         drawExploredTile(canvas);
@@ -142,6 +148,18 @@ public class MapCanvas extends View implements View.OnTouchListener {
         canvas.drawCircle(sensorCenterX, sensorCenterY,cellWidth/3f, robotEye);
     }
 
+    //draw coords
+
+    private void drawCoords(Canvas canvas) {
+        //draw explored
+        for(int x =0;x<15;x++){
+            for(int y =0;y<20;y++){
+                float posX = (paddingX+x*cellWidth);
+                float posY = (paddingY+(19-y)*cellHeight);
+                canvas.drawText(String.valueOf(x) + ", " + String.valueOf(y), posX+(0.5f)*cellWidth, posY+cellHeight-10, coords);
+            }
+        }
+    }
     // draw tiles
     private void drawExploredTile(Canvas canvas) {
         //draw explored
@@ -162,6 +180,7 @@ public class MapCanvas extends View implements View.OnTouchListener {
                           canvas.drawRect(posX, posY, posX+cellWidth, posY+cellHeight, startEndPoint);
                       }else{
                           //show white for explored area
+                          canvas.drawText(String.valueOf(x) + "," + String.valueOf(y), posX+(0.5f)*cellWidth, posY+cellHeight, coords);
                           canvas.drawRect(posX, posY, posX+cellWidth, posY+cellHeight, exploredArea);
                       }
                   }
