@@ -154,25 +154,25 @@ void runCommands()
   }
   case 'C':
   {
-    frontAlignment();
+    calibrateFrontAngleLR(true);
     sendAck();
     break;
   }
   case 'L':
   {
-    calibrateDistanceLeft();
+    calibrateDistanceL(-1, false);
     sendAck();
     break;
   }
   case 'M':
   {
-    calibrateDistanceMiddle();
+    calibrateDistanceM(-1, false);
     sendAck();
     break;
   }
   case 'R':
   {
-    calibrateDistanceRight();
+    calibrateDistanceR(-1, false);
     sendAck();
     break;
   }
@@ -478,172 +478,4 @@ double rpmToSpeed2(double RPM)
     return 0;
   else
     return 4.0999 * RPM;
-}
-
-// ===========================================================================
-// ============================MOVEMENT SECTION===============================
-// ===========================================================================
-
-void frontAlignment()
-{
-  calibrateFrontAngle();
-  delay(100);
-}
-
-void calibrateFrontAngle()
-{
-  int offset = 2; // TODO
-
-  int count = 0;
-
-  while (1)
-  {
-    float LFreading = getSensorFL(CALIBRATE_BUFFER);
-    float RFreading = getSensorFR(CALIBRATE_BUFFER);
-    float error = RFreading - (LFreading - offset); //Higher to the left, Lower to the right
-
-    //Serial.println(error);
-
-    if (error > 1.40) // TODO
-    //rotateLeft(0.25);
-    {
-      //Serial.println("LEFT");
-      md.setSpeeds(-150, 150);
-      if (error > 2.35)
-      {
-        delay(30 * abs(error));
-      }
-      else
-      {
-        delay(12);
-      }
-      //delay(abs(error * 20 / 3));
-    }
-    else if (error < 1.30)
-    //rotateRight(0.25);
-    {
-      //Serial.println("RIGHT");
-      md.setSpeeds(150, -150);
-      if (error < -0.12)
-      {
-        delay(30 * abs(error));
-      }
-      else
-      {
-        delay(12);
-      }
-      //delay(abs(error * 20 / 3));
-    }
-    else
-    {
-      md.setBrakes(400, 400);
-      break;
-    }
-
-    md.setBrakes(100, 100);
-
-    count++;
-    if (count > 10)
-    {
-      break;
-    }
-  }
-
-  float LFdistance = getSensorFL(CALIBRATE_BUFFER);
-
-  if (LFdistance > 15 || LFdistance < 15) // TODO, should be fine
-    calibrateFrontDistance();
-}
-
-void calibrateFrontDistance()
-{
-  int count = 0;
-
-  while (1)
-  {
-
-    float LFdistance = getSensorFL(CALIBRATE_BUFFER);
-
-    //    if(LFdistance > 23) {
-    //      return;
-    //    }
-
-    if (LFdistance > 13.6)
-      moveForward(0.005);
-    else if (LFdistance < 13.4)
-      moveBackward(0.005);
-    else
-      break;
-
-    count++;
-    if (count > 25)
-    {
-      break;
-    }
-  }
-
-  //Recursive call if angle is misaligned after distance alignment.
-  float angleError = getSensorFL(CALIBRATE_BUFFER) - getSensorFR(CALIBRATE_BUFFER);
-  if (angleError > 3 || angleError < -3)
-    calibrateFrontAngle();
-}
-
-void calibrateDistanceLeft()
-{
-  while (1)
-  {
-
-    float LFdistance = getSensorFL(CALIBRATE_BUFFER);
-
-    //    if(LFdistance > 23) {
-    //      return;
-    //    }
-
-    if (LFdistance > 13.6)
-      moveForward(0.01);
-    else if (LFdistance < 13.4)
-      moveBackward(0.01);
-    else
-      break;
-  }
-}
-
-void calibrateDistanceMiddle()
-{
-  while (1)
-  {
-
-    float Fdistance = getSensorF(CALIBRATE_BUFFER);
-
-    //    if(Fdistance > 17) {
-    //      return;
-    //    }
-
-    if (Fdistance > 10.5)
-      moveForward(0.01);
-    else if (Fdistance < 10.3)
-      moveBackward(0.01);
-    else
-      break;
-  }
-}
-
-void calibrateDistanceRight()
-{
-  while (1)
-  {
-
-    float RFdistance = getSensorFR(CALIBRATE_BUFFER);
-
-    //    if(RFdistance > 21) {
-    //      return;
-    //    }
-
-    if (RFdistance > 12.9)
-      moveForward(0.01);
-    else if (RFdistance < 12.7)
-      moveBackward(0.01);
-    else
-      break;
-  }
 }

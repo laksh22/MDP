@@ -18,7 +18,7 @@ SharpIR sensorF = SharpIR(FPIN, SRmodel);
 SharpIR sensorFL = SharpIR(FLPIN, SRmodel);
 SharpIR sensorFR = SharpIR(FRPIN, SRmodel);
 
-void printSensors(boolean grids, int buffer)
+void printSensors(bool grids, int buffer)
 {
     if (grids)
     {

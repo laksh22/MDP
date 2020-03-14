@@ -8,8 +8,8 @@ The following libraries have been used:
 ## Pin configurations
 
 sr1 = RBPIN (Right Back)
-sr2 = LLPIN (Left Long)
+sr2 = LPIN (Left)
 sr3 = RFPIN (Right Front)
-sr4 = FSPIN (Front Short)
-sr5 = FLSPIN (Front Left Short)
-sr6 = FRSPIN (Front Right Short)
+sr4 = FPIN (Front)
+sr5 = FLPIN (Front Left)
+sr6 = FRPIN (Front Right)
