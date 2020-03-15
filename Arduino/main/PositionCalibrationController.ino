@@ -4,8 +4,8 @@ void calibrateFrontAngleLM(bool calibrateDistance) // ID = 1
 
     while (1)
     {
-        float FLdistance = getSensorF(CALIBRATE_BUFFER);
-        float Fdistance = getSensorFR(CALIBRATE_BUFFER);
+        float FLdistance = sensorF.distance();
+        float Fdistance = sensorFR.distance();
         float error = FLdistance - Fdistance;
 
         if (error > 1.40) // Rotate Left
@@ -47,7 +47,7 @@ void calibrateFrontAngleLM(bool calibrateDistance) // ID = 1
         }
     }
 
-    float Fdistance = getSensorF(CALIBRATE_BUFFER);
+    float Fdistance = sensorF.distance();
 
     if (calibrateDistance && (Fdistance > 15 || Fdistance < 15)) // TODO
         calibrateDistanceM(1, false);
@@ -59,8 +59,8 @@ void calibrateFrontAngleLR(bool calibrateDistance) // ID = 2
 
     while (1)
     {
-        float FLdistance = getSensorFL(CALIBRATE_BUFFER);
-        float FRdistance = getSensorFR(CALIBRATE_BUFFER);
+        float FLdistance = sensorFL.distance();
+        float FRdistance = sensorFR.distance();
         float error = FRdistance - FLdistance;
 
         if (error > 1.40) // Rotate Left
@@ -102,7 +102,7 @@ void calibrateFrontAngleLR(bool calibrateDistance) // ID = 2
         }
     }
 
-    float FLdistance = getSensorFL(CALIBRATE_BUFFER);
+    float FLdistance = sensorFL.distance();
 
     if (calibrateDistance && (FLdistance > 15 || FLdistance < 15)) // TODO
         calibrateDistanceL(2, false);
@@ -114,8 +114,8 @@ void calibrateFrontAngleMR(bool calibrateDistance) // ID = 3
 
     while (1)
     {
-        float Fdistance = getSensorF(CALIBRATE_BUFFER);
-        float FRdistance = getSensorFR(CALIBRATE_BUFFER);
+        float Fdistance = sensorF.distance();
+        float FRdistance = sensorFR.distance();
         float error = Fdistance - FRdistance;
 
         if (error > 1.40) // Rotate Left
@@ -157,7 +157,7 @@ void calibrateFrontAngleMR(bool calibrateDistance) // ID = 3
         }
     }
 
-    float Fdistance = getSensorF(CALIBRATE_BUFFER);
+    float Fdistance = sensorF.distance();
 
     if (calibrateDistance && (Fdistance > 15 || Fdistance < 15)) // TODO
         calibrateDistanceM(3, false);
@@ -167,7 +167,7 @@ void calibrateDistanceL(int id, bool calibrateAngle)
 {
     while (1)
     {
-        float LFdistance = getSensorFL(CALIBRATE_BUFFER);
+        float LFdistance = sensorFL.distance();
 
         if (LFdistance > 13.6)
             moveForward(0.01);
@@ -182,12 +182,12 @@ void calibrateDistanceL(int id, bool calibrateAngle)
     switch (id)
     {
     case 1:
-        angleError = getSensorFL(CALIBRATE_BUFFER) - getSensorF(CALIBRATE_BUFFER);
+        angleError = sensorFL.distance() - sensorF.distance();
         if (calibrateAngle && (angleError > 3 || angleError < -3))
             calibrateFrontAngleLM(false);
         return;
     case 2:
-        angleError = getSensorFL(CALIBRATE_BUFFER) - getSensorFR(CALIBRATE_BUFFER);
+        angleError = sensorFL.distance() - sensorFR.distance();
         if (calibrateAngle && (angleError > 3 || angleError < -3))
             calibrateFrontAngleLR(false);
         return;
@@ -200,7 +200,7 @@ void calibrateDistanceM(int id, bool calibrateAngle)
 {
     while (1)
     {
-        float Fdistance = getSensorF(CALIBRATE_BUFFER);
+        float Fdistance = sensorF.distance();
 
         if (Fdistance > 10.5)
             moveForward(0.01);
@@ -215,12 +215,12 @@ void calibrateDistanceM(int id, bool calibrateAngle)
     switch (id)
     {
     case 1:
-        angleError = getSensorFL(CALIBRATE_BUFFER) - getSensorF(CALIBRATE_BUFFER);
+        angleError = sensorFL.distance() - sensorF.distance();
         if (calibrateAngle && (angleError > 3 || angleError < -3))
             calibrateFrontAngleLM(false);
         return;
     case 3:
-        angleError = getSensorF(CALIBRATE_BUFFER) - getSensorFR(CALIBRATE_BUFFER);
+        angleError = sensorF.distance() - sensorFR.distance();
         if (calibrateAngle && (angleError > 3 || angleError < -3))
             calibrateFrontAngleMR(false);
         return;
@@ -233,7 +233,7 @@ void calibrateDistanceR(int id, bool calibrateAngle)
 {
     while (1)
     {
-        float RFdistance = getSensorFR(CALIBRATE_BUFFER);
+        float RFdistance = sensorFR.distance();
 
         if (RFdistance > 12.9)
             moveForward(0.01);
@@ -248,12 +248,12 @@ void calibrateDistanceR(int id, bool calibrateAngle)
     switch (id)
     {
     case 2:
-        angleError = getSensorFL(CALIBRATE_BUFFER) - getSensorFR(CALIBRATE_BUFFER);
+        angleError = sensorFL.distance() - sensorFR.distance();
         if (calibrateAngle && (angleError > 3 || angleError < -3))
             calibrateFrontAngleLR(false);
         return;
     case 3:
-        angleError = getSensorF(CALIBRATE_BUFFER) - getSensorFR(CALIBRATE_BUFFER);
+        angleError = sensorF.distance() - sensorFR.distance();
         if (calibrateAngle && (angleError > 3 || angleError < -3))
             calibrateFrontAngleMR(false);
         return;

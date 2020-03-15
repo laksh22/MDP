@@ -16,10 +16,6 @@
 // For communication
 char source = 't';
 
-// For sensors
-#define E_BUFFER 10
-#define CALIBRATE_BUFFER 5
-
 // For motors
 DualVNH5019MotorShield md;
 
@@ -77,7 +73,7 @@ void setup()
 
 void loop()
 {
-  // printSensors(true, CALIBRATE_BUFFER);
+  // printSensors(true);
 
   runCommands();
 }
@@ -149,7 +145,7 @@ void runCommands()
   }
   case 'E':
   {
-    sendSensors(source, E_BUFFER);
+    sendSensors(source);
     break;
   }
   case 'C':
