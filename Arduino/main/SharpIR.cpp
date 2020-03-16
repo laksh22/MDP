@@ -10,8 +10,8 @@
 	https://github.com/guillaume-rico/SharpIR
     
     Original comment from Dr. Marcal Casas-Cartagena :
-   The Sahrp IR sensors are cheap but somehow unreliable. I've found that when doing continous readings to a
-   fix object, the distance given oscilates quite a bit from time to time. For example I had an object at
+   The Sharp IR sensors are cheap but somehow unreliable. I've found that when doing continuous readings to a
+   fix object, the distance given oscillates quite a bit from time to time. For example I had an object at
    31 cm. The readings from the sensor were mainly steady at the correct distance but eventually the distance
    given dropped down to 25 cm or even 16 cm. That's quite a bit and for some applications it is quite
    unacceptable. I checked the library http://code.google.com/p/gp2y0a21yk-library/ by Jeroen Doggen
@@ -22,7 +22,7 @@
    The distance is calculated from a formula extracted from the graphs on the sensors datasheets
    After some tests, I think that a set of 20 to 25 readings is more than enough to get an accurate distance
    Reading 25 times and return a mean distance takes 53 ms. For my application of the sensor is fast enough.
-   This library has the formulas to work with the GP2Y0A21Y and the GP2Y0A02YK sensors but exanding it for
+   This library has the formulas to work with the GP2Y0A21Y and the GP2Y0A02YK sensors but expanding it for
    other sensors is easy enough.
 */
 
