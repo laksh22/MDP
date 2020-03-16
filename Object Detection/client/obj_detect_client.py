@@ -34,7 +34,7 @@ if __name__ == "__main__":
         os.makedirs(LOCAL_IMAGES_TO_SCAN_DIR)
 
     # Initialise yolo detector
-    yolo = Yolo(yolo_asset_dir="../model", confidence=.5, threshold=.3)
+    yolo = Yolo(yolo_asset_dir="../model", confidence=.6, threshold=.3)
 
     # Establish FTP connection
     with ftplib.FTP(host=HOST) as ftp:
