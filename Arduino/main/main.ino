@@ -10,8 +10,13 @@
 #define RIGHT_ROTATE_DEGREES 93
 #define ROTATE_LEFT_180 184.5
 
-//Move Forward
+//Move Forward fixed distance
 #define FORWARD_DISTANCE 10
+#define MULTIPLE_FORWARD_FACTOR 4.1/3
+
+//Move Forward Staight
+#define LEFT_RPM 68.5
+#define RIGHT_RPM 65
 
 // For communication
 char source = 't';
@@ -25,7 +30,7 @@ byte encoder1B = 5;
 byte encoder2A = 11;
 byte encoder2B = 13;
 
-double speed1, speed2; // In PWM
+double speedL, speedR; // In PWM
 
 // For operation mode
 bool FASTEST_PATH = false;
@@ -34,15 +39,15 @@ byte delayExplore = 2.5;
 byte delayFastestPath = 1;
 
 // For PID
-volatile word tick1 = 0;
-volatile word tick2 = 0;
+volatile word ticksL = 0;
+volatile word ticksR = 0;
 word ticks_moved = 0;
-double currentTick1, currentTick2, oldTick1, oldTick2;
+double currentTicksL, currentTicksR, oldticksL, oldticksR;
 double a = 0;
 
-//PID PIDControlStraight(&currentTick1, &speed1, &currentTick2, 3.5, 0, 0.75, DIRECT);
-//PID PIDControlLeft(&currentTick1, &speed1, &currentTick2, 3, 0, 0.5, DIRECT);
-//PID PIDControlRight(&currentTick1, &speed1, &currentTick2, 3, 0, 0.5, DIRECT);
+//PID PIDControlStraight(&currentTicksL, &speedL, &currentTicksR, 3.5, 0, 0.75, DIRECT);
+//PID PIDControlLeft(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0.5, DIRECT);
+//PID PIDControlRight(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0.5, DIRECT);
 
 PID PIDControlStraight(&a, &a, &a, a, a, a, DIRECT);
 PID PIDControlLeft(&a, &a, &a, a, a, a, DIRECT);
@@ -67,7 +72,7 @@ void setup()
   enableInterrupt(encoder2A, E2Pos, RISING);
 
   // Init values
-  currentTick1 = currentTick2 = oldTick1 = oldTick2 = 0;
+  currentTicksL = currentTicksR = oldticksL = oldticksR = 0;
 
   // Begin communication
   Serial.begin(9600);
@@ -178,6 +183,54 @@ void runCommands()
     sendAck();
     break;
   }
+  case '1':
+  {
+    moveForward(FORWARD_DISTANCE);
+    sendAck();
+    break;
+  }
+  case '2':
+  {
+    moveForward(FORWARD_DISTANCE*2 + MULTIPLE_FORWARD_FACTOR);
+    sendAck();
+    break;
+  }
+  case '3':
+  {
+    moveForward(FORWARD_DISTANCE*3 + MULTIPLE_FORWARD_FACTOR*2);
+    sendAck();
+    break;
+  }
+  case '4':
+  {
+    moveForward(FORWARD_DISTANCE*4 + MULTIPLE_FORWARD_FACTOR*3);
+    sendAck();
+    break;
+  }
+  case '5':
+  {
+    moveForward(FORWARD_DISTANCE*5 + MULTIPLE_FORWARD_FACTOR*4);
+    sendAck();
+    break;
+  }
+  case '6':
+  {
+    moveForward(FORWARD_DISTANCE*6 + MULTIPLE_FORWARD_FACTOR*5);
+    sendAck();
+    break;
+  }
+  case '7':
+  {
+    moveForward(FORWARD_DISTANCE*7 + MULTIPLE_FORWARD_FACTOR*6);
+    sendAck();
+    break;
+  }
+  case '8':
+  {
+    moveForward(FORWARD_DISTANCE*8 + MULTIPLE_FORWARD_FACTOR*7);
+    sendAck();
+    break;
+  }  
 
   default:
   {
@@ -209,54 +262,39 @@ void rotateLeft(double degree)
 {
   double target_tick = 4.3589 * degree;
   //double target_tick = 384;
-
-  if (FASTEST_PATH)
-  {
-    //target_tick = 378;
-  }
-  //target_tick = 4.1533*degree;
   double tick_travelled = 0;
 
   if (target_tick < 0)
     return;
 
   // Init values
-  tick1 = tick2 = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
-  currentTick1 = currentTick2 = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
-  oldTick1 = oldTick2 = 0;
-  speed1 = rpmToSpeed1(-66.25);
-  speed2 = rpmToSpeed2(64.9);
-  //speed1 = -210;
-  //speed2 = 210;
+  ticksL = ticksR = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
+  currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
+  oldticksL = oldticksR = 0;
+  speedL = rpmTospeedL(-66.25);
+  speedR = rpmTospeedR(64.9);
 
-  md.setSpeeds(speed1, speed2);
-  tick_travelled = (double)tick2;
+  md.setSpeeds(speedL, speedR);
+  tick_travelled = (double)ticksR;
 
   PIDControlLeft.SetSampleTime(15); //Controller is called every 50ms
-  if (FASTEST_PATH)
-  {
-    PIDControlLeft.SetTunings(5, 0, 0.5);
-    PIDControlLeft.SetSampleTime(15);
-  }
   PIDControlLeft.SetMode(AUTOMATIC); //Controller is invoked automatically.
 
   while (tick_travelled < target_tick)
   {
     // if not reach destination ticks yet
-    currentTick1 = tick1 - oldTick1; //calculate the ticks travelled in this sample interval of 50ms
-    currentTick2 = tick2 - oldTick2;
+    currentTicksL = ticksL - oldticksL; //calculate the ticks travelled in this sample interval of 50ms
+    currentTicksR = ticksR - oldticksR;
 
     PIDControlLeft.Compute();
-    oldTick2 += currentTick2; //update ticks
-    oldTick1 += currentTick1;
-    tick_travelled += currentTick2;
+    oldticksR += currentTicksR; //update ticks
+    oldticksL += currentTicksL;
+    tick_travelled += currentTicksR;
   }
 
   md.setBrakes(400, 400);
   PIDControlLeft.SetMode(MANUAL); //turn off PID
   delay(delayExplore);
-  if (FASTEST_PATH)
-    delay(delayFastestPath);
 }
 
 // Rotate right by given degrees. Using 360 degree as a base line
@@ -264,59 +302,46 @@ void rotateRight(double degree)
 {
   double target_tick = 4.3589 * degree;
   //double target_tick = 373;
-
-  if (FASTEST_PATH)
-  {
-    //target_tick = 380;
-  }
-  //0.2319*degree + 6.4492;
   double tick_travelled = 0;
+  
   if (target_tick < 0)
     return;
 
   // Init values
-  tick1 = tick2 = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
-  currentTick1 = currentTick2 = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
-  oldTick1 = oldTick2 = 0;
-  speed1 = rpmToSpeed1(66.25);
-  speed2 = rpmToSpeed2(-64.9);
+  ticksL = ticksR = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
+  currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
+  oldticksL = oldticksR = 0;
+  speedL = rpmTospeedL(66.25);
+  speedR = rpmTospeedR(-64.9);
 
-  md.setSpeeds(speed1, speed2);
-  tick_travelled = (double)tick2;
+  md.setSpeeds(speedL, speedR);
+  tick_travelled = (double)ticksR;
 
   PIDControlRight.SetSampleTime(15); //Controller is called every 25ms
-  if (FASTEST_PATH)
-  {
-    PIDControlRight.SetTunings(4, 0, 0.5);
-    PIDControlRight.SetSampleTime(15); // less aggressive
-  }
   PIDControlRight.SetMode(AUTOMATIC); //Controller is invoked automatically.
 
   while (tick_travelled < target_tick)
   {
     // if not reach destination ticks yet
-    currentTick1 = tick1 - oldTick1; //calculate the ticks travelled in this sample interval of 50ms
-    currentTick2 = tick2 - oldTick2;
+    currentTicksL = ticksL - oldticksL; //calculate the ticks travelled in this sample interval of 50ms
+    currentTicksR = ticksR - oldticksR;
 
     PIDControlRight.Compute();
-    oldTick2 += currentTick2; //update ticks
-    oldTick1 += currentTick1;
-    tick_travelled += currentTick2;
+    oldticksR += currentTicksR; //update ticks
+    oldticksL += currentTicksL;
+    tick_travelled += currentTicksR;
   }
 
   md.setBrakes(400, 400);
   PIDControlRight.SetMode(MANUAL);
 
   delay(delayExplore);
-  if (FASTEST_PATH)
-    delay(delayFastestPath);
 }
 
 // Move robot forward by distance (in cm)
 void moveForward(float distance)
 {
   //at 6.10v to 6.20v
-  double rpm1, rpm2;
   double target_tick = 0;
 
   //target_tick = FORWARD_TARGET_TICKS; //289 // EDITED
@@ -327,64 +352,45 @@ void moveForward(float distance)
     return;
 
   // Init values
-  tick1 = tick2 = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
-  currentTick1 = currentTick2 = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
-  oldTick1 = oldTick2 = 0;
+  ticksL = ticksR = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
+  currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
+  oldticksL = oldticksR = 0;
 
-  //Speed in rpm for motor 1 and 2
-  if (FASTEST_PATH)
-  {
-    rpm1 = 101;
-    // rpm1 = 99.8;
-    rpm2 = 100;
-  }
-  else
-  {
-    rpm1 = 68.5;
-    rpm2 = 65.1;
-  }
-  speed1 = rpmToSpeed1(rpm1); //70.75 //74.9  100
-  speed2 = rpmToSpeed2(rpm2); //70.5 //74.5 99.5
+  speedL = rpmTospeedL(LEFT_RPM); //70.75 //74.9  100
+  speedR = rpmTospeedR(RIGHT_RPM); //70.5 //74.5 99.5
 
   //Set Final ideal speed and accomodate for the ticks we used in acceleration
-  md.setSpeeds(speed1, speed2);
-  tick_travelled = (double)tick2;
+  md.setSpeeds(speedL, speedR);
+  tick_travelled = (double)ticksR;
+  
   PIDControlStraight.SetSampleTime(6.5); //Controller is called every 25ms
-
-  if (FASTEST_PATH)
-  { //turn on PID tuning if fastest path
-    PIDControlStraight.SetTunings(10, 0, 1);
-    PIDControlStraight.SetSampleTime(8);
-  }
   PIDControlStraight.SetMode(AUTOMATIC); //Controller is invoked automatically using default value for PID
 
   while (tick_travelled < target_tick)
   {
     // if not reach destination ticks yet
-    currentTick1 = tick1 - oldTick1; //calculate the ticks travelled in this sample interval of 50ms
-    currentTick2 = tick2 - oldTick2;
+    currentTicksL = ticksL - oldticksL; //calculate the ticks travelled in this sample interval of 50ms
+    currentTicksR = ticksR - oldticksR;
 
     PIDControlStraight.Compute();
 
-    oldTick2 += currentTick2; //update ticks
-    oldTick1 += currentTick1;
-    tick_travelled += currentTick2;
+    oldticksR += currentTicksR; //update ticks
+    oldticksL += currentTicksL;
+    tick_travelled += currentTicksR;
   }
 
   //md.setBrakes(370,400);
   md.setBrakes(350, 350);
   PIDControlStraight.SetMode(MANUAL);
   delay(delayExplore);
-  if (FASTEST_PATH)
-    delay(delayFastestPath);
 }
 
 // Move robot backward by distance (in cm)
 void moveBackward(float distance)
 {
   //at 6.10v to 6.20v
-  double rpm1, rpm2;
   double target_tick = 0;
+  double rpmL, rpmR;
 
   //target_tick = FORWARD_TARGET_TICKS; //289 // EDITED
   target_tick = 26.85 * distance + FORWARD_TARGET_TICKS;
@@ -394,72 +400,57 @@ void moveBackward(float distance)
     return;
 
   // Init values
-  tick1 = tick2 = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
-  currentTick1 = currentTick2 = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
-  oldTick1 = oldTick2 = 0;
+  ticksL = ticksR = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
+  currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
+  oldticksL = oldticksR = 0;
 
   //Speed in rpm for motor 1 and 2
-  if (FASTEST_PATH)
-  {
-    rpm1 = 100.5;
-    // rpm1 = 99.8;
-    rpm2 = 100;
-  }
-  else
-  {
-    rpm1 = -64.9;
-    rpm2 = -64.9;
-  }
-  speed1 = rpmToSpeed1(rpm1); //70.75 //74.9  100
-  speed2 = rpmToSpeed2(rpm2); //70.5 //74.5 99.5
+  rpmL = -64.9;
+  rpmR = -64.9;
+  
+  speedL = rpmTospeedL(rpmL); //70.75 //74.9  100
+  speedR = rpmTospeedR(rpmR); //70.5 //74.5 99.5
 
   //Set Final ideal speed and accomodate for the ticks we used in acceleration
-  md.setSpeeds(speed1, speed2);
-  tick_travelled = (double)tick2;
+  md.setSpeeds(speedL, speedR);
+  tick_travelled = (double)ticksR;
+  
   PIDControlStraight.SetSampleTime(6.5); //Controller is called every 25ms
-
-  if (FASTEST_PATH)
-  { //turn on PID tuning if fastest path
-    PIDControlStraight.SetTunings(10, 0, 1);
-    PIDControlStraight.SetSampleTime(8);
-  }
   PIDControlStraight.SetMode(AUTOMATIC); //Controller is invoked automatically using default value for PID
 
   while (tick_travelled < target_tick)
   {
     // if not reach destination ticks yet
-    currentTick1 = tick1 - oldTick1; //calculate the ticks travelled in this sample interval of 50ms
-    currentTick2 = tick2 - oldTick2;
+    currentTicksL = ticksL - oldticksL; //calculate the ticks travelled in this sample interval of 50ms
+    currentTicksR = ticksR - oldticksR;
 
     PIDControlStraight.Compute();
 
-    oldTick2 += currentTick2; //update ticks
-    oldTick1 += currentTick1;
-    tick_travelled += currentTick2;
+    oldticksR += currentTicksR; //update ticks
+    oldticksL += currentTicksL;
+    tick_travelled += currentTicksR;
   }
 
   //md.setBrakes(370,400);
   md.setBrakes(250, 250);
   PIDControlStraight.SetMode(MANUAL);
   delay(delayExplore);
-  if (FASTEST_PATH)
-    delay(delayFastestPath);
 }
 
 // Increase ticks (left motor)
 void E1Pos()
 {
-  tick1++;
+  ticksL++;
 }
 
 // Increase ticks (right motor)
 void E2Pos()
 {
-  tick2++;
+  ticksR++;
 }
 
 // RPM to speed conversion (left motor)
-double rpmToSpeed1(double RPM)
+double rpmTospeedL(double RPM)
 {
   if (RPM == 0)
     return 0;
@@ -468,7 +459,7 @@ double rpmToSpeed1(double RPM)
 }
 
 // RPM to speed conversion (right motor)
-double rpmToSpeed2(double RPM)
+double rpmTospeedR(double RPM)
 {
   if (RPM == 0)
     return 0;
