@@ -215,8 +215,15 @@ class Yolo:
             (x, y) = (boxes[0][0], boxes[0][1])
             (w, h) = (boxes[0][2], boxes[0][3])
 
+            # Bounding box cannot be more than region 1 + 15% tolerance
+            if w > 253:
+                return None
+
             # Draw a bounding box rectangle and label on the frame
             color = [int(c) for c in self.colors[class_ids[0]]]
+
+            # (x, y) is the top left
+            # (x + w, y + h) is the bottom right
             cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
             text = "{}: {:.4f}".format(self.labels[class_ids[0]],
                                        confidences[0])
