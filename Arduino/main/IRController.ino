@@ -18,6 +18,17 @@ SharpIR sensorF = SharpIR(FPIN, SRmodel);
 SharpIR sensorFL = SharpIR(FLPIN, SRmodel);
 SharpIR sensorFR = SharpIR(FRPIN, SRmodel);
 
+void sensorInit() {
+    for(int i = 0; i < 50; i++){
+    sensorF.distance();
+    sensorFL.distance();
+    sensorFR.distance();
+    sensorRF.distance();
+    sensorRB.distance();
+    sensorL.distance();
+  }
+}
+
 void printSensors(bool grids)
 {
     if (grids)

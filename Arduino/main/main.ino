@@ -55,6 +55,8 @@ PID PIDControlRight(&a, &a, &a, a, a, a, DIRECT);
  */
 void setup()
 {
+  sensorInit();
+  
   // Initialise the motor
   md.init();
 
@@ -73,9 +75,9 @@ void setup()
 
 void loop()
 {
-  // printSensors(true);
+   printSensors(false);
 
-  runCommands();
+  //runCommands();
 }
 
 void runCommands()
