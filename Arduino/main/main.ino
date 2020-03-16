@@ -75,9 +75,7 @@ void setup()
 
 void loop()
 {
-   printSensors(false);
-
-  //runCommands();
+  runCommands();
 }
 
 void runCommands()

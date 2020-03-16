@@ -19,7 +19,7 @@ SharpIR sensorFL = SharpIR(FLPIN, SRmodel);
 SharpIR sensorFR = SharpIR(FRPIN, SRmodel);
 
 void sensorInit() {
-    for(int i = 0; i < 50; i++){
+    for(int i = 0; i < 30; i++){
     sensorF.distance();
     sensorFL.distance();
     sensorFR.distance();
