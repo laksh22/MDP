@@ -94,6 +94,9 @@ int main() {
   pthread_create(&thread_group[6], NULL, serial_inactiv_prvt_thread, NULL);
   pthread_create(&thread_group[7], NULL, read_img_labels, NULL);
 
+  // Start python script to take pictures
+  system("python ../../../Object\\ Detection/RPi/img_evnt_handler.py &")
+
   // Join the created threads
   for (i = 0; i < NUM_THREADS; i++) {
     pthread_join(thread_group[i], NULL);
