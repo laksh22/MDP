@@ -63,40 +63,38 @@ void calibrateFrontAngleLR(bool calibrateDistance) // ID = 2
         float FRdistance = sensorFR.distance();
         float error = FRdistance - FLdistance;
 
-        if (error > 1.40) // Rotate Left
+        if (error > -0.45) // Rotate Left
         {
-            md.setSpeeds(-150, 150);
-            if (error > 2.35)
+            if (error > 0.04)
             {
-                delay(30 * abs(error));
+                rotateLeft(abs(error) / 150);
             }
             else
             {
-                delay(12);
+              rotateLeft(abs(error) / 500);
             }
         }
-        else if (error < 1.30) // Rotate Right
+        else if (error < -0.55) // Rotate Right
         {
-            md.setSpeeds(150, -150);
-            if (error < -0.12)
+            if (error < -1.20)
             {
-                delay(30 * abs(error));
+                rotateRight(abs(error) / 100);
             }
             else
             {
-                delay(12);
+              rotateRight(abs(error) / 500);
             }
         }
         else
         {
-            md.setBrakes(400, 400);
+          error = FRdistance - FLdistance;
+          if(error <= -0.45 && error >= -0.55){
             break;
+          }
         }
 
-        md.setBrakes(100, 100);
-
         count++;
-        if (count > 10)
+        if (count > 100)
         {
             break;
         }
@@ -165,16 +163,30 @@ void calibrateFrontAngleMR(bool calibrateDistance) // ID = 3
 
 void calibrateDistanceL(int id, bool calibrateAngle)
 {
+    float targetDistance = 13.525;
+    int count = 0;
     while (1)
     {
         float LFdistance = sensorFL.distance();
+        float error = abs(targetDistance - LFdistance);
 
-        if (LFdistance > 13.6)
-            moveForward(0.01);
-        else if (LFdistance < 13.4)
-            moveBackward(0.01);
+        if (LFdistance > 13.55)
+            moveForward(error/100);
+        else if (LFdistance < 13.50)
+            moveBackward(error/100);
         else
-            break;
+        {
+            LFdistance = sensorFL.distance();
+            if(LFdistance <= 13.55 && LFdistance >= 13.50){
+              break;
+            }
+        }
+
+        count++;
+
+        if(count > 100) {
+          break;
+        }
     }
 
     float angleError = 0;
@@ -198,16 +210,30 @@ void calibrateDistanceL(int id, bool calibrateAngle)
 
 void calibrateDistanceM(int id, bool calibrateAngle)
 {
+    int count = 0;
+    float targetDistance = 10.81;
     while (1)
     {
         float Fdistance = sensorF.distance();
+        float error = abs(targetDistance - Fdistance);
 
-        if (Fdistance > 10.5)
-            moveForward(0.01);
-        else if (Fdistance < 10.3)
-            moveBackward(0.01);
+        if (Fdistance > 10.82)
+            moveForward(error/100);
+        else if (Fdistance < 10.79)
+            moveBackward(error/100);
         else
-            break;
+        {
+            Fdistance = sensorF.distance();
+            if(Fdistance <= 10.82 && Fdistance >= 10.79){
+              break;
+            }
+        }
+
+        count++;
+
+        if(count > 100) {
+          break;
+        }
     }
 
     float angleError = 0;
@@ -231,16 +257,30 @@ void calibrateDistanceM(int id, bool calibrateAngle)
 
 void calibrateDistanceR(int id, bool calibrateAngle)
 {
+  int count = 0;
+  float targetDistance = 12.475;
     while (1)
     {
         float RFdistance = sensorFR.distance();
+        float error = abs(targetDistance - RFdistance);
 
-        if (RFdistance > 12.9)
-            moveForward(0.01);
-        else if (RFdistance < 12.7)
-            moveBackward(0.01);
+        if (RFdistance > 12.50)
+            moveForward(error/100);
+        else if (RFdistance < 12.45)
+            moveBackward(error/100);
         else
-            break;
+        {
+            RFdistance = sensorFR.distance();
+            if(RFdistance <= 13.55 && RFdistance >= 13.50){
+              break;
+            }
+        }
+
+        count++;
+
+        if(count > 100) {
+          break;
+        }
     }
 
     float angleError = 0;
