@@ -7,7 +7,7 @@
 
 // Move 90 degrees
 #define LEFT_ROTATE_DEGREES 90
-#define RIGHT_ROTATE_DEGREES 93
+#define RIGHT_ROTATE_DEGREES 91
 #define ROTATE_LEFT_180 184.5
 
 //Move Forward fixed distance
@@ -15,8 +15,8 @@
 #define MULTIPLE_FORWARD_FACTOR 4.1 / 3
 
 //Move Forward Staight
-#define LEFT_RPM 68.5
-#define RIGHT_RPM 67
+#define LEFT_RPM 69
+#define RIGHT_RPM 66.5
 
 // For communication
 char source = 't';
@@ -80,7 +80,7 @@ void setup()
 
 void loop()
 {
-  //printSensors(false);
+  //printSensors(true);
   runCommands();
 }
 
@@ -134,6 +134,7 @@ void runCommands()
   case 'W':
   {
     moveForward(FORWARD_DISTANCE);
+    //calibrateRightAngle();
     sendAck();
     break;
   }
@@ -157,6 +158,18 @@ void runCommands()
   case 'C':
   {
     calibrateFrontAngleLR(true);
+    sendAck();
+    break;
+  }
+  case 'T':
+  {
+    calibrateFrontAngleLM(true);
+    sendAck();
+    break;
+  }
+  case 'Y':
+  {
+    calibrateFrontAngleMR(true);
     sendAck();
     break;
   }
