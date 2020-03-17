@@ -29,24 +29,9 @@ void sensorInit() {
   }
 }
 
-void printSensors(bool grids)
+void printSensors(int type)
 {
-    if (grids)
-    {
-        Serial.print("F: ");
-        Serial.print(gridsF());
-        Serial.print(", FL: ");
-        Serial.print(gridsFL());
-        Serial.print(", FR: ");
-        Serial.print(gridsFR());
-        Serial.print(", RF: ");
-        Serial.print(gridsRF());
-        Serial.print("RB: ");
-        Serial.print(gridsRB());
-        Serial.print(", L: ");
-        Serial.println(gridsL());
-    }
-    else
+    if (type == 1)
     {
         Serial.print("F: ");
         Serial.print(sensorF.distance());
@@ -60,6 +45,40 @@ void printSensors(bool grids)
         Serial.print(sensorRB.distance());
         Serial.print(", L: ");
         Serial.println(sensorL.distance());
+    }
+    else if (type == 2)
+    {
+        Serial.print("F: ");
+        Serial.print(gridsF());
+        Serial.print(", FL: ");
+        Serial.print(gridsFL());
+        Serial.print(", FR: ");
+        Serial.print(gridsFR());
+        Serial.print(", RF: ");
+        Serial.print(gridsRF());
+        Serial.print("RB: ");
+        Serial.print(gridsRB());
+        Serial.print(", L: ");
+        Serial.println(gridsL());
+    } else {
+        int f = sensorF.distance() * 100;
+        int fl = sensorFL.distance() * 100;
+        int fr = sensorFR.distance() * 100;
+        int rf = sensorRF.distance() * 100;
+        int rb = sensorRB.distance() * 100;
+        int l = sensorL.distance() * 100;
+        Serial.print("F: ");
+        Serial.print(f);
+        Serial.print(", FL: ");
+        Serial.print(fl);
+        Serial.print(", FR: ");
+        Serial.print(fr);
+        Serial.print(", RF: ");
+        Serial.print(rf);
+        Serial.print(", RB: ");
+        Serial.print(rb);
+        Serial.print(", L: ");
+        Serial.println(l);
     }
 }
 

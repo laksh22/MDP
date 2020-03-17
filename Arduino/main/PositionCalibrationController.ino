@@ -1,9 +1,9 @@
-#define DIST_L_LOWER 13.10
-#define DIST_L_UPPER 13.17
-#define DIST_M_LOWER 10.20
-#define DIST_M_UPPER 10.15
-#define DIST_R_LOWER 12.35
-#define DIST_R_UPPER 12.30
+#define DIST_L_LOWER 1110
+#define DIST_L_UPPER DIST_L_LOWER+70
+#define DIST_M_LOWER 890
+#define DIST_M_UPPER DIST_M_LOWER+50
+#define DIST_R_LOWER 1096
+#define DIST_R_UPPER DIST_R_LOWER+80
 #define ROT_L_UPPER -2.15
 #define ROT_L_LOWER -2.05
 #define ROT_M_UPPER -0.45
@@ -210,7 +210,7 @@ void calibrateDistanceL(int id, bool calibrateAngle)
     int count = 0;
     while (1)
     {
-        float LFdistance = sensorFL.distance();
+        int LFdistance = sensorFL.distance() * 100;
 
         if (LFdistance > DIST_L_UPPER)
         {
@@ -223,11 +223,7 @@ void calibrateDistanceL(int id, bool calibrateAngle)
 
         else
         {
-            LFdistance = sensorFL.distance();
-            if (LFdistance <= DIST_L_UPPER && LFdistance >= DIST_L_LOWER)
-            {
-                break;
-            }
+          break;
         }
 
         count++;
@@ -262,7 +258,7 @@ void calibrateDistanceM(int id, bool calibrateAngle)
     int count = 0;
     while (1)
     {
-        float Fdistance = sensorF.distance();
+        int Fdistance = sensorF.distance() * 100;
 
         if (Fdistance > DIST_M_UPPER)
         {
@@ -274,11 +270,7 @@ void calibrateDistanceM(int id, bool calibrateAngle)
         }
         else
         {
-            Fdistance = sensorF.distance();
-            if (Fdistance <= DIST_M_UPPER && Fdistance >= DIST_M_LOWER)
-            {
-                break;
-            }
+          break;
         }
 
         count++;
@@ -313,7 +305,7 @@ void calibrateDistanceR(int id, bool calibrateAngle)
     int count = 0;
     while (1)
     {
-        float RFdistance = sensorFR.distance();
+        int RFdistance = sensorFR.distance() * 100;
 
         if (RFdistance > DIST_R_UPPER)
         {
@@ -325,11 +317,7 @@ void calibrateDistanceR(int id, bool calibrateAngle)
         }
         else
         {
-            RFdistance = sensorFR.distance();
-            if (RFdistance <= DIST_R_UPPER && RFdistance >= DIST_R_LOWER)
-            {
-                break;
-            }
+          break;
         }
 
         count++;

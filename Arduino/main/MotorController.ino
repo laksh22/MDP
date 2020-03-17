@@ -222,8 +222,8 @@ void moveForwardCalib(float distance)
     currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
     oldticksL = oldticksR = 0;
 
-    speedL = rpmTospeedL(LEFT_RPM/3);  //70.75 //74.9  100
-    speedR = rpmTospeedR(RIGHT_RPM/3); //70.5 //74.5 99.5
+    speedL = rpmTospeedL(LEFT_RPM/2);  //70.75 //74.9  100
+    speedR = rpmTospeedR(RIGHT_RPM/2); //70.5 //74.5 99.5
 
     //Set Final ideal speed and accomodate for the ticks we used in acceleration
     md.setSpeeds(speedL, speedR);
@@ -270,8 +270,8 @@ void moveBackwardCalib(float distance)
     currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
     oldticksL = oldticksR = 0;
 
-    speedL = rpmTospeedL(-LEFT_RPM/3); //70.75 //74.9  100
-    speedR = rpmTospeedR(-RIGHT_RPM/3); //70.5 //74.5 99.5
+    speedL = rpmTospeedL(-LEFT_RPM/2); //70.75 //74.9  100
+    speedR = rpmTospeedR(-RIGHT_RPM/2); //70.5 //74.5 99.5
 
     //Set Final ideal speed and accomodate for the ticks we used in acceleration
     md.setSpeeds(speedL, speedR);
