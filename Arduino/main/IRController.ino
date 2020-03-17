@@ -97,19 +97,19 @@ int gridsRB()
 int gridsL()
 {
     int dis = sensorL.distance();
-    if (dis <= 19)
+    if (dis <= 19.00)
         return 1;
 
-    else if (dis > 19 && dis <= 25)
+    else if (dis > 19.00 && dis <= 24.60)
         return 2;
 
-    else if (dis > 25 && dis <= 34)
+    else if (dis > 24.60 && dis <= 34.10)
         return 3;
 
-    else if (dis > 34 && dis <= 44)
+    else if (dis > 34.10 && dis <= 44.20)
         return 4;
 
-    else if (dis > 44 && dis <= 57)
+    else if (dis > 44.20 && dis <= 57.00)
         return 5;
 
     else

@@ -6,8 +6,8 @@
 #define FORWARD_TARGET_TICKS 0
 
 // Move 90 degrees
-#define LEFT_ROTATE_DEGREES 90
-#define RIGHT_ROTATE_DEGREES 93
+#define LEFT_ROTATE_DEGREES 9
+#define RIGHT_ROTATE_DEGREES 91
 #define ROTATE_LEFT_180 184.5
 
 //Move Forward fixed distance
@@ -134,6 +134,7 @@ void runCommands()
   case 'W':
   {
     moveForward(FORWARD_DISTANCE);
+    calibrateRightAngle();
     sendAck();
     break;
   }
@@ -157,6 +158,7 @@ void runCommands()
   case 'C':
   {
     calibrateFrontAngleLR(true);
+    //calibrateRightAngle();
     sendAck();
     break;
   }

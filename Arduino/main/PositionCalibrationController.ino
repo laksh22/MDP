@@ -1,3 +1,42 @@
+void calibrateRightAngle() // ID = 2
+{
+    int count = 0;
+    float RBdistance = sensorRB.distance();
+    float RFdistance = sensorRF.distance();
+    float error = RBdistance - RFdistance;
+
+    if (RBdistance > 19 || RFdistance > 17)
+    {
+        return;
+    }
+
+    while (1)
+    {
+        RBdistance = sensorRB.distance();
+        RFdistance = sensorRF.distance();
+        error = RBdistance - RFdistance;
+
+        if (error > 1.10) // Rotate Left
+        {
+            rotateLeft(abs(error) / 3000);
+        }
+        else if (error < 1.01) // Rotate Right
+        {
+            rotateRight(abs(error) / 3000);
+        }
+        else
+        {
+            break;
+        }
+
+        count++;
+        if (count > 20)
+        {
+            break;
+        }
+    }
+}
+
 void calibrateFrontAngleLM(bool calibrateDistance) // ID = 1
 {
     int count = 0;
@@ -13,7 +52,7 @@ void calibrateFrontAngleLM(bool calibrateDistance) // ID = 1
             md.setSpeeds(-150, 150);
             if (error > 2.35)
             {
-                delay(30 * abs(error));
+                delay(20 * abs(error));
             }
             else
             {
@@ -25,7 +64,7 @@ void calibrateFrontAngleLM(bool calibrateDistance) // ID = 1
             md.setSpeeds(150, -150);
             if (error < -0.12)
             {
-                delay(30 * abs(error));
+                delay(20 * abs(error));
             }
             else
             {
@@ -67,30 +106,27 @@ void calibrateFrontAngleLR(bool calibrateDistance) // ID = 2
         {
             if (error > 0.04)
             {
-                rotateLeft(abs(error) / 150);
+                rotateLeft(abs(error) / 300);
             }
             else
             {
-              rotateLeft(abs(error) / 500);
+                rotateLeft(abs(error) / 1000);
             }
         }
         else if (error < -0.55) // Rotate Right
         {
             if (error < -1.20)
             {
-                rotateRight(abs(error) / 100);
+                rotateRight(abs(error) / 300);
             }
             else
             {
-              rotateRight(abs(error) / 500);
+                rotateRight(abs(error) / 1000);
             }
         }
         else
         {
-          error = FRdistance - FLdistance;
-          if(error <= -0.45 && error >= -0.55){
             break;
-          }
         }
 
         count++;
@@ -163,29 +199,48 @@ void calibrateFrontAngleMR(bool calibrateDistance) // ID = 3
 
 void calibrateDistanceL(int id, bool calibrateAngle)
 {
-    float targetDistance = 13.525;
     int count = 0;
     while (1)
     {
         float LFdistance = sensorFL.distance();
-        float error = abs(targetDistance - LFdistance);
 
-        if (LFdistance > 13.55)
-            moveForward(error/100);
-        else if (LFdistance < 13.50)
-            moveBackward(error/100);
+        if (LFdistance > 13.17)
+        {
+            if (LFdistance > 13.70)
+            {
+                moveForward(LFdistance / 10000);
+            }
+            else
+            {
+                moveForward(0.01);
+            }
+        }
+        else if (LFdistance < 13.10)
+        {
+            if (LFdistance < 12.25)
+            {
+                moveBackward(LFdistance / 10000);
+            }
+            else
+            {
+                moveBackward(0.01);
+            }
+        }
+
         else
         {
             LFdistance = sensorFL.distance();
-            if(LFdistance <= 13.55 && LFdistance >= 13.50){
-              break;
+            if (LFdistance <= 13.17 && LFdistance >= 13.10)
+            {
+                break;
             }
         }
 
         count++;
 
-        if(count > 100) {
-          break;
+        if (count > 100)
+        {
+            break;
         }
     }
 
@@ -217,22 +272,40 @@ void calibrateDistanceM(int id, bool calibrateAngle)
         float Fdistance = sensorF.distance();
         float error = abs(targetDistance - Fdistance);
 
-        if (Fdistance > 10.82)
-            moveForward(error/100);
-        else if (Fdistance < 10.79)
-            moveBackward(error/100);
+        if (Fdistance > 10.20)
+        {
+            if (Fdistance > 11.0)
+            {
+                moveForward(Fdistance / 10000);
+            }
+            else
+            {
+                moveForward(0.01);
+            }
+        }
+        else if (Fdistance < 10.15)
+            if (Fdistance < 9.80)
+            {
+                moveBackward(Fdistance / 10000);
+            }
+            else
+            {
+                moveBackward(0.01);
+            }
         else
         {
             Fdistance = sensorF.distance();
-            if(Fdistance <= 10.82 && Fdistance >= 10.79){
-              break;
+            if (Fdistance <= 10.20 && Fdistance >= 10.15)
+            {
+                break;
             }
         }
 
         count++;
 
-        if(count > 100) {
-          break;
+        if (count > 100)
+        {
+            break;
         }
     }
 
@@ -257,29 +330,47 @@ void calibrateDistanceM(int id, bool calibrateAngle)
 
 void calibrateDistanceR(int id, bool calibrateAngle)
 {
-  int count = 0;
-  float targetDistance = 12.475;
+    int count = 0;
     while (1)
     {
         float RFdistance = sensorFR.distance();
-        float error = abs(targetDistance - RFdistance);
 
-        if (RFdistance > 12.50)
-            moveForward(error/100);
-        else if (RFdistance < 12.45)
-            moveBackward(error/100);
+        if (RFdistance > 12.35)
+        {
+            if (RFdistance > 13.10)
+            {
+                moveForward(RFdistance / 1000);
+            }
+            else
+            {
+                moveForward(RFdistance / 2000);
+            }
+        }
+        else if (RFdistance < 12.30)
+        {
+            if (RFdistance < 11.70)
+            {
+                moveBackward(RFdistance / 1000);
+            }
+            else
+            {
+                moveBackward(RFdistance / 2000);
+            }
+        }
         else
         {
             RFdistance = sensorFR.distance();
-            if(RFdistance <= 13.55 && RFdistance >= 13.50){
-              break;
+            if (RFdistance <= 12.35 && RFdistance >= 13.30)
+            {
+                break;
             }
         }
 
         count++;
 
-        if(count > 100) {
-          break;
+        if (count > 100)
+        {
+            break;
         }
     }
 
