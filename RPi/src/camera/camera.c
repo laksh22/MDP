@@ -54,7 +54,7 @@ int count_files_in_dir(char *path) {
   if ((dir = opendir(path)) != NULL) {
     while ((entry = readdir(dir)) != NULL) {
       if (entry->d_type == DT_REG) {
-        // If the entry is a regular file
+        // If the entry is a regular filec
         fileCount++;
       }
     }

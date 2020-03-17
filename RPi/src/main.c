@@ -32,7 +32,8 @@ void *serial_inactiv_prvt_thread(void *arg) {
      * Not using distribute_command(), as we do not want this message to be
      * queued.
      */
-    write_hub("@sK|!", 'p');
+    char wpointer[] = "@sK|!";
+    write_hub(wpointer, 'p');
     sleep(6);
   }
 }

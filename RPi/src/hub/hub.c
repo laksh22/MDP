@@ -60,9 +60,12 @@ void write_hub(char *wpointer, char source) {
         } else if (source == 'b') {
           *(wpointer + 1) = 'b';
           serial_send((void *) wpointer + 1);
-        } else {
+        } else if (source == 'p') {
           // Send keep alive message
-          serial_send("pK|");
+          *(wpointer + 1) = 'p';
+          serial_send((void *) wpointer + 1);
+        } else {
+          printf("[write_hub] Unknown source received: [%s]\n", source);
         }
 
       } else if (tolower(wpointer[1]) == 'r') {
