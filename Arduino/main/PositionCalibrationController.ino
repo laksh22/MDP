@@ -4,43 +4,43 @@
 #define DIST_M_UPPER DIST_M_LOWER+50
 #define DIST_R_LOWER 1096
 #define DIST_R_UPPER DIST_R_LOWER+80
-#define ROT_L_UPPER -2.15
-#define ROT_L_LOWER -2.05
-#define ROT_M_UPPER -0.45
-#define ROT_M_LOWER -0.55
-#define ROT_R_UPPER -2.24
-#define ROT_R_LOWER -2.50
-#define ROT_SIDE_LOWER 1.01
-#define ROT_SIDE_UPPER 1.10
-#define MAX_ROTATION_COUNT_RIGHT 20
+#define ROT_L_LOWER 230
+#define ROT_L_UPPER ROT_L_LOWER+20
+#define ROT_M_LOWER -50
+#define ROT_M_UPPER ROT_M_LOWER+20
+#define ROT_R_LOWER -210
+#define ROT_R_UPPER ROT_R_LOWER+20
+#define ROT_SIDE_LOWER -20
+#define ROT_SIDE_UPPER ROT_SIDE_LOWER+20
+#define MAX_ROTATION_COUNT_RIGHT 100
 #define MAX_ROTATION_COUNT_FRONT 100
 #define MAX_DIST_COUNT 100
 
 void calibrateRightAngle() // ID = 2
 {
     int count = 0;
-    float RBdistance = sensorRB.distance();
-    float RFdistance = sensorRF.distance();
-    float error = RBdistance - RFdistance;
+    int RBdistance = sensorRB.distance() * 100;
+    int RFdistance = sensorRF.distance() * 100;
+    int error = RBdistance - RFdistance;
 
-    if (RBdistance > 19 || RFdistance > 17)
+    if (RBdistance > 1900 || RFdistance > 1700)
     {
         return;
     }
 
     while (1)
     {
-        RBdistance = sensorRB.distance();
-        RFdistance = sensorRF.distance();
+        RBdistance = sensorRB.distance() * 100;
+        RFdistance = sensorRF.distance() * 100;
         error = RBdistance - RFdistance;
 
         if (error > ROT_SIDE_UPPER) // Rotate Left
         {
-            rotateLeft(abs(error) / 5000);
+            rotateLeftCalib(0.01);
         }
         else if (error < ROT_SIDE_LOWER) // Rotate Right
         {
-            rotateRight(abs(error) / 5000);
+            rotateRightCalib(0.01);
         }
         else
         {
@@ -61,31 +61,17 @@ void calibrateFrontAngleLM(bool calibrateDistance) // ID = 1
 
     while (1)
     {
-        float FLdistance = sensorF.distance();
-        float Fdistance = sensorFR.distance();
-        float error = FLdistance - Fdistance;
+        int FLdistance = sensorFL.distance() * 100;
+        int Fdistance = sensorF.distance() * 100;
+        int error = FLdistance - Fdistance;
 
         if (error > ROT_L_UPPER) // Rotate Left
         {
-            if (error > ROT_L_UPPER + 0.50)
-            {
-                rotateRightCalib(abs(error) / 500);
-            }
-            else
-            {
-                rotateRightCalib(abs(error) / 2000);
-            }
+          rotateRightCalib(0.01);
         }
         else if (error < ROT_L_LOWER) // Rotate Right
         {
-            if (error < ROT_L_LOWER - 0.50)
-            {
-                rotateLeftCalib(abs(error) / 500);
-            }
-            else
-            {
-                rotateLeftCalib(abs(error) / 2000);
-            }
+          rotateLeftCalib(0.01);
         }
         else
         {
@@ -111,31 +97,17 @@ void calibrateFrontAngleLR(bool calibrateDistance) // ID = 2
 
     while (1)
     {
-        float FLdistance = sensorFL.distance();
-        float FRdistance = sensorFR.distance();
-        float error = FRdistance - FLdistance;
+        int FLdistance = sensorFL.distance() * 100;
+        int FRdistance = sensorFR.distance() * 100;
+        int error = FRdistance - FLdistance;
 
         if (error > ROT_M_UPPER) // Rotate Left
         {
-            if (error > ROT_M_UPPER + 0.50)
-            {
-                rotateLeftCalib(abs(error) / 500);
-            }
-            else
-            {
-                rotateLeftCalib(abs(error) / 2000);
-            }
+          rotateLeftCalib(0.01);
         }
         else if (error < ROT_M_LOWER) // Rotate Right
         {
-            if (error < ROT_M_LOWER - 0.50)
-            {
-                rotateRightCalib(abs(error) / 500);
-            }
-            else
-            {
-                rotateRightCalib(abs(error) / 2000);
-            }
+          rotateRightCalib(0.01);
         }
         else
         {
@@ -161,31 +133,17 @@ void calibrateFrontAngleMR(bool calibrateDistance) // ID = 3
 
     while (1)
     {
-        float Fdistance = sensorF.distance();
-        float FRdistance = sensorFR.distance();
-        float error = Fdistance - FRdistance;
+        int Fdistance = sensorF.distance() * 100;
+        int FRdistance = sensorFR.distance() * 100;
+        int error = Fdistance - FRdistance;
 
         if (error > ROT_R_UPPER) // Rotate Left
         {
-            if (error > ROT_R_UPPER + 0.50)
-            {
-                rotateRightCalib(abs(error) / 500);
-            }
-            else
-            {
-                rotateRightCalib(abs(error) / 2000);
-            }
+          rotateRightCalib(0.01);
         }
         else if (error < ROT_R_LOWER) // Rotate Right
         {
-            if (error < ROT_R_LOWER - 0.50)
-            {
-                rotateLeftCalib(abs(error) / 500);
-            }
-            else
-            {
-                rotateLeftCalib(abs(error) / 2000);
-            }
+          rotateLeftCalib(0.01);
         }
         else
         {
