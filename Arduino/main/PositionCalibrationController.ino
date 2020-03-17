@@ -1,3 +1,21 @@
+#define DIST_L_LOWER 13.10
+#define DIST_L_UPPER 13.17
+#define DIST_M_LOWER 10.20
+#define DIST_M_UPPER 10.15
+#define DIST_R_LOWER 12.35
+#define DIST_R_UPPER 12.30
+#define ROT_L_UPPER -2.15
+#define ROT_L_LOWER -2.05
+#define ROT_M_UPPER -0.45
+#define ROT_M_LOWER -0.55
+#define ROT_R_UPPER -2.24
+#define ROT_R_LOWER -2.50
+#define ROT_SIDE_LOWER 1.01
+#define ROT_SIDE_UPPER 1.10
+#define MAX_ROTATION_COUNT_RIGHT 20
+#define MAX_ROTATION_COUNT_FRONT 100
+#define MAX_DIST_COUNT 100
+
 void calibrateRightAngle() // ID = 2
 {
     int count = 0;
@@ -16,13 +34,13 @@ void calibrateRightAngle() // ID = 2
         RFdistance = sensorRF.distance();
         error = RBdistance - RFdistance;
 
-        if (error > 1.10) // Rotate Left
+        if (error > ROT_SIDE_UPPER) // Rotate Left
         {
-            rotateLeft(abs(error) / 3000);
+            rotateLeft(abs(error) / 5000);
         }
-        else if (error < 1.01) // Rotate Right
+        else if (error < ROT_SIDE_LOWER) // Rotate Right
         {
-            rotateRight(abs(error) / 3000);
+            rotateRight(abs(error) / 5000);
         }
         else
         {
@@ -30,7 +48,7 @@ void calibrateRightAngle() // ID = 2
         }
 
         count++;
-        if (count > 20)
+        if (count > MAX_ROTATION_COUNT_RIGHT)
         {
             break;
         }
@@ -47,40 +65,35 @@ void calibrateFrontAngleLM(bool calibrateDistance) // ID = 1
         float Fdistance = sensorFR.distance();
         float error = FLdistance - Fdistance;
 
-        if (error > 1.40) // Rotate Left
+        if (error > ROT_L_UPPER) // Rotate Left
         {
-            md.setSpeeds(-150, 150);
-            if (error > 2.35)
+            if (error > ROT_L_UPPER + 0.50)
             {
-                delay(20 * abs(error));
+                rotateRightCalib(abs(error) / 500);
             }
             else
             {
-                delay(12);
+                rotateRightCalib(abs(error) / 2000);
             }
         }
-        else if (error < 1.30) // Rotate Right
+        else if (error < ROT_L_LOWER) // Rotate Right
         {
-            md.setSpeeds(150, -150);
-            if (error < -0.12)
+            if (error < ROT_L_LOWER - 0.50)
             {
-                delay(20 * abs(error));
+                rotateLeftCalib(abs(error) / 500);
             }
             else
             {
-                delay(12);
+                rotateLeftCalib(abs(error) / 2000);
             }
         }
         else
         {
-            md.setBrakes(400, 400);
             break;
         }
 
-        md.setBrakes(100, 100);
-
         count++;
-        if (count > 10)
+        if (count > MAX_ROTATION_COUNT_FRONT)
         {
             break;
         }
@@ -89,7 +102,7 @@ void calibrateFrontAngleLM(bool calibrateDistance) // ID = 1
     float Fdistance = sensorF.distance();
 
     if (calibrateDistance && (Fdistance > 15 || Fdistance < 15)) // TODO
-        calibrateDistanceM(1, false);
+        calibrateDistanceM(1, true);
 }
 
 void calibrateFrontAngleLR(bool calibrateDistance) // ID = 2
@@ -102,26 +115,26 @@ void calibrateFrontAngleLR(bool calibrateDistance) // ID = 2
         float FRdistance = sensorFR.distance();
         float error = FRdistance - FLdistance;
 
-        if (error > -0.45) // Rotate Left
+        if (error > ROT_M_UPPER) // Rotate Left
         {
-            if (error > 0.04)
+            if (error > ROT_M_UPPER + 0.50)
             {
-                rotateLeft(abs(error) / 300);
+                rotateLeftCalib(abs(error) / 500);
             }
             else
             {
-                rotateLeft(abs(error) / 1000);
+                rotateLeftCalib(abs(error) / 2000);
             }
         }
-        else if (error < -0.55) // Rotate Right
+        else if (error < ROT_M_LOWER) // Rotate Right
         {
-            if (error < -1.20)
+            if (error < ROT_M_LOWER - 0.50)
             {
-                rotateRight(abs(error) / 300);
+                rotateRightCalib(abs(error) / 500);
             }
             else
             {
-                rotateRight(abs(error) / 1000);
+                rotateRightCalib(abs(error) / 2000);
             }
         }
         else
@@ -130,7 +143,7 @@ void calibrateFrontAngleLR(bool calibrateDistance) // ID = 2
         }
 
         count++;
-        if (count > 100)
+        if (count > MAX_ROTATION_COUNT_FRONT)
         {
             break;
         }
@@ -152,40 +165,35 @@ void calibrateFrontAngleMR(bool calibrateDistance) // ID = 3
         float FRdistance = sensorFR.distance();
         float error = Fdistance - FRdistance;
 
-        if (error > 1.40) // Rotate Left
+        if (error > ROT_R_UPPER) // Rotate Left
         {
-            md.setSpeeds(-150, 150);
-            if (error > 2.35)
+            if (error > ROT_R_UPPER + 0.50)
             {
-                delay(30 * abs(error));
+                rotateRightCalib(abs(error) / 500);
             }
             else
             {
-                delay(12);
+                rotateRightCalib(abs(error) / 2000);
             }
         }
-        else if (error < 1.30) // Rotate Right
+        else if (error < ROT_R_LOWER) // Rotate Right
         {
-            md.setSpeeds(150, -150);
-            if (error < -0.12)
+            if (error < ROT_R_LOWER - 0.50)
             {
-                delay(30 * abs(error));
+                rotateLeftCalib(abs(error) / 500);
             }
             else
             {
-                delay(12);
+                rotateLeftCalib(abs(error) / 2000);
             }
         }
         else
         {
-            md.setBrakes(400, 400);
             break;
         }
 
-        md.setBrakes(100, 100);
-
         count++;
-        if (count > 10)
+        if (count > MAX_ROTATION_COUNT_FRONT)
         {
             break;
         }
@@ -194,7 +202,7 @@ void calibrateFrontAngleMR(bool calibrateDistance) // ID = 3
     float Fdistance = sensorF.distance();
 
     if (calibrateDistance && (Fdistance > 15 || Fdistance < 15)) // TODO
-        calibrateDistanceM(3, false);
+        calibrateDistanceM(3, true);
 }
 
 void calibrateDistanceL(int id, bool calibrateAngle)
@@ -204,33 +212,19 @@ void calibrateDistanceL(int id, bool calibrateAngle)
     {
         float LFdistance = sensorFL.distance();
 
-        if (LFdistance > 13.17)
+        if (LFdistance > DIST_L_UPPER)
         {
-            if (LFdistance > 13.70)
-            {
-                moveForward(LFdistance / 10000);
-            }
-            else
-            {
-                moveForward(0.01);
-            }
+            moveForwardCalib(0.001);
         }
-        else if (LFdistance < 13.10)
+        else if (LFdistance < DIST_L_LOWER)
         {
-            if (LFdistance < 12.25)
-            {
-                moveBackward(LFdistance / 10000);
-            }
-            else
-            {
-                moveBackward(0.01);
-            }
+            moveBackwardCalib(0.001);
         }
 
         else
         {
             LFdistance = sensorFL.distance();
-            if (LFdistance <= 13.17 && LFdistance >= 13.10)
+            if (LFdistance <= DIST_L_UPPER && LFdistance >= DIST_L_LOWER)
             {
                 break;
             }
@@ -238,7 +232,7 @@ void calibrateDistanceL(int id, bool calibrateAngle)
 
         count++;
 
-        if (count > 100)
+        if (count > MAX_DIST_COUNT)
         {
             break;
         }
@@ -266,36 +260,22 @@ void calibrateDistanceL(int id, bool calibrateAngle)
 void calibrateDistanceM(int id, bool calibrateAngle)
 {
     int count = 0;
-    float targetDistance = 10.81;
     while (1)
     {
         float Fdistance = sensorF.distance();
-        float error = abs(targetDistance - Fdistance);
 
-        if (Fdistance > 10.20)
+        if (Fdistance > DIST_M_UPPER)
         {
-            if (Fdistance > 11.0)
-            {
-                moveForward(Fdistance / 10000);
-            }
-            else
-            {
-                moveForward(0.01);
-            }
+            moveForwardCalib(0.001);
         }
-        else if (Fdistance < 10.15)
-            if (Fdistance < 9.80)
-            {
-                moveBackward(Fdistance / 10000);
-            }
-            else
-            {
-                moveBackward(0.01);
-            }
+        else if (Fdistance < DIST_M_LOWER)
+        {
+            moveBackwardCalib(0.001);
+        }
         else
         {
             Fdistance = sensorF.distance();
-            if (Fdistance <= 10.20 && Fdistance >= 10.15)
+            if (Fdistance <= DIST_M_UPPER && Fdistance >= DIST_M_LOWER)
             {
                 break;
             }
@@ -303,7 +283,7 @@ void calibrateDistanceM(int id, bool calibrateAngle)
 
         count++;
 
-        if (count > 100)
+        if (count > MAX_DIST_COUNT)
         {
             break;
         }
@@ -335,32 +315,18 @@ void calibrateDistanceR(int id, bool calibrateAngle)
     {
         float RFdistance = sensorFR.distance();
 
-        if (RFdistance > 12.35)
+        if (RFdistance > DIST_R_UPPER)
         {
-            if (RFdistance > 13.10)
-            {
-                moveForward(RFdistance / 1000);
-            }
-            else
-            {
-                moveForward(RFdistance / 2000);
-            }
+            moveForwardCalib(0.001);
         }
-        else if (RFdistance < 12.30)
+        else if (RFdistance < DIST_R_LOWER)
         {
-            if (RFdistance < 11.70)
-            {
-                moveBackward(RFdistance / 1000);
-            }
-            else
-            {
-                moveBackward(RFdistance / 2000);
-            }
+            moveBackwardCalib(0.001);
         }
         else
         {
             RFdistance = sensorFR.distance();
-            if (RFdistance <= 12.35 && RFdistance >= 13.30)
+            if (RFdistance <= DIST_R_UPPER && RFdistance >= DIST_R_LOWER)
             {
                 break;
             }
@@ -368,7 +334,7 @@ void calibrateDistanceR(int id, bool calibrateAngle)
 
         count++;
 
-        if (count > 100)
+        if (count > MAX_DIST_COUNT)
         {
             break;
         }

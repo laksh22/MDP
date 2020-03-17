@@ -160,14 +160,28 @@ int gridsFL()
 
 int gridsFR()
 {
-    int dis = sensorFR.distance();
+    float sensorValues[5];
+    for(int i = 0; i < 5; i++){
+      sensorValues[i] = sensorFR.distance();
+    }
+    float dis = findMedian(sensorValues, 5);
 
     if (dis <= 18.30)
         return 1;
 
-    else if (dis > 18.30 && dis <= 32)
+    else if (dis > 18.30 && dis <= 30)
         return 2;
 
     else
         return 3;
+}
+
+int findMedian(float a[], int n)
+{
+  sortArray(a, n);
+  if (n % 2 != 0)
+  {
+    return a[n / 2];
+  }
+  return (a[(n - 1) / 2] + a[n / 2]) / 2.0;
 }
