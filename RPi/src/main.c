@@ -19,20 +19,18 @@ rpa_queue_t *b_queue, *s_queue, *t_queue;
 // Serial "keep-alive" thread
 void *serial_inactiv_prvt_thread(void *arg) {
   // Endless loop: Send a keep-alive message every 6 seconds
-  while(1) {
+  while (1) {
 //    printf("Sending serial inactivity prevention message\n");
 
-    /* The content will be DISCARDED and replaced if source is invalid.
-     *
-     * For clarity, we are putting a string value that we are using.
-     *
-     * The string clarity is the raw string that needs to be sent from external
-     * programs.
+    /*
+     * Since cuts all queues and does not preprocess the messages, preprocess
+     * whereby removing the char '!' is not done, it will be omitted in the
+     * keep-alive message.
      *
      * Not using distribute_command(), as we do not want this message to be
      * queued.
      */
-    char wpointer[] = "@sK|!";
+    char wpointer[] = "@sK|";
     write_hub(wpointer, 'p');
     sleep(6);
   }
@@ -96,7 +94,7 @@ int main() {
   pthread_create(&thread_group[7], NULL, read_img_labels, NULL);
 
   // Start python script to take pictures
-  system("python ../../../Object\\ Detection/RPi/img_evnt_handler.py &")
+  system("python ../../../Object\\ Detection/RPi/img_evnt_handler.py &");
 
   // Join the created threads
   for (i = 0; i < NUM_THREADS; i++) {
