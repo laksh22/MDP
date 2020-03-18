@@ -23,9 +23,9 @@ void *serial_inactiv_prvt_thread(void *arg) {
 //    printf("Sending serial inactivity prevention message\n");
 
     /*
-     * Since cuts all queues and does not preprocess the messages, preprocess
-     * whereby removing the char '!' is not done, it will be omitted in the
-     * keep-alive message.
+     * Since this cuts all queues and this message is not preprocessed, whereby
+     * the char '!' is removed before calling distribute_command, it will be
+     * omitted in the keep-alive message declared in wpointer.
      *
      * Not using distribute_command(), as we do not want this message to be
      * queued.
