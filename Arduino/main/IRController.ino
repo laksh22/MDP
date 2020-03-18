@@ -86,7 +86,7 @@ void printSensors(int type)
 //        Serial.println(error);
 int RBdistance = sensorRB.distance() * 100;
     int RFdistance = sensorRF.distance() * 100;
-    Serial.println(RBdistance);
+    Serial.println(RFdistance);
     }
 
 }
@@ -151,7 +151,7 @@ int gridsRF()
     if (dis <= 19)
         return 1;
 
-    else if (dis > 19 && dis <= 29)
+    else if (dis > 19 && dis <= 30)
         return 2;
 
     else
@@ -188,16 +188,16 @@ int gridsFL()
 
 int gridsFR()
 {
-    float sensorVals[5];
-    for(int i = 0; i < 5; i++){
+    float sensorVals[15];
+    for(int i = 0; i < 15; i++){
       sensorVals[i] = sensorFR.distance();
     }
-    float dis = findMedian(sensorVals, 5);
+    float dis = findMedian(sensorVals, 15);
 
-    if (dis <= 18.30)
+    if (dis <= 19)
         return 1;
 
-    else if (dis > 18.30 && dis <= 30)
+    else if (dis > 19 && dis <= 30)
         return 2;
 
     else

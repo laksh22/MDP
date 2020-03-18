@@ -13,7 +13,7 @@
 #define ROTATE_LEFT_180 184.5
 
 //Move Forward fixed distance
-#define FORWARD_DISTANCE 9.8
+#define FORWARD_DISTANCE 9.6
 #define MULTIPLE_FORWARD_FACTOR 4.1 / 3
 
 //Move Forward Staight/
@@ -21,6 +21,7 @@
 //#define RIGHT_RPM 67.5
 #define LEFT_RPM 100
 #define RIGHT_RPM 98.5
+  
 
 // For communication
 char source = 't';
@@ -138,7 +139,6 @@ void runCommands()
   case 'W':
   {
     moveForward(FORWARD_DISTANCE);
-    calibrateRightAngle();
     sendAck();
     break;
   }
@@ -157,6 +157,12 @@ void runCommands()
   case 'E':
   {
     sendSensors(source);
+    break;
+  }
+  case 'Z':
+  {
+    calibrateRightAngle();
+    sendAck();
     break;
   }
   case 'C':

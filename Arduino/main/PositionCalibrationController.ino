@@ -19,20 +19,12 @@
 void calibrateRightAngle() // ID = 2
 {
     int count = 0;
-    int RBdistance = sensorRB.distance() * 100;
-    int RFdistance = sensorRF.distance() * 100;
-    int error = RBdistance - RFdistance;
-
-    if (RBdistance > 1900 || RFdistance > 1700)
-    {
-        return;
-    }
-
+        
     while (1)
     {
-        RBdistance = sensorRB.distance() * 100;
-        RFdistance = sensorRF.distance() * 100;
-        error = RBdistance - RFdistance;
+        int RBdistance = sensorRB.distance() * 100;
+        int RFdistance = sensorRF.distance() * 100;
+        int error = RBdistance - RFdistance;
 
         if (error > ROT_SIDE_UPPER) // Rotate Left
         {
