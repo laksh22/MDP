@@ -5,7 +5,6 @@
 #include <unistd.h>
 #include "settings.h"
 #include "hub/hub.h"
-//#include "queue/queue.h"
 #include "rpa_queue/rpa_queue.h"
 #include "bluetooth/bluetooth.h"
 #include "serial/serial.h"
@@ -16,16 +15,22 @@ pthread_mutex_t lock;
 
 rpa_queue_t *b_queue, *s_queue, *t_queue;
 
+// Serial "keep-alive" thread
+void *serial_inactivity_prevention_thread(void *arg) {
+  char source = 'p';
+  while(1)
+  {
+//    printf("Sending serial inactivity prevention message\n");
+    write_hub("@sK|!", source);
+    sleep(6);
+  }
+}
+
 int main() {
   // Ctrl+C to terminate the entire program properly
   signal(SIGINT, all_disconnect);
   printf("===== Initializing connections =====\n");
   fflush(stdout);
-
-//  // Create the respective queues for each devices
-//  s_queue = createQueue(QSIZE);
-//  b_queue = createQueue(QSIZE);
-//  t_queue = createQueue(QSIZE);
 
   // Create the respective rpa_queue for each communication port
   rpa_queue_create(&s_queue, (uint32_t) QSIZE);
@@ -65,18 +70,23 @@ int main() {
 
   // Create the respective threads to the main program
   pthread_t *thread_group = malloc(sizeof(pthread_t) * NUM_THREADS);
-  pthread_create(&thread_group[0], NULL, tcp_reader_create, "\0");
-  pthread_create(&thread_group[1], NULL, tcp_sender_create, "\0");
-  pthread_create(&thread_group[2], NULL, bt_reader_create, "\0");
-  pthread_create(&thread_group[3], NULL, bt_sender_create, "\0");
-  pthread_create(&thread_group[4], NULL, serial_reader_create, "\0");
-  pthread_create(&thread_group[5], NULL, serial_sender_create, "\0");
+  pthread_create(&thread_group[0], NULL, tcp_reader_create, NULL);
+  pthread_create(&thread_group[1], NULL, tcp_sender_create, NULL);
+  pthread_create(&thread_group[2], NULL, bt_reader_create, NULL);
+  pthread_create(&thread_group[3], NULL, bt_sender_create, NULL);
+  pthread_create(&thread_group[4], NULL, serial_reader_create, NULL);
+  pthread_create(&thread_group[5], NULL, serial_sender_create, NULL);
+
+  pthread_t tid;
+  pthread_create(&tid, NULL, serial_inactivity_prevention_thread, NULL);
 
   // Join the created threads created previously
   int i;
   for (i = 0; i < NUM_THREADS; i++) {
     pthread_join(thread_group[i], NULL);
   }
+
+  pthread_join(tid, NULL);
 
   return 0;
 }
