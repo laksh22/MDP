@@ -6,17 +6,21 @@
 #define FORWARD_TARGET_TICKS 0
 
 // Move 90 degrees
-#define LEFT_ROTATE_DEGREES 90
-#define RIGHT_ROTATE_DEGREES 91
+//#define LEFT_ROTATE_DEGREES 90
+//#define RIGHT_ROTATE_DEGREES 91
+#define LEFT_ROTATE_DEGREES 87
+#define RIGHT_ROTATE_DEGREES 88
 #define ROTATE_LEFT_180 184.5
 
 //Move Forward fixed distance
-#define FORWARD_DISTANCE 10
+#define FORWARD_DISTANCE 9.8
 #define MULTIPLE_FORWARD_FACTOR 4.1 / 3
 
-//Move Forward Staight
-#define LEFT_RPM 69
-#define RIGHT_RPM 66.5
+//Move Forward Staight/
+//#define LEFT_RPM 69
+//#define RIGHT_RPM 67.5
+#define LEFT_RPM 100
+#define RIGHT_RPM 98.5
 
 // For communication
 char source = 't';
@@ -80,7 +84,7 @@ void setup()
 
 void loop()
 {
-  //printSensors(3);
+  //printSensors(2);
   runCommands();
 }
 
@@ -134,7 +138,7 @@ void runCommands()
   case 'W':
   {
     moveForward(FORWARD_DISTANCE);
-    //calibrateRightAngle();
+    calibrateRightAngle();
     sendAck();
     break;
   }

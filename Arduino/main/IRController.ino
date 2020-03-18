@@ -4,9 +4,9 @@
 #define RBPIN A0 // PS1
 #define LPIN A1  // PS2
 #define RFPIN A2 // PS3
-#define FPIN A3  // PS4
+#define FRPIN A3  // PS4
 #define FLPIN A4 // PS5
-#define FRPIN A5 // PS6
+#define FPIN A5 // PS6
 
 #define SRmodel 1080
 #define LRmodel 20150
@@ -60,7 +60,7 @@ void printSensors(int type)
         Serial.print(gridsRB());
         Serial.print(", L: ");
         Serial.println(gridsL());
-    } else {
+    } else if(type==3) {
         int f = sensorF.distance() * 100;
         int fl = sensorFL.distance() * 100;
         int fr = sensorFR.distance() * 100;
@@ -79,7 +79,16 @@ void printSensors(int type)
         Serial.print(rb);
         Serial.print(", L: ");
         Serial.println(l);
+    } else {
+//        int RBdistance = sensorRB.distance() * 100;
+//        int RFdistance = sensorRF.distance() * 100;
+//        int error = RBdistance - RFdistance;
+//        Serial.println(error);
+int RBdistance = sensorRB.distance() * 100;
+    int RFdistance = sensorRF.distance() * 100;
+    Serial.println(RBdistance);
     }
+
 }
 
 void sendSensors(char source)
@@ -179,11 +188,11 @@ int gridsFL()
 
 int gridsFR()
 {
-    float sensorValues[5];
+    float sensorVals[5];
     for(int i = 0; i < 5; i++){
-      sensorValues[i] = sensorFR.distance();
+      sensorVals[i] = sensorFR.distance();
     }
-    float dis = findMedian(sensorValues, 5);
+    float dis = findMedian(sensorVals, 5);
 
     if (dis <= 18.30)
         return 1;
