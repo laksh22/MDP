@@ -22,6 +22,7 @@ target_link_libraries(RPi Threads::Threads)
 target_link_libraries(RPi ${wiringPi_LIB})
 target_link_libraries(RPi ${bluez_LIB})
 
+add_subdirectory(arraylist)
 add_subdirectory(bluetooth)
 add_subdirectory(camera)
 add_subdirectory(hub)

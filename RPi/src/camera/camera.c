@@ -5,8 +5,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "camera.h"
-#include "../settings.h"
 #include "../hub/hub.h"
+#include "../settings.h"
 
 int save_coord_orientation(char *coord_orientation) {
   char emptyDir[50];
@@ -21,7 +21,7 @@ int save_coord_orientation(char *coord_orientation) {
 int create_work_directories() {
   // Create all required working directories
   char dirList[3][35] =
-          {COORDS_ORIENT_DIR, IMAGES_TO_SCAN_DIR, IMAGES_FOUND_DIR};
+      {COORDS_ORIENT_DIR, IMAGES_TO_SCAN_DIR, IMAGES_FOUND_DIR};
   char emptyDir[1024];
   DIR *dir;
   int i;
@@ -47,15 +47,19 @@ int create_work_directories() {
 }
 
 int count_files_in_dir(char *path) {
-  int fileCount = 0;
+  int file_count = 0;
   DIR *dir;
   struct dirent *entry;
 
   if ((dir = opendir(path)) != NULL) {
     while ((entry = readdir(dir)) != NULL) {
       if (entry->d_type == DT_REG) {
-        // If the entry is a regular filec
-        fileCount++;
+        // Do not want invisible files like .DS_Store
+        if (entry->d_name[0] == '.') {
+          continue;
+        }
+        // If the entry is a regular file
+        file_count++;
       }
     }
     closedir(dir);
@@ -70,7 +74,7 @@ int count_files_in_dir(char *path) {
 int files_in_dir(char *path, char ***files) {
   DIR *dir;
   struct dirent *entry;
-  int n = 0;
+  int file_count = 0;
 
   if ((dir = opendir(path)) != NULL) {
     printf("[files_in_dir] Files in folder [%s]: ", path);
@@ -84,7 +88,7 @@ int files_in_dir(char *path, char ***files) {
       }
     }
     closedir(dir);
-    return n;
+    return file_count;
   } else {
     // Could not open directory
     perror("[files_in_dir] Could not open directory");
@@ -92,79 +96,97 @@ int files_in_dir(char *path, char ***files) {
   }
 }
 
-int process_file_in_dir(char *path, char ***files) {
+int l_files_in_dir(char *path, arraylist *l) {
   DIR *dir;
   struct dirent *entry;
-  char *file_extension;
-  size_t n = 0;
+  char *filename = NULL;
+  int file_count = 0;
+  unsigned int idx = 0;
 
   if ((dir = opendir(path)) != NULL) {
-    printf("[process_files_in_dir] Printing files in folder [%s]\n", path);
+    printf("[l_files_in_dir] Files in folder [%s]: ", path);
     while ((entry = readdir(dir)) != NULL) {
       if (entry->d_type == DT_REG) {
-//        *files = realloc(*files, sizeof(**files) * (n + 1));
+        // Do not want invisible files like .DS_Store
+        if (entry->d_name[0] == '.') {
+          continue;
+        } else if (l->size == 0) {
+          // Nothing in the list, insert into Arraylist
+          filename = malloc(strlen(entry->d_name) + 1);
+          strcpy(filename, entry->d_name);
+          arraylist_add(l, filename);
+          continue;
+        }
 
-        // Get file extension
-//        file_extension = malloc(16);
-//        strcpy(file_extension, strrchr(entry->d_name, '.'));
-
-//        (*files)[n] = malloc(strlen(entry->d_name) + 10);
-//        strcpy((*files)[n], "@bBLOCK:");
-//        strcat((*files)[n], entry->d_name);
-//        (*files)[n][strlen((const char *) (*files)[n])
-//            - strlen(file_extension)] = '\0';
-//        strcat((*files)[n], "!");
-//        printf("Constructed string: %s\n", (*files)[n]);
-//
-//        free(file_extension);
-        distribute_command(entry->d_name, 'b');
-        n++;
+        // Perform string comparison and insert into list if not exists
+        for (idx = 0; idx < l->size; idx++) {
+          if (strcmp(arraylist_get(l, idx), entry->d_name) == 0) {
+            // String found, nothing needs to be done
+            break;
+          } else if (idx == l->size - 1) {
+            // Looped to end of list and filename does not exist
+            // Insert filename into Arraylist
+            filename = malloc(strlen(entry->d_name) + 1);
+            strcpy(filename, entry->d_name);
+            arraylist_add(l, filename);
+          }
+        }
+        file_count++;
       }
     }
-    printf("[process_files_in_dir] Done printing files in folder [%s]\n", path);
     closedir(dir);
-    return n;
+    return file_count;
   } else {
     // Could not open directory
-    perror("");
+    perror("[l_files_in_dir] Could not open directory");
     return 0;
   }
 }
 
 void *read_img_labels() {
   // Thread to check if image recognition is done
-  int fileCount;
-  char **files = NULL;
-  int i = 0;
+  arraylist *l;
+  unsigned int pre_list_idx = 0;
+  unsigned int loop_idx = 0;
+  int file_count;
+  int cnt = 0;
 
   // Ensure required folders are created
   create_work_directories();
 
+  // Initialise Arraylist
+  l = arraylist_create();
+
   // Endless loop
   while (1) {
-    // Get number of files in COORDS_ORIENT_DIR folder
-    fileCount = count_files_in_dir(COORDS_ORIENT_DIR);
+    // Process file in IMAGES_FOUND_DIR
+    if (l->size > pre_list_idx) {
+      // New filenames found, send new filenames to RPi
+      for (loop_idx = pre_list_idx; loop_idx < l->size; loop_idx++) {
+        distribute_command(arraylist_get(l, loop_idx), 'b');
+      }
+      pre_list_idx = l->size;
+    }
 
-    // Check if the DONE file is created
+    // Get number of files in COORDS_ORIENT_DIR and filenames
+    file_count = count_files_in_dir(COORDS_ORIENT_DIR, l);
+
+    // Check if the DONE file is created in COORDS_ORIENT_DIR
     if (access(DONE_FILE, F_OK) != -1 && fileCount == 1) {
       // DONE file exists and is the only file
-
-      // Process file in dir
-      fileCount = process_file_in_dir(IMAGES_FOUND_DIR, &files);
-
-      // Ensure messages are sent before free-ing
-      sleep(10);
-//      for (i = 0; i < fileCount; i++) {
-//        printf("Freeing: %s\n", files[i]);
-//        free(files[i]);
-//      }
-//      free(files);
-
-      // Breaking out of endless-loop
+      // Break out of endless-loop and proceed to end of function/thread
       break;
     }
 
+    //Pause thread for 1 second
     sleep(1);
   }
+
+  // Free up memory used by Arraylist
+  for (loop_idx = 0; loop_idx < l->size; loop_idx++) {
+    printf("[read_img_labels] Freeing Arraylist idx: %d\n", loop_idx);
+    free(arraylist_get(l, loop_idx));
+  }
+  arraylist_destroy(l);
 }
 
