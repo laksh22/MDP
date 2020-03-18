@@ -134,7 +134,7 @@ void runCommands()
   case 'W':
   {
     moveForward(FORWARD_DISTANCE);
-    calibrateRightAngle();
+    //calibrateRightAngle();
     sendAck();
     break;
   }

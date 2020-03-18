@@ -172,11 +172,11 @@ void calibrateDistanceL(int id, bool calibrateAngle)
 
         if (LFdistance > DIST_L_UPPER)
         {
-            moveForwardCalib(0.001);
+            moveForward(0.01);
         }
         else if (LFdistance < DIST_L_LOWER)
         {
-            moveBackwardCalib(0.001);
+            moveBackward(0.01);
         }
 
         else
@@ -220,11 +220,11 @@ void calibrateDistanceM(int id, bool calibrateAngle)
 
         if (Fdistance > DIST_M_UPPER)
         {
-            moveForwardCalib(0.001);
+            moveForward(0.01);
         }
         else if (Fdistance < DIST_M_LOWER)
         {
-            moveBackwardCalib(0.001);
+            moveBackward(0.01);
         }
         else
         {
@@ -267,11 +267,11 @@ void calibrateDistanceR(int id, bool calibrateAngle)
 
         if (RFdistance > DIST_R_UPPER)
         {
-            moveForwardCalib(0.001);
+            moveForward(0.01);
         }
         else if (RFdistance < DIST_R_LOWER)
         {
-            moveBackwardCalib(0.001);
+            moveBackward(0.01);
         }
         else
         {
