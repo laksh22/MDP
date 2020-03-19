@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.file.FileSystems;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,7 +52,7 @@ public class Controller {
 	private float _actualCoverage, _initialCoverage;
 	private boolean _hasReachedStart, _hasReachedTimeThreshold;
 	private PCClient _pcClient;
-	private Path _fastestPath, _fastestPath2;
+	private Path _fastestPath, _fastestPath2, _fastestBackPath;
 
 	private Controller() {
 		_ui = new UI();
@@ -70,6 +71,10 @@ public class Controller {
 	
 	public int[] getPosition() {
 		return this._robotPosition;
+	}
+	
+	public Path getFastestPathBack() {
+		return _fastestBackPath;
 	}
 	
 	public void run() {
@@ -361,15 +366,18 @@ public class Controller {
 			
 			if (_counter >= 0) {
 				SwingWorker<Void, Float> getThreshold = new SwingWorker<Void, Float>() {
-					Path _backPath;
+//					Path _backPath;
 					@Override
 					protected Void doInBackground() throws Exception {
 						//float threshold;
 						MazeExplorer explorer = MazeExplorer.getInstance();
 						AStarPathFinder pathFinder = AStarPathFinder.getInstance();
 						
-						_backPath = pathFinder.findFastestPath(_robotPosition[0], _robotPosition[1], 
-								MazeExplorer.START[0], MazeExplorer.START[1], explorer.getMazeRef());
+//						_backPath = pathFinder.findFastestPath(_robotPosition[0], _robotPosition[1], 
+//								MazeExplorer.START[0], MazeExplorer.START[1], explorer.getMazeRef());
+//						System.out.println("Find fastest path back every turn");
+//						_fastestBackPath = pathFinder.findFastestPath(_robotPosition[0], _robotPosition[1], 
+//								MazeExplorer.START[0], MazeExplorer.START[1], explorer.getMazeRef());
 						
 						//threshold = _backPath.getNumOfSteps() * (1 / (float)_speed) + THRESHOLD_BUFFER_TIME; //If need buffer.
 						publish((float)_counter);
@@ -439,6 +447,7 @@ public class Controller {
 				explorer.explore(_robotPosition, _robotOrientation);
 				//Compute the fastest path right after exploration for real run
 				if (RobotSystem.isRealRun()) {
+					System.out.println("Explore: Finish");
 					AStarPathFinder pathFinder = AStarPathFinder.getInstance();
 					
 					_fastestPath = pathFinder.findFastestPath(MazeExplorer.START[0], MazeExplorer.START[1], 
@@ -448,9 +457,10 @@ public class Controller {
 							MazeExplorer.GOAL[0], MazeExplorer.GOAL[1], explorer.getMazeRef());
 
 					_fastestPath.combineSteps(_fastestPath2.getSteps());
-					
+					System.out.println("Explore: Fastest Path Found");
 					Orientation bestOri = pathFinder.getBestInitialOrientation(_fastestPath);
 					explorer.adjustOrientationTo(bestOri);
+					
 				}
 				
 				return null;
@@ -579,15 +589,15 @@ public class Controller {
 				MazeExplorer explorer = MazeExplorer.getInstance();
 				AStarPathFinder pathFinder = AStarPathFinder.getInstance();
 	
-				if (!RobotSystem.isRealRun()) {
+				if(!RobotSystem.isRealRun()) {
 					_fastestPath = pathFinder.findFastestPath(MazeExplorer.START[0], MazeExplorer.START[1], 
 							_waypointPosition[0], _waypointPosition[1], explorer.getMazeRef());
 					_fastestPath2 = pathFinder.findFastestPath(_waypointPosition[0], _waypointPosition[1], 
 							MazeExplorer.GOAL[0], MazeExplorer.GOAL[1], explorer.getMazeRef());
-
+	
 					_fastestPath.combineSteps(_fastestPath2.getSteps());
 				}
-				
+				System.out.println("Fastest Path: Start");
 				pathFinder.moveRobotAlongFastestPath(_fastestPath, explorer.getRobotOrientation());
 				
 				ArrayList<Path.Step> steps = _fastestPath.getSteps();
@@ -679,6 +689,7 @@ public class Controller {
 				_robotPosition[0] = _robotPosition[0] - 1;
 		}
 		updateMazeColor();
+		System.out.println("MoveRobotForward: "+LocalTime.now());
 	}
 
 	public void turnRobotRight() {

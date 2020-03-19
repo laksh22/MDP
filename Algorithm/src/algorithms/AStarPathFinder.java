@@ -3,6 +3,7 @@ package algorithms;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.time.LocalTime;  
 
 import datatypes.Movement;
 import datatypes.Orientation;
@@ -33,7 +34,7 @@ public class AStarPathFinder {
     }
 	
 	public Path findFastestPath(int startX, int startY, int destinationX, int destinationY, int[][] mazeRef) {
-		
+		System.out.println("findFastestPath Start "+LocalTime.now());
 		init(mazeRef);
 		
 		_closed.clear();
@@ -42,21 +43,6 @@ public class AStarPathFinder {
 		_nodes[startX][startY]._pathCost = 0;
 		_nodes[startX][startY]._ori = Orientation.NORTH;
 		_open.add(_nodes[startX][startY]);
-		
-		//testing - check virtual map
-//		boolean[][] cleared = _virtualMap.getCleared();
-//		int value;
-//		for (int a = Arena.MAP_WIDTH - 1; a >= 0; a--) {
-//			for (int b = 0; b < Arena.MAP_LENGTH; b++) {
-//				if (cleared[b][a]) {
-//					value = 1;
-//				} else {
-//					value = 0;
-//				}
-//				System.out.print(value + " ");
-//			}
-//			System.out.println();
-//		}
 
 		while (_open.size() != 0) {
 			Node current = _open.getFirstNode();
@@ -111,12 +97,12 @@ public class AStarPathFinder {
 			target = target._parent;
 		}
 		path.prependStep(0, startX,startY);
-		
+		System.out.println("findFastestPath End "+LocalTime.now());
 		return path;
 	}
 	
 	public Orientation moveRobotAlongFastestPath(Path fastestPath, Orientation currentOrientation) {
-		return moveRobotAlongFastestPath(fastestPath, currentOrientation, true, true, false);
+		return moveRobotAlongFastestPath(fastestPath, currentOrientation, false, false, false);
 	}
 	
 	public Orientation moveRobotAlongFastestPath(Path fastestPath, Orientation currentOrientation, boolean isExploring, 
@@ -132,7 +118,7 @@ public class AStarPathFinder {
 		
 		int count = 0;
 		String moveMessage = "";
-		System.out.println("Fastest Path Start");
+		System.out.println("Fastest Path Start via AStarPathFinder "+LocalTime.now());
 		for (int i = 0; i < steps.size() - 1; i++) {
 			
 			tempPosition[0] = steps.get(i).getX();
@@ -145,25 +131,19 @@ public class AStarPathFinder {
 					nextPosition[0], nextPosition[1]);
 			if (nextOrientation == currentOrientation) {
 				count++;
-				if(count == 1)
-					moveMessage += "W|";
-				else
-					moveMessage += "tW|";
+
 			} else {
 				if (isExploring) {
 					for (int v = 0; v < count; v++) {
 						_robot.moveForward();
 						robotPosition = explorer.updateRobotPositionAfterMF(currentOrientation, robotPosition);
-						//if(!isImageRun)
-							explorer.setIsExplored(robotPosition, currentOrientation, hasCalibration);
+						explorer.setIsExplored(robotPosition, currentOrientation, hasCalibration);
 					}
 				} else {
-					if(RobotSystem.isRealRun())
-						_robot.moveForward(count, moveMessage);
-					else
+					System.out.println("AStarPathFinder: moving robot forward: "+count+" "+LocalTime.now());
+					if(count != 0)
 						_robot.moveForward(count);
 				}
-				System.out.println("Done moving straight in fastest");
 				count = 1;
 				ChangeRobotOrientation(currentOrientation, nextOrientation, isExploring, hasCalibration);
 			}
@@ -174,7 +154,7 @@ public class AStarPathFinder {
 				_robot.moveForward();
 				robotPosition = explorer.updateRobotPositionAfterMF(currentOrientation, robotPosition);
 				//if(!isImageRun)
-					explorer.setIsExplored(robotPosition, currentOrientation, hasCalibration);
+				explorer.setIsExplored(robotPosition, currentOrientation, hasCalibration);
 			}
 		} else {
 			_robot.moveForward(count);

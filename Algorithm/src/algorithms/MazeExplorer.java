@@ -1,10 +1,14 @@
 package algorithms;
 
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import algorithms.Path.Step;
+
 import java.util.HashMap; // import the HashMap class
 import java.util.LinkedHashSet;
 
@@ -33,7 +37,7 @@ public class MazeExplorer {
 	public static final int[] START = {1, 1};
 	private static final int INVALID_SENSOR_VALUE = -1;
 	private static final int CALIBRATION_THRESHOLD = 3;
-	
+	private static final int RIGHT_CALIBRATION_THRESHOLD = 2;
 	private static MazeExplorer _instance;
 	private Boolean[][] _isExplored;
 	private int[][] _mazeRef, rightWallRef, imageRef;
@@ -41,7 +45,9 @@ public class MazeExplorer {
 	private int[] _robotPosition;
 	private Orientation _robotOrientation;
 	private boolean _hasExploredTillGoal;
-	private boolean startImageRun = false;
+	private boolean startImageRun = false, nextRun = false;
+	private Path _fastestPathBack = null; 
+	private AStarPathFinder _pathFinder;
 	
 	private MazeExplorer() {
 	}
@@ -59,6 +65,11 @@ public class MazeExplorer {
 
 	public int[] getRobotPosition() {
 		return _robotPosition;
+	}
+	
+	private void setRobotPosition(int x, int y) {
+		_robotPosition[0] = x;
+		_robotPosition[1] = y;
 	}
 	
 	public Orientation getRobotOrientation() {
@@ -180,16 +191,12 @@ public class MazeExplorer {
 			findImage();
 		
 		//Current robot position is not at start point, find fastest path back to start point
-		if (!isGoalPos(_robotPosition, START)) {
-			System.out.println("Heading back to start point");
-			AStarPathFinder pathFinder = AStarPathFinder.getInstance();
-			Path backPath;
-			backPath = pathFinder.findFastestPath(_robotPosition[0], _robotPosition[1], START[0], START[1], _mazeRef);
-			_robotOrientation = pathFinder.moveRobotAlongFastestPath(backPath, _robotOrientation, false, false, false);
-		} 
+		System.out.println("After end");
+		fastestPathBackToStart(); 
+		
 		if (RobotSystem.isRealRun()) {
 			//Send Arduino the signal that exploration is done
-			_robotOrientation = _robot.calibrateAtStartZone(_robotOrientation);
+			//_robotOrientation = _robot.calibrateAtStartZone(_robotOrientation);
 			try {
 				PCClient pcClient = PCClient.getInstance();
 				pcClient.sendMessage(Message.EXPLORE_DONE + Message.SEPARATOR);
@@ -209,12 +216,29 @@ public class MazeExplorer {
 		}
 	}
 	
+	private void fastestPathBackToStart() {
+		System.out.println("Current pos: "+_robotPosition[0]+","+_robotPosition[1]);
+		if (!isGoalPos(_robotPosition, START)) {
+			System.out.println("Heading back to start point "+LocalTime.now());
+			AStarPathFinder pathFinder = AStarPathFinder.getInstance();
+			//Controller controller = Controller.getInstance();
+			//Path backPath = controller.getFastestPathBack();
+//			if(backPath != null) {
+				Path backPath = pathFinder.findFastestPath(_robotPosition[0], _robotPosition[1], START[0], START[1], _mazeRef);
+				_robotOrientation = pathFinder.moveRobotAlongFastestPath(backPath, _robotOrientation, false, false, false);
+				_robotOrientation = _robot.calibrateAtStartZone(_robotOrientation);
+				setRobotPosition(START[0], START[1]);
+//			}
+		} 
+	}
+	
 	public void hasNextRun() {
 		Controller controller = Controller.getInstance();
 		boolean end = false;
 		HashMap<Integer, int[]> positionHashMap = new HashMap<Integer, int[]>();
 		HashMap<Integer, Integer> positionHashMap2 = new HashMap<Integer, Integer>();
 		while (!controller.hasReachedTimeThreshold() && !areAllExplored() && !end) {
+			nextRun = true;
 			end = ExploreNextRound(_robotPosition, positionHashMap, positionHashMap2);
 		}
 	}
@@ -267,7 +291,6 @@ public class MazeExplorer {
 				break;
 			}
 			if (imageRef[obsX][obsY] == IS_OBSTACLE){
-				System.out.println("Finding Image In Middle!");
 				nextRobotPosition = getNearestRobotPositionTo(obsX, obsY, virtualMap, false);
 				
 				fastestPath = pathFinder.findFastestPath(_robotPosition[0], _robotPosition[1], nextRobotPosition[0], nextRobotPosition[1], _mazeRef);													
@@ -315,6 +338,12 @@ public class MazeExplorer {
 		if (RobotSystem.isRealRun()) {
 			Controller controller = Controller.getInstance();
 			PCClient pcClient = controller.getPCClient();
+			try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 			pcClient.sendMsgToRPI(msg);
 			
 			//send rpi obstacle message
@@ -721,65 +750,53 @@ public class MazeExplorer {
 				}
 			}
 		}
-	
+		
+//		for (int i = 12; i < 15; i++) {
+//			for(int j = 17; j < 20; j++) {
+//				_isExplored[i][j] = true;
+//				_mazeRef[i][j] = IS_EMPTY;
+//			}
+//		}
+//		
+//		for (int i = 0; i < 3; i++) {
+//			for(int j = 0; j < 3; j++) {
+//				_isExplored[i][j] = true;
+//				_mazeRef[i][j] = IS_EMPTY;
+//			}
+//		}
+		
 		Controller controller = Controller.getInstance();
 		controller.updateMazeColor();
-		
-		//Movement move;
+		System.out.println("Deadend: "+isDeadEnd(controller.getPosition(), controller.getOrientation()));
 		if (RobotSystem.isRealRun() && hasCalibration) {
-			
-//			if (canCalibrateAhead(msgSensorValues)) {
-//				_robot.calibrateRobotPosition();
-//				_robot.resetStepsSinceLastCalibration();
-//				if (canCalibrateLeft2(msgSensorValues)) {
-//					_robot.turnLeft();
-//					_robot.calibrateRobotPosition();
-//					_robot.turnRight();
-//					_robot.resetStepsSinceLastCalibration();
-//				} else if (canCalibrateRight2(msgSensorValues)) {
-//					_robot.turnRight();
-//					_robot.calibrateRobotPosition();
-//					_robot.turnLeft();
-//					_robot.resetStepsSinceLastCalibration();
-//				}
-//				
-//			} else {
-//				boolean needCalibration = _robot.getStepsSinceLastCalibration() > CALIBRATION_THRESHOLD;
-//				
-//				if (needCalibration) {
-//					if (canCalibrateLeft2(msgSensorValues)) {
-//						_robot.turnLeft();
-//						_robot.calibrateRobotPosition();
-//						_robot.turnRight();
-//						_robot.resetStepsSinceLastCalibration();
-//					} else if (canCalibrateRight2(msgSensorValues)) {
-//						_robot.turnRight();
-//						_robot.calibrateRobotPosition();
-//						_robot.turnLeft();
-//						_robot.resetStepsSinceLastCalibration();
-//					}
-//				}
+//			Movement rightCali = canCalibrateRight(controller.getPosition(), controller.getOrientation());
+//			if(rightCali == Movement.LR) {
+//				_robot.calibrateRobotPosition(Movement.Z);
 //			}
 			
 			if(!isGoalPos(_robotPosition, START)) {
 				Movement mc = canCalibrateFront(controller.getPosition(), controller.getOrientation());
-				if (mc == Movement.LR) {
+				boolean deadend = false;
+				if (mc == Movement.LR || mc == Movement.T || mc == Movement.Y ) {
 					_robot.calibrateRobotPosition(mc);
 					Movement mr = canCalibrateRight(controller.getPosition(), controller.getOrientation());
 					Movement ml = canCalibrateLeft(controller.getPosition(), controller.getOrientation());
 					if (mr != null) {
+						deadend = isDeadEnd(controller.getPosition(), controller.getOrientation());
+						
 						_robot.turnRight();
 						_robot.calibrateRobotPosition(mr);
-						_robot.turnLeft();
+						if(deadend)
+							_robot.turnRight();
+						else
+							_robot.turnLeft();
 						//_robot.turn180();
-						//updateRobotOrientation(Movement.TURN_LEFT);
 						_robot.resetStepsSinceLastCalibration();
 					}else if(ml != null){
 						_robot.turnLeft();
 						_robot.calibrateRobotPosition(ml);
 						_robot.turnRight();
 						//_robot.turn180();
-						//updateRobotOrientation(Movement.TURN_RIGHT);
 						_robot.resetStepsSinceLastCalibration();
 					}
 				} 
@@ -789,25 +806,40 @@ public class MazeExplorer {
 				}
 				else {
 					boolean needCalibration = _robot.getStepsSinceLastCalibration() > CALIBRATION_THRESHOLD;
-					//move = canCalibrateAside(robotPosition, ori);
+					
 					if (needCalibration && canCalibrateFront2(controller.getPosition(), controller.getOrientation()) != Movement.LR) {
 						Movement mr = canCalibrateRight(controller.getPosition(), controller.getOrientation());
 						Movement ml = canCalibrateLeft(controller.getPosition(), controller.getOrientation());
 						if (mr != null) {
 							_robot.turnRight();
-							_robot.calibrateRobotPosition(mr);
+							if(mr == Movement.LR)
+								_robot.calibrateRobotPosition();
+							else
+								_robot.calibrateRobotPosition(mr);
 							_robot.turnLeft();
 							_robot.resetStepsSinceLastCalibration();
 						}else if(ml != null){
 							_robot.turnLeft();
 							_robot.calibrateRobotPosition(ml);
-							_robot.turnRight();
+							if(mr == Movement.LR)
+								_robot.calibrateRobotPosition();
+							else
+								_robot.calibrateRobotPosition(mr);
 							_robot.resetStepsSinceLastCalibration();
 						}
 					}
 				}
 			}
 		}
+		
+//		_fastestPathBack = _pathFinder.findFastestPath(_robotPosition[0], _robotPosition[1], 
+//				MazeExplorer.START[0], MazeExplorer.START[1], getMazeRef());
+//		
+//		System.out.println("Explored all?: "+areAllExplored());
+//		if(areAllExplored() && !startImageRun && !nextRun) {
+//			_fastestPathBack = controller.getFastestPathBack();
+//			fastestPathBackToStart(); 
+//		}
 	}
 
 	public Orientation updateRobotOrientation (Movement move) {
@@ -960,7 +992,6 @@ public class MazeExplorer {
 				}
 		}
 		
-		
 	}
 
 	public void init(int[] robotPosition, Orientation robotOrientation) {
@@ -970,6 +1001,7 @@ public class MazeExplorer {
 		_robotPosition[1] = robotPosition[1];
 		_robotOrientation = robotOrientation;
 		_hasExploredTillGoal = false;
+		_pathFinder  = AStarPathFinder.getInstance();
 		_isExplored = new Boolean[Arena.MAP_LENGTH][Arena.MAP_WIDTH];
 		_mazeRef = new int[Arena.MAP_LENGTH][Arena.MAP_WIDTH];
 		rightWallRef = new int[Arena.MAP_LENGTH][Arena.MAP_WIDTH];
@@ -1109,7 +1141,8 @@ public class MazeExplorer {
 		boolean isClearedAhead;
 		for (int radius = 2; radius <= Sensor.LONG_RANGE; radius ++) {
 			for (int y = 0; y <= obsY + radius; y++) {
-				for (int x = 0; x <= obsX + radius; x++) {
+				//for (int x = 0; x <= obsX + radius; x++) {
+				for (int x = obsX + radius; x >= 0; x--) {
 					if (x == obsX - radius || x == obsX + radius || y == obsY - radius || y == obsY + radius) {
 						if (x >= 0 && y >= 0 && x < Arena.MAP_LENGTH && y < Arena.MAP_WIDTH) {
 							if (cleared[x][y]) {
@@ -1233,9 +1266,8 @@ public class MazeExplorer {
 	private void exploreAlongWall (int[] goalPos) {
 		Controller controller = Controller.getInstance();
 		PCClient pc = PCClient.getInstance();
-		while (!isGoalPos(_robotPosition, goalPos) && !controller.hasReachedTimeThreshold()) {
+		while (!isGoalPos(_robotPosition, goalPos) && !controller.hasReachedTimeThreshold() && !areAllExplored()) {
 			int rightStatus = checkRightSide(_robotPosition, _robotOrientation);
-			
 			updateWall(_robotPosition, _robotOrientation);
 			
 			if (rightStatus != RIGHT_NO_ACCESS) {
@@ -1270,6 +1302,12 @@ public class MazeExplorer {
 				_robot.turnLeft();
 				updateRobotOrientation(Movement.TURN_LEFT);
 				setIsExplored(_robotPosition, _robotOrientation, true);
+			}
+				
+//			System.out.println("Explored all?: "+areAllExplored());
+			if(areAllExplored()) {
+				_fastestPathBack = controller.getFastestPathBack();
+				fastestPathBackToStart(); 
 			}
 		}
 	}
@@ -1578,11 +1616,11 @@ private void eraseWall(int[] curPos, Orientation ori) {
 				case NORTH:
 					if(checkObstacleFront(x-1, y+2, Orientation.NORTH) && checkObstacleFront(x+1, y+2, Orientation.NORTH))
 						return Movement.LR;
-//					else if (checkObstacle(x-1, y+2, Orientation.NORTH) && checkObstacle(x, y+2, Orientation.NORTH))
-//						return Movement.LM;
-//					else if (checkObstacle(x, y+2, Orientation.NORTH) && checkObstacle(x+1, y+2, Orientation.NORTH) )
-//						return Movement.MR;
-					else if (checkObstacleFront(x, y+2, Orientation.NORTH))
+					if (checkObstacleFront(x-1, y+2, Orientation.NORTH) && checkObstacleFront(x, y+2, Orientation.NORTH))
+						return Movement.T;
+					else if (checkObstacleFront(x, y+2, Orientation.NORTH) && checkObstacleFront(x+1, y+2, Orientation.NORTH) )
+						return Movement.Y;
+					if (checkObstacleFront(x, y+2, Orientation.NORTH))
 						return Movement.M;
 					else if (checkObstacleFront(x-1, y+2, Orientation.NORTH) )
 						return Movement.L;
@@ -1593,11 +1631,11 @@ private void eraseWall(int[] curPos, Orientation ori) {
 				case SOUTH:
 					if(checkObstacleFront(x-1, y-2, Orientation.SOUTH) && checkObstacleFront(x+1, y-2, Orientation.SOUTH))
 						return Movement.LR;
-//					else if (checkObstacle(x+1, y-2, Orientation.NORTH) && checkObstacle(x, y-2, Orientation.NORTH))
-//						return Movement.LM;
-//					else if (checkObstacle(x, y-2, Orientation.NORTH) && checkObstacle(x-1, y-2, Orientation.NORTH) )
-//						return Movement.MR;
-					else if (checkObstacleFront(x, y-2, Orientation.SOUTH))
+					else if (checkObstacleFront(x+1, y-2, Orientation.NORTH) && checkObstacleFront(x, y-2, Orientation.NORTH))
+						return Movement.T;
+					else if (checkObstacleFront(x, y-2, Orientation.NORTH) && checkObstacleFront(x-1, y-2, Orientation.NORTH) )
+						return Movement.Y;
+					if (checkObstacleFront(x, y-2, Orientation.SOUTH))
 						return Movement.M;
 					else if (checkObstacleFront(x+1, y-2, Orientation.SOUTH) )
 						return Movement.L;
@@ -1608,11 +1646,11 @@ private void eraseWall(int[] curPos, Orientation ori) {
 				case EAST:
 					if(checkObstacleFront(x+2, y+1, Orientation.EAST) && checkObstacleFront(x+2, y-1, Orientation.EAST))
 						return Movement.LR;
-//					else if (checkObstacle(x+2, y+1, Orientation.NORTH) && checkObstacle(x+2, y, Orientation.NORTH))
-//						return Movement.LM;
-//					else if (checkObstacle(x+2, y, Orientation.NORTH) && checkObstacle(x+2, y-1, Orientation.NORTH) )
-//						return Movement.MR;
-					else if (checkObstacleFront(x+2, y, Orientation.EAST))
+					else if (checkObstacleFront(x+2, y+1, Orientation.NORTH) && checkObstacleFront(x+2, y, Orientation.NORTH))
+						return Movement.T;
+					else if (checkObstacleFront(x+2, y, Orientation.NORTH) && checkObstacleFront(x+2, y-1, Orientation.NORTH) )
+						return Movement.Y;
+					if (checkObstacleFront(x+2, y, Orientation.EAST))
 						return Movement.M;
 					else if (checkObstacleFront(x+2, y+1, Orientation.EAST) )
 						return Movement.L;
@@ -1622,11 +1660,11 @@ private void eraseWall(int[] curPos, Orientation ori) {
 				case WEST:
 					if(checkObstacleFront(x-2, y+1, Orientation.WEST) && checkObstacleFront(x-2, y-1, Orientation.WEST))
 						return Movement.LR;
-//					else if (checkObstacle(x-2, y, Orientation.NORTH) && checkObstacle(x-2, y-1, Orientation.NORTH))
-//						return Movement.LM;
-//					else if (checkObstacle(x-2, y, Orientation.NORTH) && checkObstacle(x-2, y+1, Orientation.NORTH) )
-//						return Movement.MR;
-					else if (checkObstacleFront(x-2, y, Orientation.WEST))
+					else if (checkObstacleFront(x-2, y, Orientation.NORTH) && checkObstacleFront(x-2, y-1, Orientation.NORTH))
+						return Movement.T;
+					else if (checkObstacleFront(x-2, y, Orientation.NORTH) && checkObstacleFront(x-2, y+1, Orientation.NORTH) )
+						return Movement.Y;
+					if (checkObstacleFront(x-2, y, Orientation.WEST))
 						return Movement.M;
 					else if (checkObstacleFront(x-2, y-1, Orientation.WEST) )
 						return Movement.L;
@@ -1704,10 +1742,10 @@ private Movement canCalibrateFront2(int[] robotPosition, Orientation ori) {
 			case NORTH:
 				if(checkObstacleLeft(x-2, y+1, Orientation.NORTH) && checkObstacleLeft(x-2, y-1, Orientation.NORTH))
 					return Movement.LR;
-//				else if (checkObstacleLeft(x-2, y, Orientation.NORTH) && checkObstacleLeft(x-2, y-1, Orientation.NORTH))
-//					return Movement.LM;
-//				else if (checkObstacleLeft(x-2, y, Orientation.NORTH) && checkObstacleLeft(x-2, y+1, Orientation.NORTH) )
-//					return Movement.MR;
+				else if (checkObstacleLeft(x-2, y, Orientation.NORTH) && checkObstacleLeft(x-2, y-1, Orientation.NORTH))
+					return Movement.T;
+				else if (checkObstacleLeft(x-2, y, Orientation.NORTH) && checkObstacleLeft(x-2, y+1, Orientation.NORTH) )
+					return Movement.Y;
 				else if (checkObstacleLeft(x-2, y, Orientation.NORTH))
 					return Movement.M;
 				else if (checkObstacleLeft(x-2, y-1, Orientation.NORTH) )
@@ -1718,10 +1756,10 @@ private Movement canCalibrateFront2(int[] robotPosition, Orientation ori) {
 			case SOUTH:
 				if(checkObstacleLeft(x+2, y+1, Orientation.SOUTH) && checkObstacleLeft(x+2, y-1, Orientation.SOUTH))
 					return Movement.LR;
-//				else if (checkObstacleLeft(x+2, y+1, Orientation.SOUTH) && checkObstacleLeft(x+2, y, Orientation.SOUTH))
-//					return Movement.LM;
-//				else if (checkObstacleLeft(x+2, y, Orientation.SOUTH) && checkObstacleLeft(x+2, y-1, Orientation.SOUTH) )
-//					return Movement.MR;
+				else if (checkObstacleLeft(x+2, y+1, Orientation.SOUTH) && checkObstacleLeft(x+2, y, Orientation.SOUTH))
+					return Movement.T;
+				else if (checkObstacleLeft(x+2, y, Orientation.SOUTH) && checkObstacleLeft(x+2, y-1, Orientation.SOUTH) )
+					return Movement.Y;
 				else if (checkObstacleLeft(x+2, y, Orientation.SOUTH))
 					return Movement.M;
 				else if (checkObstacleLeft(x+2, y+1, Orientation.SOUTH) )
@@ -1732,10 +1770,10 @@ private Movement canCalibrateFront2(int[] robotPosition, Orientation ori) {
 			case EAST:
 				if(checkObstacleLeft(x-1, y+2, Orientation.EAST) && checkObstacleLeft(x+1, y+2, Orientation.EAST))
 					return Movement.LR;
-//				else if (checkObstacleLeft(x-1, y+2, Orientation.EAST) && checkObstacleLeft(x, y+2, Orientation.EAST))
-//					return Movement.LM;
-//				else if (checkObstacleLeft(x, y+2, Orientation.EAST) && checkObstacleLeft(x+1, y+2, Orientation.EAST) )
-//					return Movement.MR;
+				else if (checkObstacleLeft(x-1, y+2, Orientation.EAST) && checkObstacleLeft(x, y+2, Orientation.EAST))
+					return Movement.T;
+				else if (checkObstacleLeft(x, y+2, Orientation.EAST) && checkObstacleLeft(x+1, y+2, Orientation.EAST) )
+					return Movement.Y;
 				else if (checkObstacleLeft(x, y+2, Orientation.EAST))
 					return Movement.M;
 				else if (checkObstacleLeft(x-1, y+2, Orientation.EAST) )
@@ -1747,10 +1785,10 @@ private Movement canCalibrateFront2(int[] robotPosition, Orientation ori) {
 				
 				if(checkObstacleLeft(x-1, y-2, Orientation.WEST) && checkObstacleLeft(x+1, y-2, Orientation.WEST))
 					return Movement.LR;
-//				else if (checkObstacleLeft(x+1, y-2, Orientation.WEST) && checkObstacleLeft(x, y-2, Orientation.WEST))
-//					return Movement.LM;
-//				else if (checkObstacleLeft(x, y-2, Orientation.WEST) && checkObstacleLeft(x-1, y-2, Orientation.WEST) )
-//					return Movement.MR;
+				else if (checkObstacleLeft(x+1, y-2, Orientation.WEST) && checkObstacleLeft(x, y-2, Orientation.WEST))
+					return Movement.T;
+				else if (checkObstacleLeft(x, y-2, Orientation.WEST) && checkObstacleLeft(x-1, y-2, Orientation.WEST) )
+					return Movement.Y;
 				else if (checkObstacleLeft(x, y-2, Orientation.WEST))
 					return Movement.M;
 				else if (checkObstacleLeft(x+1, y-2, Orientation.WEST) )
@@ -1761,7 +1799,39 @@ private Movement canCalibrateFront2(int[] robotPosition, Orientation ori) {
 		}
 		
 		return null;
-		//return msgSensorValues.matches(Message.CALIBRATE_PATTERN_RIGHT_WALL);
+	}
+	
+	private boolean isDeadEnd(int[] robotPosition, Orientation ori) {
+		int x = robotPosition[0];
+		int y = robotPosition[1];
+		switch(ori) {
+			case NORTH:
+				if((checkObstacleFront(x-1,y+2,Orientation.NORTH) || checkObstacleFront(x,y+2,Orientation.NORTH) || checkObstacleFront(x+1,y+2,Orientation.NORTH)) &&
+				(checkObstacleLeft(x-2,y+1,Orientation.NORTH) || checkObstacleLeft(x-2,y,Orientation.NORTH) || checkObstacleLeft(x-2,y-1,Orientation.NORTH)) &&
+				(checkObstacle(x+2,y+1,Orientation.NORTH) || checkObstacle(x+2,y,Orientation.NORTH) || checkObstacle(x+2,y-1,Orientation.NORTH))) 
+					return true;
+				break;
+			case SOUTH:
+				if((checkObstacle(x-2,y+1,Orientation.SOUTH) || checkObstacle(x-2,y,Orientation.SOUTH) || checkObstacle(x-2,y-1,Orientation.SOUTH)) &&
+				(checkObstacleLeft(x+2,y+1,Orientation.SOUTH) || checkObstacleLeft(x+2,y,Orientation.SOUTH) || checkObstacleLeft(x+2,y-1,Orientation.SOUTH)) &&
+				(checkObstacleFront(x-1,y-2,Orientation.SOUTH) || checkObstacleFront(x,y-2,Orientation.SOUTH) || checkObstacleFront(x+1,y-2,Orientation.SOUTH)))
+					return true;
+				break;
+			case EAST:
+				if((checkObstacleLeft(x-1,y+2,Orientation.EAST) || checkObstacleLeft(x,y+2,Orientation.EAST) || checkObstacleLeft(x+1,y+2,Orientation.EAST)) &&
+				(checkObstacleFront(x+2,y+1,Orientation.EAST) || checkObstacleFront(x+2,y,Orientation.EAST) || checkObstacleFront(x+2,y-1,Orientation.EAST)) &&
+				(checkObstacle(x-1,y-2,Orientation.EAST) || checkObstacle(x,y-2,Orientation.EAST) || checkObstacle(x+1,y-2,Orientation.EAST)))
+					return true;
+				break;
+			case WEST:
+				if((checkObstacle(x-1,y+2,Orientation.WEST) || checkObstacle(x,y+2,Orientation.WEST) || checkObstacle(x+1,y+2,Orientation.WEST)) &&
+				(checkObstacleFront(x-2,y+1,Orientation.WEST) || checkObstacleFront(x-2,y,Orientation.WEST) || checkObstacleFront(x-2,y-1,Orientation.WEST)) &&
+				(checkObstacleLeft(x-1,y-2,Orientation.WEST) || checkObstacleLeft(x,y-2,Orientation.WEST) || checkObstacleLeft(x+1,y-2,Orientation.WEST)))
+					return true;
+				break;
+		}
+		
+		return false;
 	}
 	
 	private Movement canCalibrateRight(int[] robotPosition, Orientation ori) {
@@ -1771,10 +1841,10 @@ private Movement canCalibrateFront2(int[] robotPosition, Orientation ori) {
 			case NORTH:
 				if(checkObstacle(x+2, y+1, Orientation.NORTH) && checkObstacle(x+2, y-1, Orientation.NORTH))
 					return Movement.LR;
-//				else if (checkObstacle(x+2, y+1, Orientation.NORTH) && checkObstacle(x+2, y, Orientation.NORTH))
-//					return Movement.LM;
-//				else if (checkObstacle(x+2, y, Orientation.NORTH) && checkObstacle(x+2, y-1, Orientation.NORTH) )
-//					return Movement.MR;
+				else if (checkObstacle(x+2, y+1, Orientation.NORTH) && checkObstacle(x+2, y, Orientation.NORTH))
+					return Movement.T;
+				else if (checkObstacle(x+2, y, Orientation.NORTH) && checkObstacle(x+2, y-1, Orientation.NORTH) )
+					return Movement.Y;
 				else if (checkObstacle(x+2, y, Orientation.NORTH))
 					return Movement.M;
 				else if (checkObstacle(x+2, y+1, Orientation.NORTH) )
@@ -1785,10 +1855,10 @@ private Movement canCalibrateFront2(int[] robotPosition, Orientation ori) {
 			case SOUTH:
 				if(checkObstacle(x-2, y+1, Orientation.SOUTH) && checkObstacle(x-2, y-1, Orientation.SOUTH))
 					return Movement.LR;
-//				else if (checkObstacle(x-2, y, Orientation.SOUTH) && checkObstacle(x-2, y-1, Orientation.SOUTH))
-//					return Movement.LM;
-//				else if (checkObstacle(x-2, y, Orientation.SOUTH) && checkObstacle(x-2, y+1, Orientation.SOUTH) )
-//					return Movement.MR;
+				else if (checkObstacle(x-2, y, Orientation.SOUTH) && checkObstacle(x-2, y-1, Orientation.SOUTH))
+					return Movement.T;
+				else if (checkObstacle(x-2, y, Orientation.SOUTH) && checkObstacle(x-2, y+1, Orientation.SOUTH) )
+					return Movement.Y;
 				else if (checkObstacle(x-2, y, Orientation.SOUTH))
 					return Movement.M;
 				else if (checkObstacle(x-2, y-1, Orientation.SOUTH))
@@ -1799,10 +1869,10 @@ private Movement canCalibrateFront2(int[] robotPosition, Orientation ori) {
 			case EAST:
 				if(checkObstacle(x-1, y-2, Orientation.EAST) && checkObstacle(x+1, y-2, Orientation.EAST)) 
 					return Movement.LR;
-//				else if (checkObstacle(x+1, y-2, Orientation.EAST) && checkObstacle(x, y-2, Orientation.EAST))
-//					return Movement.LM;
-//				else if (checkObstacle(x, y-2, Orientation.EAST) && checkObstacle(x-1, y-2, Orientation.EAST) )
-//					return Movement.MR;
+				else if (checkObstacle(x+1, y-2, Orientation.EAST) && checkObstacle(x, y-2, Orientation.EAST))
+					return Movement.T;
+				else if (checkObstacle(x, y-2, Orientation.EAST) && checkObstacle(x-1, y-2, Orientation.EAST) )
+					return Movement.Y;
 				else if (checkObstacle(x, y-2, Orientation.EAST))
 					return Movement.M;
 				else if (checkObstacle(x+1, y-2, Orientation.EAST))
@@ -1813,10 +1883,10 @@ private Movement canCalibrateFront2(int[] robotPosition, Orientation ori) {
 			case WEST:
 				if(checkObstacle(x-1, y+2, Orientation.WEST) && checkObstacle(x+1, y+2, Orientation.WEST))
 					return Movement.LR;
-//				else if (checkObstacle(x-1, y+2, Orientation.WEST) && checkObstacle(x, y+2, Orientation.WEST))
-//					return Movement.LM;
-//				else if (checkObstacle(x, y+2, Orientation.WEST) && checkObstacle(x+1, y+2, Orientation.WEST) )
-//					return Movement.MR;
+				else if (checkObstacle(x-1, y+2, Orientation.WEST) && checkObstacle(x, y+2, Orientation.WEST))
+					return Movement.T;
+				else if (checkObstacle(x, y+2, Orientation.WEST) && checkObstacle(x+1, y+2, Orientation.WEST) )
+					return Movement.Y;
 				else if (checkObstacle(x, y+2, Orientation.WEST))
 					return Movement.M;
 				else if (checkObstacle(x-1, y+2, Orientation.WEST) )
@@ -1827,7 +1897,6 @@ private Movement canCalibrateFront2(int[] robotPosition, Orientation ori) {
 		}
 		
 		return null;
-		//return msgSensorValues.matches(Message.CALIBRATE_PATTERN_RIGHT_WALL);
 	}
 	
 	private boolean checkObstacleFront(int x, int y, Orientation ori) {

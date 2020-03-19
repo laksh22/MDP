@@ -1,6 +1,7 @@
 package simulator.robot;
 
 import java.io.IOException;
+import java.time.LocalTime;
 
 import algorithms.MazeExplorer;
 import datatypes.Message;
@@ -239,60 +240,43 @@ public class Robot {
 		sendToAndroid();
 	}
 	
-	public void moveForward(int count, String msg) {
-		
-		Controller controller = Controller.getInstance();
-		PCClient pcClient = controller.getPCClient();
-		if (!RobotSystem.isRealRun()) {
-			int stepTime = 1000 / _speed;
-			for (int i = 0; i < count; i++) {
-				try {
-					Thread.sleep(stepTime);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-		
-				controller.moveRobotForward();
-			}
-		} else {
-//			try {
-//				if (count >= 10) {
-//					pcClient.sendMessage(Message.MOVE_FORWARD + count % 10 + count / 10 +  "|");
-//				} else {
-//					pcClient.sendMessage(Message.MOVE_FORWARD + count + Message.SEPARATOR);
+//	public void moveForward(int count, String msg) {
+//		
+//		Controller controller = Controller.getInstance();
+//		PCClient pcClient = controller.getPCClient();
+//		if (!RobotSystem.isRealRun()) {
+//			int stepTime = 1000 / _speed;
+//			for (int i = 0; i < count; i++) {
+//				try {
+//					Thread.sleep(stepTime);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
 //				}
+//		
+//				controller.moveRobotForward();
+//			}
+//		} else {
+//			
+//			try {
 //				
-//				String feedback = pcClient.readMessage();
 //				for (int i = 0; i < count; i++) {
-//					while (!feedback.equals(Message.DONE)) {
-//						feedback = pcClient.readMessage();
-//					}
 //					controller.moveRobotForward();
 //				}
+//				
+//				String feedback = "";
+//				int c = 0;				
+//				pcClient.sendMessage(msg);
+//				while (c != count) {
+//					feedback = pcClient.readMessage();
+//					if(feedback.equals(Message.DONE))
+//						c++;
+//				}
 //			} catch (IOException e) {
+//				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
-			
-			try {
-				
-				for (int i = 0; i < count; i++) {
-					controller.moveRobotForward();
-				}
-				
-				String feedback = "";
-				int c = 0;				
-				pcClient.sendMessage(msg);
-				while (c != count) {
-					feedback = pcClient.readMessage();
-					if(feedback.equals(Message.DONE))
-						c++;
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+//		}
+//	}
 	
 public void moveForward(int count) {
 		
@@ -309,7 +293,26 @@ public void moveForward(int count) {
 		
 				controller.moveRobotForward();
 			}
-		} 
+		} else {
+			try {
+				System.out.println("Robot: Moving robot straight: "+count+" "+LocalTime.now());
+				for (int i = 0; i < count; i++) {
+					controller.moveRobotForward();
+				}
+				System.out.println("Robot: Moving robot straight via RPI: "+count+" "+LocalTime.now());
+				pcClient.sendMessage(Integer.toString(count));
+				
+				String feedback = pcClient.readMessage();	
+				while (!feedback.equals(Message.DONE)) {
+					System.out.println("Waiting: "+LocalTime.now());
+					feedback = pcClient.readMessage();
+				}
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void sendToAndroid() {
@@ -327,16 +330,19 @@ public void moveForward(int count) {
 	}
 
 	public void calibrateRobotPosition() {
-		Controller controller = Controller.getInstance();
-		PCClient pcClient = controller.getPCClient();
-		try {
-			pcClient.sendMessage(Message.CALIBRATE + Message.SEPARATOR);
-			String feedback = pcClient.readMessage();
-			while (!feedback.equals(Message.DONE)) {
-				feedback = pcClient.readMessage();
+		
+		if (RobotSystem.isRealRun()) {
+			Controller controller = Controller.getInstance();
+			PCClient pcClient = controller.getPCClient();
+			try {
+				pcClient.sendMessage(Message.CALIBRATE + Message.SEPARATOR);
+				String feedback = pcClient.readMessage();
+				while (!feedback.equals(Message.DONE)) {
+					feedback = pcClient.readMessage();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 	
