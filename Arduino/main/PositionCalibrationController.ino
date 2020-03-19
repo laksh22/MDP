@@ -12,9 +12,9 @@
 #define ROT_R_UPPER ROT_R_LOWER + 20
 #define ROT_SIDE_LOWER 106 // Right side rotation
 #define ROT_SIDE_UPPER ROT_SIDE_LOWER + 20
-#define MAX_ROTATION_COUNT_RIGHT 100
-#define MAX_ROTATION_COUNT_FRONT 100
-#define MAX_DIST_COUNT 100
+#define MAX_ROTATION_COUNT_RIGHT 40
+#define MAX_ROTATION_COUNT_FRONT 50
+#define MAX_DIST_COUNT 70
 
 void calibrateRightAngle() // ID = 2
 {
@@ -176,11 +176,11 @@ void calibrateDistanceL(int id, bool calibrateAngle)
 
         if (LFdistance > DIST_L_UPPER)
         {
-            moveForwardCalib(0.001);
+            moveForwardCalib(0.01);
         }
         else if (LFdistance < DIST_L_LOWER)
         {
-            moveBackwardCalib(0.001);
+            moveBackwardCalib(0.01);
         }
 
         else

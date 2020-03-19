@@ -159,17 +159,17 @@ int gridsRF()
 
 int gridsF()
 {
-    int buffer = 10;
+    int buffer = 15;
     int sensorVals[buffer];
     for(int i = 0; i < buffer; i++){
       sensorVals[i] = sensorF.distance();
     }
     int dis = findMedian(sensorVals, buffer);
 
-    if (dis <= 16)
+    if (dis <= 15)
         return 1;
 
-    else if (dis > 16 && dis <= 28)
+    else if (dis > 15 && dis <= 26)
         return 2;
 
     else
@@ -178,12 +178,17 @@ int gridsF()
 
 int gridsFL()
 {
-    int dis = sensorFL.distance();
+    int buffer = 4;
+    int sensorVals[buffer];
+    for(int i = 0; i < buffer; i++){
+      sensorVals[i] = sensorFL.distance();
+    }
+    int dis = findMedian(sensorVals, buffer);
 
-    if (dis <= 19)
+    if (dis <= 18)
         return 1;
 
-    else if (dis > 19 && dis <= 30)
+    else if (dis > 18 && dis <= 30)
         return 2;
 
     else
@@ -192,12 +197,17 @@ int gridsFL()
 
 int gridsFR()
 {
-    float dis = sensorFR.distance();
+    int buffer = 4;
+    int sensorVals[buffer];
+    for(int i = 0; i < buffer; i++){
+      sensorVals[i] = sensorFR.distance();
+    }
+    int dis = findMedian(sensorVals, buffer);
 
-    if (dis <= 17)
+    if (dis <= 16)
         return 1;
 
-    else if (dis > 17 && dis <= 27)
+    else if (dis > 16 && dis <= 27)
         return 2;
 
     else
