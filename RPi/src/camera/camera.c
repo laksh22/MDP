@@ -159,7 +159,9 @@ void *read_img_labels() {
 
   // Endless loop
   while (1) {
-    // Process file in IMAGES_FOUND_DIR
+    // Find files in IMAGES_FOUND_DIR
+    l_files_in_dir(IMAGES_FOUND_DIR, l);
+
     if (l->size > pre_list_idx) {
       // New filenames found, send new filenames to RPi
       for (loop_idx = pre_list_idx; loop_idx < l->size; loop_idx++) {
