@@ -74,7 +74,7 @@ if __name__ == "__main__":
                     # Write file back to RPi if object is found
                     if detected_img_name:
                         # Copy the file with the send string as name
-                        block_name = "@bBLOCK-" + detected_img_name.split(".jpeg")[0] + "!"
+                        block_name = "@bBLOCK-" + detected_img_name.split(".jpeg")[0]
                         shutil.copy(LOCAL_IMAGES_FOUND_DIR + detected_img_name, LOCAL_IMAGES_FOUND_DIR + block_name)
 
                         # Navigate to IMAGES_FOUND_DIR
