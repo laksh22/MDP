@@ -82,9 +82,19 @@ void printSensors(int type)
         Serial.println(l);
     } else 
     {
-        int RBdistance = sensorRB.distance() * 100;
-        int RFdistance = sensorRF.distance() * 100;
-        int error = RBdistance - RFdistance;
+//       int FLdistance = sensorFL.distance() * 100;
+//        int Fdistance = sensorF.distance() * 100;
+//        int error = FLdistance - Fdistance;
+
+//        int FLdistance = sensorFL.distance() * 100;
+//        int FRdistance = sensorFR.distance() * 100;
+//        int error = FRdistance - FLdistance;
+
+        int Fdistance = sensorF.distance() * 100;
+        int FRdistance = sensorFR.distance() * 100;
+        int error = Fdistance - FRdistance;
+
+        
         Serial.println(error);
     }
 
@@ -109,7 +119,12 @@ void sendSensors(char source)
 
 int gridsRB()
 {
-    int dis = sensorRB.distance();
+    int buffer = 15;
+    int sensorVals[buffer];
+    for(int i = 0; i < buffer; i++){
+      sensorVals[i] = sensorRB.distance();
+    }
+    int dis = findMedian(sensorVals, buffer);
 
     if (dis <= 20)
         return 1;
@@ -123,7 +138,12 @@ int gridsRB()
 
 int gridsL()
 {
-    int dis = sensorL.distance();
+    int buffer = 15;
+    int sensorVals[buffer];
+    for(int i = 0; i < buffer; i++){
+      sensorVals[i] = sensorL.distance();
+    }
+    int dis = findMedian(sensorVals, buffer);
     if (dis <= 19)
         return 1;
 
@@ -169,7 +189,7 @@ int gridsF()
     if (dis <= 15)
         return 1;
 
-    else if (dis > 15 && dis <= 26)
+    else if (dis > 15 && dis <= 28)
         return 2;
 
     else
@@ -178,7 +198,7 @@ int gridsF()
 
 int gridsFL()
 {
-    int buffer = 4;
+    int buffer = 15;
     int sensorVals[buffer];
     for(int i = 0; i < buffer; i++){
       sensorVals[i] = sensorFL.distance();
@@ -197,7 +217,7 @@ int gridsFL()
 
 int gridsFR()
 {
-    int buffer = 4;
+    int buffer = 15;
     int sensorVals[buffer];
     for(int i = 0; i < buffer; i++){
       sensorVals[i] = sensorFR.distance();
@@ -207,7 +227,7 @@ int gridsFR()
     if (dis <= 16)
         return 1;
 
-    else if (dis > 16 && dis <= 27)
+    else if (dis > 16 && dis <= 25)
         return 2;
 
     else

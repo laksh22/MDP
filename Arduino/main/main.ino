@@ -9,19 +9,24 @@
 //#define LEFT_ROTATE_DEGREES 90
 //#define RIGHT_ROTATE_DEGREES 91
 #define LEFT_ROTATE_DEGREES 87
-#define RIGHT_ROTATE_DEGREES 88
-#define ROTATE_LEFT_180 184.5
+#define RIGHT_ROTATE_DEGREES 87.5
+#define ROTATE_LEFT_180 184.5             
 
 //Move Forward fixed distance
-#define FORWARD_DISTANCE 9.6
-#define MULTIPLE_FORWARD_FACTOR 4.1 / 3
+#define FORWARD_DISTANCE 9.85
+#define FORWARD_DISTANCE_MULTIPLE 9.6
+#define MULTIPLE_FORWARD_FACTOR 4.65 / 3
 
 //Move Forward Staight/
 //#define LEFT_RPM 69
 //#define RIGHT_RPM 67.5
-#define LEFT_RPM 100
-#define RIGHT_RPM 98.5
-  
+//#define LEFT_RPM 100
+//#define RIGHT_RPM 95
+#define LEFT_RPM 85
+#define RIGHT_RPM 78.5   
+#define LEFT_RPM_MULTIPLE 100
+#define RIGHT_RPM_MULTIPLE 93.5
+
 
 // For communication
 char source = 't';
@@ -40,7 +45,7 @@ double speedL, speedR; // In PWM
 // For operation mode
 bool FASTEST_PATH = false;
 bool DEBUG = true;
-byte delayExplore = 2.5;
+byte delayExplore = 10;
 byte delayFastestPath = 1;
 
 // For PID
@@ -85,7 +90,7 @@ void setup()
 
 void loop()
 {
-  //printSensors(1);
+  //printSensors(2);
   runCommands();
 }
 
@@ -227,31 +232,31 @@ void runCommands()
   }
   case '4':
   {
-    moveForward(FORWARD_DISTANCE * 4 + MULTIPLE_FORWARD_FACTOR * 3);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 4 + MULTIPLE_FORWARD_FACTOR * 3);
     sendAck();
     break;
   }
   case '5':
   {
-    moveForward(FORWARD_DISTANCE * 5 + MULTIPLE_FORWARD_FACTOR * 4);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 5 + MULTIPLE_FORWARD_FACTOR * 4);
     sendAck();
     break;
   }
   case '6':
   {
-    moveForward(FORWARD_DISTANCE * 6 + MULTIPLE_FORWARD_FACTOR * 5);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 6 + MULTIPLE_FORWARD_FACTOR * 5);
     sendAck();
     break;
   }
   case '7':
   {
-    moveForward(FORWARD_DISTANCE * 7 + MULTIPLE_FORWARD_FACTOR * 6);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 7 + MULTIPLE_FORWARD_FACTOR * 6);
     sendAck();
     break;
   }
   case '8':
   {
-    moveForward(FORWARD_DISTANCE * 8 + MULTIPLE_FORWARD_FACTOR * 7);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 8 + MULTIPLE_FORWARD_FACTOR * 7);
     sendAck();
     break;
   }
