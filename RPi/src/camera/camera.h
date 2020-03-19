@@ -10,7 +10,7 @@ int save_coord_orientation(char *coord_orientation);
 int create_work_directories();
 
 // Count number of files in a directory
-int count_files_in_dir(char *path)
+int count_files_in_dir(char *path);
 
 // Get all file names in directory and save it into a string array
 // returns the number of files in directory

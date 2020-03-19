@@ -68,7 +68,7 @@ int count_files_in_dir(char *path) {
     perror("[count_files] Could not open directory");
     return -1;
   }
-  return fileCount;
+  return file_count;
 }
 
 int files_in_dir(char *path, char ***files) {
@@ -80,11 +80,11 @@ int files_in_dir(char *path, char ***files) {
     printf("[files_in_dir] Files in folder [%s]: ", path);
     while ((entry = readdir(dir)) != NULL) {
       if (entry->d_type == DT_REG) {
-        *files = realloc(*files, sizeof(**files) * (n + 1));
+        *files = realloc(*files, sizeof(**files) * (file_count + 1));
         // Remember to free from calling function
-        (*files)[n] = malloc(strlen(entry->d_name));
-        strcpy((*files)[n], entry->d_name);
-        n++;
+        (*files)[file_count] = malloc(strlen(entry->d_name));
+        strcpy((*files)[file_count], entry->d_name);
+        file_count++;
       }
     }
     closedir(dir);
@@ -169,10 +169,10 @@ void *read_img_labels() {
     }
 
     // Get number of files in COORDS_ORIENT_DIR and filenames
-    file_count = count_files_in_dir(COORDS_ORIENT_DIR, l);
+    file_count = count_files_in_dir(COORDS_ORIENT_DIR);
 
     // Check if the DONE file is created in COORDS_ORIENT_DIR
-    if (access(DONE_FILE, F_OK) != -1 && fileCount == 1) {
+    if (access(DONE_FILE, F_OK) != -1 && file_count == 1) {
       // DONE file exists and is the only file
       // Break out of endless-loop and proceed to end of function/thread
       break;

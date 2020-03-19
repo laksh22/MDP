@@ -7,13 +7,13 @@ set(THREADS_PREFER_PTHREAD_FLAG_ON)
 find_package(Threads REQUIRED)
 
 add_executable(RPi main.c settings.h
-        arraylist/arraylist.h arraylist/arraylist.c
-        bluetooth/bluetooth.h bluetooth/bluetooth.c
         camera/camera.h camera/camera.c
         hub/hub.h hub/hub.c
         rpa_queue/rpa_queue.h rpa_queue/rpa_queue.c
         serial/serial.h serial/serial.c
-        tcp/tcp.h tcp/tcp.c)
+        bluetooth/bluetooth.h bluetooth/bluetooth.c
+        tcp/tcp.h tcp/tcp.c
+        arraylist/arraylist.h arraylist/arraylist.c)
 
 find_library(wiringPi_LIB wiringPi)
 find_library(bluez_LIB bluetooth)

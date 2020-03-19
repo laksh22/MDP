@@ -15,7 +15,7 @@ void arraylist_set(arraylist *l, unsigned int index, void *value);
 void *arraylist_get(arraylist *l, unsigned int index);
 void *arraylist_pop(arraylist *l);
 void arraylist_add(arraylist *l, void *item);
-inline unsigned int arraylist_size(arraylist *l);
+unsigned int arraylist_size(arraylist *l);
 void arraylist_allocate(arraylist *l, unsigned int size);
 arraylist *arraylist_create();
 #define arraylist_iterate(l, index, item) \
