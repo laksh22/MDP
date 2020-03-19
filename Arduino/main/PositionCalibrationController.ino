@@ -1,17 +1,17 @@
-#define DIST_L_LOWER 1260
-#define DIST_L_UPPER DIST_L_LOWER+20
-#define DIST_M_LOWER 1005
-#define DIST_M_UPPER DIST_M_LOWER+20
-#define DIST_R_LOWER 1225
-#define DIST_R_UPPER DIST_R_LOWER+20
-#define ROT_L_LOWER 275
-#define ROT_L_UPPER ROT_L_LOWER+20
-#define ROT_M_LOWER -70
-#define ROT_M_UPPER ROT_M_LOWER+20
-#define ROT_R_LOWER -220
-#define ROT_R_UPPER ROT_R_LOWER+20
-#define ROT_SIDE_LOWER 95
-#define ROT_SIDE_UPPER ROT_SIDE_LOWER+20
+#define DIST_L_LOWER 1307 // Left sensor distance
+#define DIST_L_UPPER DIST_L_LOWER + 20
+#define DIST_M_LOWER 1073 // Middle sensor distance
+#define DIST_M_UPPER DIST_M_LOWER + 20
+#define DIST_R_LOWER 1179 // Right sensor distance
+#define DIST_R_UPPER DIST_R_LOWER + 20
+#define ROT_L_LOWER 235 // Left-Middle rotation
+#define ROT_L_UPPER ROT_L_LOWER + 20
+#define ROT_M_LOWER -128 // Left-Right rotation
+#define ROT_M_UPPER ROT_M_LOWER + 20
+#define ROT_R_LOWER -106 // Middle-Right rotation
+#define ROT_R_UPPER ROT_R_LOWER + 20
+#define ROT_SIDE_LOWER 106 // Right side rotation
+#define ROT_SIDE_UPPER ROT_SIDE_LOWER + 20
 #define MAX_ROTATION_COUNT_RIGHT 100
 #define MAX_ROTATION_COUNT_FRONT 100
 #define MAX_DIST_COUNT 100
@@ -19,7 +19,7 @@
 void calibrateRightAngle() // ID = 2
 {
     int count = 0;
-        
+
     while (1)
     {
         int RBdistance = sensorRB.distance() * 100;
@@ -36,7 +36,10 @@ void calibrateRightAngle() // ID = 2
         }
         else
         {
-            break;
+            if (error > ROT_SIDE_LOWER && error < ROT_SIDE_UPPER)
+            {
+                break;
+            }
         }
 
         count++;
@@ -59,17 +62,18 @@ void calibrateFrontAngleLM(bool calibrateDistance) // ID = 1
 
         if (error > ROT_L_UPPER) // Rotate Left
         {
-          rotateRightCalib(0.01);
+            rotateRightCalib(0.01);
         }
         else if (error < ROT_L_LOWER) // Rotate Right
         {
-          rotateLeftCalib(0.01);
+            rotateLeftCalib(0.01);
         }
         else
         {
-          if(error > ROT_L_LOWER&& error < ROT_L_UPPER){
-            break;
-          }
+            if (error > ROT_L_LOWER && error < ROT_L_UPPER)
+            {
+                break;
+            }
         }
 
         count++;
@@ -97,20 +101,21 @@ void calibrateFrontAngleLR(bool calibrateDistance) // ID = 2
 
         if (error > ROT_M_UPPER) // Rotate Left
         {
-          rotateLeftCalib(0.01);
+            rotateLeftCalib(0.01);
         }
         else if (error < ROT_M_LOWER) // Rotate Right
         {
-          rotateRightCalib(0.01);
+            rotateRightCalib(0.01);
         }
         else
         {
-          int FLdistance = sensorFL.distance() * 100;
-          int FRdistance = sensorFR.distance() * 100;
-          int error = FRdistance - FLdistance;
-            if(error > ROT_M_LOWER&& error < ROT_M_UPPER){
-            break;
-          }
+            int FLdistance = sensorFL.distance() * 100;
+            int FRdistance = sensorFR.distance() * 100;
+            int error = FRdistance - FLdistance;
+            if (error > ROT_M_LOWER && error < ROT_M_UPPER)
+            {
+                break;
+            }
         }
 
         count++;
@@ -138,11 +143,11 @@ void calibrateFrontAngleMR(bool calibrateDistance) // ID = 3
 
         if (error > ROT_R_UPPER) // Rotate Left
         {
-          rotateRightCalib(0.01);
+            rotateRightCalib(0.01);
         }
         else if (error < ROT_R_LOWER) // Rotate Right
         {
-          rotateLeftCalib(0.01);
+            rotateLeftCalib(0.01);
         }
         else
         {
@@ -180,7 +185,7 @@ void calibrateDistanceL(int id, bool calibrateAngle)
 
         else
         {
-          break;
+            break;
         }
 
         count++;
@@ -227,7 +232,7 @@ void calibrateDistanceM(int id, bool calibrateAngle)
         }
         else
         {
-          break;
+            break;
         }
 
         count++;
@@ -274,7 +279,7 @@ void calibrateDistanceR(int id, bool calibrateAngle)
         }
         else
         {
-          break;
+            break;
         }
 
         count++;

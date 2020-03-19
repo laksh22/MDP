@@ -85,7 +85,7 @@ void setup()
 
 void loop()
 {
-  //printSensors(2);
+  //printSensors(4);
   runCommands();
 }
 

@@ -227,7 +227,7 @@ void moveForwardCalib(float distance)
     oldticksL = oldticksR = 0;
 
     speedL = rpmTospeedL(69/2);  //70.75 //74.9  100
-    speedR = rpmTospeedR(67.5/2); //70.5 //74.5 99.5
+    speedR = rpmTospeedR(73/2); //70.5 //74.5 99.5
 
     //Set Final ideal speed and accomodate for the ticks we used in acceleration
     md.setSpeeds(speedL, speedR);
@@ -275,7 +275,7 @@ void moveBackwardCalib(float distance)
     oldticksL = oldticksR = 0;
 
     speedL = rpmTospeedL(-69/2); //70.75 //74.9  100
-    speedR = rpmTospeedR(-67.5/2); //70.5 //74.5 99.5
+    speedR = rpmTospeedR(-69/2); //70.5 //74.5 99.5
 
     //Set Final ideal speed and accomodate for the ticks we used in acceleration
     md.setSpeeds(speedL, speedR);

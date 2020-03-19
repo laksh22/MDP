@@ -1,12 +1,12 @@
 #include "SharpIR.h"
 #include "ArduinoSort.h"
 
-#define RBPIN A0 // PS1
-#define LPIN A1  // PS2
-#define RFPIN A2 // PS3
-#define FRPIN A3  // PS4
-#define FLPIN A4 // PS5
-#define FPIN A5 // PS6
+#define RFPIN A0 // PS1
+#define FPIN A1  // PS2
+#define RBPIN A2 // PS3
+#define FLPIN A3  // PS4
+#define FRPIN A4 // PS5
+#define LPIN A5 // PS6
 
 #define SRmodel 1080
 #define LRmodel 20150
@@ -60,7 +60,8 @@ void printSensors(int type)
         Serial.print(gridsRB());
         Serial.print(", L: ");
         Serial.println(gridsL());
-    } else if(type==3) {
+    } else if (type==3) 
+    {
         int f = sensorF.distance() * 100;
         int fl = sensorFL.distance() * 100;
         int fr = sensorFR.distance() * 100;
@@ -79,14 +80,12 @@ void printSensors(int type)
         Serial.print(rb);
         Serial.print(", L: ");
         Serial.println(l);
-    } else {
-//        int RBdistance = sensorRB.distance() * 100;
-//        int RFdistance = sensorRF.distance() * 100;
-//        int error = RBdistance - RFdistance;
-//        Serial.println(error);
-int RBdistance = sensorRB.distance() * 100;
-    int RFdistance = sensorRF.distance() * 100;
-    Serial.println(RFdistance);
+    } else 
+    {
+        int RBdistance = sensorRB.distance() * 100;
+        int RFdistance = sensorRF.distance() * 100;
+        int error = RBdistance - RFdistance;
+        Serial.println(error);
     }
 
 }
@@ -112,10 +111,10 @@ int gridsRB()
 {
     int dis = sensorRB.distance();
 
-    if (dis <= 21)
+    if (dis <= 20)
         return 1;
 
-    else if (dis > 21 && dis <= 33)
+    else if (dis > 20 && dis <= 34)
         return 2;
 
     else
@@ -125,19 +124,19 @@ int gridsRB()
 int gridsL()
 {
     int dis = sensorL.distance();
-    if (dis <= 19.00)
+    if (dis <= 19)
         return 1;
 
-    else if (dis > 19.00 && dis <= 24.60)
+    else if (dis > 19 && dis <= 26)
         return 2;
 
-    else if (dis > 24.60 && dis <= 34.10)
+    else if (dis > 26 && dis <= 36)
         return 3;
 
-    else if (dis > 34.10 && dis <= 44.20)
+    else if (dis > 36 && dis <= 46)
         return 4;
 
-    else if (dis > 44.20 && dis <= 57.00)
+    else if (dis > 46 && dis <= 59)
         return 5;
 
     else
@@ -148,10 +147,10 @@ int gridsRF()
 {
     int dis = sensorRF.distance();
 
-    if (dis <= 19)
+    if (dis <= 18)
         return 1;
 
-    else if (dis > 19 && dis <= 30)
+    else if (dis > 18 && dis <= 29)
         return 2;
 
     else
@@ -160,12 +159,17 @@ int gridsRF()
 
 int gridsF()
 {
-    int dis = sensorF.distance();
+    int buffer = 10;
+    int sensorVals[buffer];
+    for(int i = 0; i < buffer; i++){
+      sensorVals[i] = sensorF.distance();
+    }
+    int dis = findMedian(sensorVals, buffer);
 
-    if (dis <= 15)
+    if (dis <= 16)
         return 1;
 
-    else if (dis > 15 && dis <= 26)
+    else if (dis > 16 && dis <= 28)
         return 2;
 
     else
@@ -176,24 +180,6 @@ int gridsFL()
 {
     int dis = sensorFL.distance();
 
-    if (dis <= 18.38)
-        return 1;
-
-    else if (dis > 18.38 && dis <= 30.94)
-        return 2;
-
-    else
-        return 3;
-}
-
-int gridsFR()
-{
-    float sensorVals[15];
-    for(int i = 0; i < 15; i++){
-      sensorVals[i] = sensorFR.distance();
-    }
-    float dis = findMedian(sensorVals, 15);
-
     if (dis <= 19)
         return 1;
 
@@ -204,7 +190,21 @@ int gridsFR()
         return 3;
 }
 
-int findMedian(float a[], int n)
+int gridsFR()
+{
+    float dis = sensorFR.distance();
+
+    if (dis <= 17)
+        return 1;
+
+    else if (dis > 17 && dis <= 27)
+        return 2;
+
+    else
+        return 3;
+}
+
+int findMedian(int a[], int n)
 {
   sortArray(a, n);
   if (n % 2 != 0)
