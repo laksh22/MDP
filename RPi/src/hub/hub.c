@@ -53,6 +53,7 @@ void write_hub(char *wpointer, char source) {
         bt_send((void *) wpointer + 2);
 
       } else if (tolower(wpointer[1]) == 's') {
+        // TODO: Implement advance picture taking code if movement detected command here
 
         if (source == 't') {
           *(wpointer + 1) = 't';
