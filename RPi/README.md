@@ -1,7 +1,7 @@
 # RPi communication Hub
 This section contains everything you will need to know to get the `RPi` communication hub binary that is written in C to run.
 
-## Compiling
+## 1. Compiling
 You must be in the `RPi/src` directory before running the commands below.
 ```shell script
 cd RPi/src/
@@ -15,16 +15,21 @@ cmake ..
 make
 ``` 
 
-## Running
+## 2. Running
 After compiling, make sure that you are in the `~/work_dir/RPi/src/build` directory before running the command below.
 ```shell script
 ./RPi
 ```
 
-## Message structure
+A one-liner command is shown below:
+```shell script
+cd ~/work_dir/RPi/src/build && ./RPi
+```
+
+## 3. Message structure
 Each message is prefixed by `@` and suffixed with `!`. New lines at the end of each messages are not allowed.
 
-### Examples
+### 3.1. Examples
 To send a message to **Bluetooth**:
 ```text
 @binsert_bluetooth_message_here!
@@ -40,9 +45,9 @@ To send a message to **Serial**:
 @sinsert_serial_message_here!
 ```
 
-## Dependencies
+## 4. Dependencies
 
-### Bluetooth
+### 4.1. Bluetooth
 Make sure you have the required bluetooth header files by running:
 ```shell script
 sudo apt-get install bluez libbluetooth-dev
@@ -88,7 +93,7 @@ uint32_t svc_uuid_int[] = { 0x00001101, 0x00001000, 0x80000080, 0x5F9B34FB };
 
 Read more about this UUID [here](https://developer.android.com/reference/android/bluetooth/BluetoothDevice.html#createRfcommSocketToServiceRecord%28java.util.UUID%29).  
 
-### Serial
+### 4.2. Serial
 **This is only required when developing on a non Raspbian platform with no wiringPi header files.**
 
 Make sure you have the required wiringPi and wiringSerial header files by running (If you are working on a linux based machine):
@@ -101,9 +106,9 @@ cd WiringPi
 This should give you the required header files so that the IDE you are working on will not complain about undefined reference(s) to wiringPi/wiringSerial dependencies.
 However, your code will still be uncompilable on a non Raspbian platform.
 
-## Common errors
+## 5. Common errors
 
-### Missing Bluetooth dependencies
+### 5.1. Missing Bluetooth dependencies
 ```text
 CMake Error: The following variables are used in this project, but they are set to NOTFOUND.
 Please set them or make sure they are set and tested correctly in the CMake files: Bluez_LIB
@@ -112,7 +117,7 @@ Please set them or make sure they are set and tested correctly in the CMake file
 -- Configuring incomplete, errors occurred!
 ```
 
-### Bluetooth not connecting / waiting for connection
+### 5.2. Bluetooth not connecting / waiting for connection
 
 ```text
 ===== Initializing connections =====
@@ -132,7 +137,7 @@ This should be enough to get you through your tests. For further instructions on
 To resolve this issue, you probably forgot to run the [install Bluetooth dependency command](#bluetooth). Make sure to run the package install command.
 
 
-### Messages not getting sent over Bluetooth
+### 5.3. Messages not getting sent over Bluetooth
 
 Connected to Bluetooth, sent messages, but it is not displaying on the console of the `RPi` binary. 
 
@@ -152,3 +157,24 @@ If you are using the application `Serial Bluetooth Terminal` by Kai Morich (*de.
 ```
 
 Your messages sent via Bluetooth should be displayed on the console running the `RPi` binary now.
+
+### 5.4. Bluetooth / TCP address is already in use
+
+This issue usually arises after an initial run, and the user terminates the RPi binary. 
+While the RPi binary is terminated, not all services invoked by the RPi binary is terminated.  
+To reduce the number of commands that the user is required to run during the 2 minutes preparation time, some python scripts are invoked automatically by the RPi binary and sent to the background.
+
+This line is responsible for the handling of the invocation.
+```c
+system("python ../../../Object\\ Detection/RPi/img_evnt_handler.py &");
+```
+
+If this python script is still running in the background, the resources that were initially used might not be released even if the RPi binary is killed.
+
+As such, before you run the RPi binary again after the initial run, run this command.
+```shell script
+killall python
+./RPi
+``` 
+
+Your RPi binary should start normally after.
