@@ -1,27 +1,27 @@
-#define DIST_L_LOWER 1354 // Left sensor distance
+#define DIST_L_LOWER 1145 // Left sensor distance
 #define DIST_L_UPPER DIST_L_LOWER + 20
 
-#define DIST_M_LOWER 990 // Middle sensor distance
+#define DIST_M_LOWER 1075 // Middle sensor distance
 #define DIST_M_UPPER DIST_M_LOWER + 20
 
-#define DIST_R_LOWER 1233 // Right sensor distance
+#define DIST_R_LOWER 1079 // Right sensor distance
 #define DIST_R_UPPER DIST_R_LOWER + 20
 
-#define ROT_L_LOWER 280 // Left-Middle rotation
+#define ROT_L_LOWER 60 // Left-Middle rotation
 #define ROT_L_UPPER ROT_L_LOWER + 20
 
-#define ROT_M_LOWER -161 // Left-Right rotation
+#define ROT_M_LOWER -65 // Left-Right rotation
 #define ROT_M_UPPER ROT_M_LOWER + 20
 
-#define ROT_R_LOWER -160 // Middle-Right rotation
+#define ROT_R_LOWER -15 // Middle-Right rotation
 #define ROT_R_UPPER ROT_R_LOWER + 20
 
 #define ROT_SIDE_LOWER 68 // Right side rotation
 #define ROT_SIDE_UPPER ROT_SIDE_LOWER + 20
 
 #define MAX_ROTATION_COUNT_RIGHT 50
-#define MAX_ROTATION_COUNT_FRONT 50
-#define MAX_DIST_COUNT 70
+#define MAX_ROTATION_COUNT_FRONT 80
+#define MAX_DIST_COUNT 100
 
 void calibrateRightAngle() // ID = 2
 {
@@ -63,15 +63,20 @@ void calibrateFrontAngleLM(bool calibrateDistance) // ID = 1
 
     while (1)
     {
-        int FLdistance = sensorFL.distance() * 100;
-        int Fdistance = sensorF.distance() * 100;
-        int error = FLdistance - Fdistance;
+        int countBuffer = 5;
+        int vals[countBuffer];
+        for(int i = 0; i < countBuffer; i++) {
+          int FLdistance = sensorFL.distance() * 100;
+          int Fdistance = sensorF.distance() * 100;
+          vals[i] = FLdistance - Fdistance;
+        }
+        int error = findMedian(vals, countBuffer);
 
         if (error > ROT_L_UPPER) // Rotate Left
         {
             rotateRightCalib(0.01);
         }
-        else if (error < ROT_L_LOWER) // Rotate Right
+        else if (error < ROT_L_LOWER) // Ro    tate Right
         {
             rotateLeftCalib(0.01);
         }
@@ -105,9 +110,14 @@ void calibrateFrontAngleLR(bool calibrateDistance) // ID = 2
 
     while (1)
     {
-        int FLdistance = sensorFL.distance() * 100;
-        int FRdistance = sensorFR.distance() * 100;
-        int error = FRdistance - FLdistance;
+        int countBuffer = 5;
+        int vals[countBuffer];
+        for(int i = 0; i < countBuffer; i++) {
+          int FLdistance = sensorFL.distance() * 100;
+          int FRdistance = sensorFR.distance() * 100;
+          vals[i] = FRdistance - FLdistance;
+        }
+        int error = findMedian(vals, countBuffer);
 
         if (error > ROT_M_UPPER) // Rotate Left
         {
@@ -147,9 +157,14 @@ void calibrateFrontAngleMR(bool calibrateDistance) // ID = 3
 
     while (1)
     {
-        int Fdistance = sensorF.distance() * 100;
-        int FRdistance = sensorFR.distance() * 100;
-        int error = Fdistance - FRdistance;
+        int countBuffer = 5;
+        int vals[countBuffer];
+        for(int i = 0; i < countBuffer; i++) {
+          int Fdistance = sensorF.distance() * 100;
+          int FRdistance = sensorFR.distance() * 100;
+          vals[i] = Fdistance - FRdistance;
+        }
+        int error = findMedian(vals, countBuffer);
 
         if (error > ROT_R_UPPER) // Rotate Left
         {
@@ -192,11 +207,11 @@ void calibrateDistanceL(int id, bool calibrateAngle)
 
         if (LFdistance > DIST_L_UPPER)
         {
-            moveForwardCalib(0.01);
+            moveForward(0.001);
         }
         else if (LFdistance < DIST_L_LOWER)
         {
-            moveBackwardCalib(0.01);
+            moveBackward(0.001);
         }
 
         else
@@ -243,11 +258,11 @@ void calibrateDistanceM(int id, bool calibrateAngle)
 
         if (Fdistance > DIST_M_UPPER)
         {
-            moveForwardCalib(0.01);
+            moveForward(0.001);
         }
         else if (Fdistance < DIST_M_LOWER)
         {
-            moveBackwardCalib(0.01);
+            moveBackward(0.001);
         }
         else
         {
@@ -293,11 +308,11 @@ void calibrateDistanceR(int id, bool calibrateAngle)
 
         if (RFdistance > DIST_R_UPPER)
         {
-            moveForwardCalib(0.01);
+            moveForward(0.001);
         }
         else if (RFdistance < DIST_R_LOWER)
         {
-            moveBackwardCalib(0.01);
+            moveBackward(0.001);
         }
         else
         {

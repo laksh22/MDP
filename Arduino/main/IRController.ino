@@ -7,7 +7,7 @@
 #define FLPIN A3  // PS4
 #define FRPIN A4 // PS5
 #define LPIN A5 // PS6
-
+ 
 #define SRmodel 1080
 #define LRmodel 20150
 
@@ -24,7 +24,6 @@ void sensorInit() {
     sensorFL.distance();
     sensorFR.distance();
     sensorRF.distance();
-    sensorRB.distance();
     sensorL.distance();
   }
 }
@@ -41,8 +40,6 @@ void printSensors(int type)
         Serial.print(sensorFR.distance());
         Serial.print(", RF: ");
         Serial.print(sensorRF.distance());
-        Serial.print(", RB: ");
-        Serial.print(sensorRB.distance());
         Serial.print(", L: ");
         Serial.println(sensorL.distance());
     }
@@ -56,8 +53,6 @@ void printSensors(int type)
         Serial.print(gridsFR());
         Serial.print(", RF: ");
         Serial.print(gridsRF());
-        Serial.print("RB: ");
-        Serial.print(gridsRB());
         Serial.print(", L: ");
         Serial.println(gridsL());
     } else if (type==3) 
@@ -75,27 +70,36 @@ void printSensors(int type)
         Serial.print(", FR: ");
         Serial.print(fr);
         Serial.print(", RF: ");
-        Serial.print(rf);
-        Serial.print(", RB: ");
         Serial.print(rb);
         Serial.print(", L: ");
         Serial.println(l);
     } else 
     {
-//       int FLdistance = sensorFL.distance() * 100;
-//        int Fdistance = sensorF.distance() * 100;
-//        int error = FLdistance - Fdistance;
+        int LVals[5], MVals[5], RVals[5];
+        for(int i = 0; i < 5; i++){
+          int FLdistance = sensorFL.distance() * 100;
+          int Fdistance = sensorF.distance() * 100;
+          LVals[i] = FLdistance - Fdistance;
 
-//        int FLdistance = sensorFL.distance() * 100;
-//        int FRdistance = sensorFR.distance() * 100;
-//        int error = FRdistance - FLdistance;
+          FLdistance = sensorFL.distance() * 100;
+          int FRdistance = sensorFR.distance() * 100;
+          MVals[i] = FRdistance - FLdistance;
 
-        int Fdistance = sensorF.distance() * 100;
-        int FRdistance = sensorFR.distance() * 100;
-        int error = Fdistance - FRdistance;
-
+          Fdistance = sensorF.distance() * 100;
+          FRdistance = sensorFR.distance() * 100;
+          RVals[i] = Fdistance - FRdistance;
+        }
         
-        Serial.println(error);
+        int error1 = findMedian(LVals, 5);
+        int error2 = findMedian(MVals, 5);
+        int error3 = findMedian(RVals, 5);
+
+        Serial.print("LM: ");
+        Serial.print(error1);
+        Serial.print(", LR: ");
+        Serial.print(error2);
+        Serial.print(", MR: ");
+        Serial.println(error3);
     }
 
 }
@@ -138,25 +142,25 @@ int gridsRB()
 
 int gridsL()
 {
-    int buffer = 15;
-    int sensorVals[buffer];
-    for(int i = 0; i < buffer; i++){
-      sensorVals[i] = sensorL.distance();
+    int vals[5];
+    for(int i = 0; i < 5; i++){
+      vals[i] = sensorL.distance();
     }
-    int dis = findMedian(sensorVals, buffer);
+    int dis = findMedian(vals, 5);
+    
     if (dis <= 19)
         return 1;
 
-    else if (dis > 19 && dis <= 26)
+    else if (dis > 19 && dis <= 25)
         return 2;
 
-    else if (dis > 26 && dis <= 36)
+    else if (dis > 25 && dis <= 36)
         return 3;
 
-    else if (dis > 36 && dis <= 46)
+    else if (dis > 36 && dis <= 47)
         return 4;
 
-    else if (dis > 46 && dis <= 59)
+    else if (dis > 47 && dis <= 59)
         return 5;
 
     else
@@ -165,45 +169,11 @@ int gridsL()
 
 int gridsRF()
 {
-    int dis = sensorRF.distance();
-
-    if (dis <= 18)
-        return 1;
-
-    else if (dis > 18 && dis <= 29)
-        return 2;
-
-    else
-        return 3;
-}
-
-int gridsF()
-{
-    int buffer = 15;
-    int sensorVals[buffer];
-    for(int i = 0; i < buffer; i++){
-      sensorVals[i] = sensorF.distance();
+    int vals[5];
+    for(int i = 0; i < 5; i++){
+      vals[i] = sensorRF.distance();
     }
-    int dis = findMedian(sensorVals, buffer);
-
-    if (dis <= 15)
-        return 1;
-
-    else if (dis > 15 && dis <= 28)
-        return 2;
-
-    else
-        return 3;
-}
-
-int gridsFL()
-{
-    int buffer = 15;
-    int sensorVals[buffer];
-    for(int i = 0; i < buffer; i++){
-      sensorVals[i] = sensorFL.distance();
-    }
-    int dis = findMedian(sensorVals, buffer);
+    int dis = findMedian(vals, 5);
 
     if (dis <= 18)
         return 1;
@@ -215,19 +185,54 @@ int gridsFL()
         return 3;
 }
 
-int gridsFR()
+int gridsF()
 {
-    int buffer = 15;
-    int sensorVals[buffer];
-    for(int i = 0; i < buffer; i++){
-      sensorVals[i] = sensorFR.distance();
+    int vals[5];
+    for(int i = 0; i < 5; i++){
+      vals[i] = sensorF.distance();
     }
-    int dis = findMedian(sensorVals, buffer);
+    int dis = findMedian(vals, 5);
 
     if (dis <= 16)
         return 1;
 
-    else if (dis > 16 && dis <= 25)
+    else if (dis > 16 && dis <= 29)
+        return 2;
+
+    else
+        return 3;
+}
+
+int gridsFL()
+{
+    int vals[5];
+    for(int i = 0; i < 5; i++){
+      vals[i] = sensorFL.distance();
+    }
+    int dis = findMedian(vals, 5);
+
+    if (dis <= 17)
+        return 1;
+
+    else if (dis > 17 && dis <= 30)
+        return 2;
+
+    else
+        return 3;
+}
+
+int gridsFR()
+{
+    int vals[5];
+    for(int i = 0; i < 5; i++){
+      vals[i] = sensorFR.distance();
+    }
+    int dis = findMedian(vals, 5);
+
+    if (dis <= 15)
+        return 1;
+
+    else if (dis > 15 && dis <= 27)
         return 2;
 
     else

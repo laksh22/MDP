@@ -12,10 +12,10 @@ void rotateLeft(double degree)
     ticksL = ticksR = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
     currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
     oldticksL = oldticksR = 0;
-//    speedL = rpmTospeedL(-66.25);
-//    speedR = rpmTospeedR(64.9);
-    speedL = rpmTospeedL(-100);
-    speedR = rpmTospeedR(98);
+    speedL = rpmTospeedL(-66.25);
+    speedR = rpmTospeedR(64.9);
+//    speedL = rpmTospeedL(-100);
+//    speedR = rpmTospeedR(98);
     
     md.setSpeeds(speedL, speedR);
     tick_travelled = (double)ticksR;
@@ -54,10 +54,10 @@ void rotateRight(double degree)
     ticksL = ticksR = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
     currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
     oldticksL = oldticksR = 0;
-//    speedL = rpmTospeedL(66.25);
-//    speedR = rpmTospeedR(-64.9);
-    speedL = rpmTospeedL(100);
-    speedR = rpmTospeedR(-98);
+    speedL = rpmTospeedL(66.25);
+    speedR = rpmTospeedR(-64.9);
+//    speedL = rpmTospeedL(100);
+//    speedR = rpmTospeedR(-98);
 
     md.setSpeeds(speedL, speedR);
     tick_travelled = (double)ticksR;
@@ -275,7 +275,7 @@ void moveBackwardCalib(float distance)
     oldticksL = oldticksR = 0;
 
     speedL = rpmTospeedL(-35); //70.75 //74.9  100
-    speedR = rpmTospeedR(-35); //70.5 //74.5 99.5
+    speedR = rpmTospeedR(-34); //70.5 //74.5 99.5
 
     //Set Final ideal speed and accomodate for the ticks we used in acceleration
     md.setSpeeds(speedL, speedR);
