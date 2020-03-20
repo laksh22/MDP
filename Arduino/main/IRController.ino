@@ -1,13 +1,13 @@
 #include "SharpIR.h"
 #include "ArduinoSort.h"
 
-#define RBPIN A0 // PS1
-#define LPIN A1  // PS2
-#define RFPIN A2 // PS3
-#define FPIN A3  // PS4
-#define FLPIN A4 // PS5
-#define FRPIN A5 // PS6
-
+#define RFPIN A0 // PS1
+#define FPIN A1  // PS2
+#define RBPIN A2 // PS3
+#define FLPIN A3  // PS4
+#define FRPIN A4 // PS5
+#define LPIN A5 // PS6
+ 
 #define SRmodel 1080
 #define LRmodel 20150
 
@@ -24,29 +24,13 @@ void sensorInit() {
     sensorFL.distance();
     sensorFR.distance();
     sensorRF.distance();
-    sensorRB.distance();
     sensorL.distance();
   }
 }
 
-void printSensors(bool grids)
+void printSensors(int type)
 {
-    if (grids)
-    {
-        Serial.print("F: ");
-        Serial.print(gridsF());
-        Serial.print(", FL: ");
-        Serial.print(gridsFL());
-        Serial.print(", FR: ");
-        Serial.print(gridsFR());
-        Serial.print(", RF: ");
-        Serial.print(gridsRF());
-        Serial.print("RB: ");
-        Serial.print(gridsRB());
-        Serial.print(", L: ");
-        Serial.println(gridsL());
-    }
-    else
+    if (type == 1)
     {
         Serial.print("F: ");
         Serial.print(sensorF.distance());
@@ -56,11 +40,68 @@ void printSensors(bool grids)
         Serial.print(sensorFR.distance());
         Serial.print(", RF: ");
         Serial.print(sensorRF.distance());
-        Serial.print(", RB: ");
-        Serial.print(sensorRB.distance());
         Serial.print(", L: ");
         Serial.println(sensorL.distance());
     }
+    else if (type == 2)
+    {
+        Serial.print("F: ");
+        Serial.print(gridsF());
+        Serial.print(", FL: ");
+        Serial.print(gridsFL());
+        Serial.print(", FR: ");
+        Serial.print(gridsFR());
+        Serial.print(", RF: ");
+        Serial.print(gridsRF());
+        Serial.print(", L: ");
+        Serial.println(gridsL());
+    } else if (type==3) 
+    {
+        int f = sensorF.distance() * 100;
+        int fl = sensorFL.distance() * 100;
+        int fr = sensorFR.distance() * 100;
+        int rf = sensorRF.distance() * 100;
+        int rb = sensorRB.distance() * 100;
+        int l = sensorL.distance() * 100;
+        Serial.print("F: ");
+        Serial.print(f);
+        Serial.print(", FL: ");
+        Serial.print(fl);
+        Serial.print(", FR: ");
+        Serial.print(fr);
+        Serial.print(", RF: ");
+        Serial.print(rb);
+        Serial.print(", L: ");
+        Serial.println(l);
+    } else 
+    {
+        int LVals[5], MVals[5], RVals[5];
+        for(int i = 0; i < 5; i++){
+          int FLdistance = sensorFL.distance() * 100;
+          int Fdistance = sensorF.distance() * 100;
+          LVals[i] = FLdistance - Fdistance;
+
+          FLdistance = sensorFL.distance() * 100;
+          int FRdistance = sensorFR.distance() * 100;
+          MVals[i] = FRdistance - FLdistance;
+
+          Fdistance = sensorF.distance() * 100;
+          FRdistance = sensorFR.distance() * 100;
+          RVals[i] = Fdistance - FRdistance;
+        }
+        
+        int error1 = findMedian(LVals, 5);
+        int error2 = findMedian(MVals, 5);
+        int error3 = findMedian(RVals, 5);
+
+        Serial.print("LM: ");
+        Serial.print(error1);
+        Serial.print(", LR: ");
+        Serial.print(error2);
+        Serial.print(", MR: ");
+        Serial.println(error3);
+    }
+
 }
 
 void sendSensors(char source)
@@ -82,12 +123,17 @@ void sendSensors(char source)
 
 int gridsRB()
 {
-    int dis = sensorRB.distance();
+    int buffer = 15;
+    int sensorVals[buffer];
+    for(int i = 0; i < buffer; i++){
+      sensorVals[i] = sensorRB.distance();
+    }
+    int dis = findMedian(sensorVals, buffer);
 
-    if (dis <= 21)
+    if (dis <= 20)
         return 1;
 
-    else if (dis > 21 && dis <= 33)
+    else if (dis > 20 && dis <= 34)
         return 2;
 
     else
@@ -96,20 +142,25 @@ int gridsRB()
 
 int gridsL()
 {
-    int dis = sensorL.distance();
-    if (dis <= 19.00)
+    int vals[5];
+    for(int i = 0; i < 5; i++){
+      vals[i] = sensorL.distance();
+    }
+    int dis = findMedian(vals, 5);
+    
+    if (dis <= 19)
         return 1;
 
-    else if (dis > 19.00 && dis <= 24.60)
+    else if (dis > 19 && dis <= 25)
         return 2;
 
-    else if (dis > 24.60 && dis <= 34.10)
+    else if (dis > 25 && dis <= 36)
         return 3;
 
-    else if (dis > 34.10 && dis <= 44.20)
+    else if (dis > 36 && dis <= 47)
         return 4;
 
-    else if (dis > 44.20 && dis <= 57.00)
+    else if (dis > 47 && dis <= 59)
         return 5;
 
     else
@@ -118,12 +169,16 @@ int gridsL()
 
 int gridsRF()
 {
-    int dis = sensorRF.distance();
+    int vals[5];
+    for(int i = 0; i < 5; i++){
+      vals[i] = sensorRF.distance();
+    }
+    int dis = findMedian(vals, 5);
 
-    if (dis <= 19)
+    if (dis <= 18)
         return 1;
 
-    else if (dis > 19 && dis <= 29)
+    else if (dis > 18 && dis <= 30)
         return 2;
 
     else
@@ -132,12 +187,16 @@ int gridsRF()
 
 int gridsF()
 {
-    int dis = sensorF.distance();
+    int vals[5];
+    for(int i = 0; i < 5; i++){
+      vals[i] = sensorF.distance();
+    }
+    int dis = findMedian(vals, 5);
 
-    if (dis <= 15)
+    if (dis <= 16)
         return 1;
 
-    else if (dis > 15 && dis <= 26)
+    else if (dis > 16 && dis <= 29)
         return 2;
 
     else
@@ -146,12 +205,16 @@ int gridsF()
 
 int gridsFL()
 {
-    int dis = sensorFL.distance();
+    int vals[5];
+    for(int i = 0; i < 5; i++){
+      vals[i] = sensorFL.distance();
+    }
+    int dis = findMedian(vals, 5);
 
-    if (dis <= 18.38)
+    if (dis <= 17)
         return 1;
 
-    else if (dis > 18.38 && dis <= 30.94)
+    else if (dis > 17 && dis <= 30)
         return 2;
 
     else
@@ -160,23 +223,23 @@ int gridsFL()
 
 int gridsFR()
 {
-    float sensorValues[5];
+    int vals[5];
     for(int i = 0; i < 5; i++){
-      sensorValues[i] = sensorFR.distance();
+      vals[i] = sensorFR.distance();
     }
-    float dis = findMedian(sensorValues, 5);
+    int dis = findMedian(vals, 5);
 
-    if (dis <= 18.30)
+    if (dis <= 15)
         return 1;
 
-    else if (dis > 18.30 && dis <= 30)
+    else if (dis > 15 && dis <= 27)
         return 2;
 
     else
         return 3;
 }
 
-int findMedian(float a[], int n)
+int findMedian(int a[], int n)
 {
   sortArray(a, n);
   if (n % 2 != 0)

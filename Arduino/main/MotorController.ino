@@ -14,7 +14,9 @@ void rotateLeft(double degree)
     oldticksL = oldticksR = 0;
     speedL = rpmTospeedL(-66.25);
     speedR = rpmTospeedR(64.9);
-
+//    speedL = rpmTospeedL(-100);
+//    speedR = rpmTospeedR(98);
+    
     md.setSpeeds(speedL, speedR);
     tick_travelled = (double)ticksR;
 
@@ -54,6 +56,8 @@ void rotateRight(double degree)
     oldticksL = oldticksR = 0;
     speedL = rpmTospeedL(66.25);
     speedR = rpmTospeedR(-64.9);
+//    speedL = rpmTospeedL(100);
+//    speedR = rpmTospeedR(-98);
 
     md.setSpeeds(speedL, speedR);
     tick_travelled = (double)ticksR;
@@ -121,7 +125,7 @@ void moveForward(float distance)
     }
 
     //md.setBrakes(370,400);
-    md.setBrakes(350, 350);
+    md.setBrakes(400, 400);
     PIDControlStraight.SetMode(MANUAL);
     delay(delayExplore);
 }
@@ -222,8 +226,8 @@ void moveForwardCalib(float distance)
     currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
     oldticksL = oldticksR = 0;
 
-    speedL = rpmTospeedL(LEFT_RPM/3);  //70.75 //74.9  100
-    speedR = rpmTospeedR(RIGHT_RPM/3); //70.5 //74.5 99.5
+    speedL = rpmTospeedL(69/2);  //70.75 //74.9  100
+    speedR = rpmTospeedR(69/2); //70.5 //74.5 99.5
 
     //Set Final ideal speed and accomodate for the ticks we used in acceleration
     md.setSpeeds(speedL, speedR);
@@ -270,8 +274,8 @@ void moveBackwardCalib(float distance)
     currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
     oldticksL = oldticksR = 0;
 
-    speedL = rpmTospeedL(-LEFT_RPM/3); //70.75 //74.9  100
-    speedR = rpmTospeedR(-RIGHT_RPM/3); //70.5 //74.5 99.5
+    speedL = rpmTospeedL(-35); //70.75 //74.9  100
+    speedR = rpmTospeedR(-34); //70.5 //74.5 99.5
 
     //Set Final ideal speed and accomodate for the ticks we used in acceleration
     md.setSpeeds(speedL, speedR);
@@ -377,5 +381,51 @@ void rotateRightCalib(double degree)
     md.setBrakes(400, 400);
     PIDControlRight.SetMode(MANUAL);
 
+    delay(delayExplore);
+}
+
+void moveForwardMultiple(float distance)
+{
+    //at 6.10v to 6.20v
+    double target_tick = 0;
+
+    //target_tick = FORWARD_TARGET_TICKS; //289 // EDITED
+    target_tick = 26.85 * distance + FORWARD_TARGET_TICKS;
+    double tick_travelled = 0;
+
+    if (target_tick < 0)
+        return;
+
+    // Init values
+    ticksL = ticksR = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
+    currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
+    oldticksL = oldticksR = 0;
+
+    speedL = rpmTospeedL(LEFT_RPM_MULTIPLE);  //70.75 //74.9  100
+    speedR = rpmTospeedR(RIGHT_RPM_MULTIPLE); //70.5 //74.5 99.5
+
+    //Set Final ideal speed and accomodate for the ticks we used in acceleration
+    md.setSpeeds(speedL, speedR);
+    tick_travelled = (double)ticksR;
+
+    PIDControlStraight.SetSampleTime(6.5); //Controller is called every 25ms
+    PIDControlStraight.SetMode(AUTOMATIC); //Controller is invoked automatically using default value for PID
+
+    while (tick_travelled < target_tick)
+    {
+        // if not reach destination ticks yet
+        currentTicksL = ticksL - oldticksL; //calculate the ticks travelled in this sample interval of 50ms
+        currentTicksR = ticksR - oldticksR;
+
+        PIDControlStraight.Compute();
+
+        oldticksR += currentTicksR; //update ticks
+        oldticksL += currentTicksL;
+        tick_travelled += currentTicksR;
+    }
+
+    //md.setBrakes(370,400);
+    md.setBrakes(350, 350);
+    PIDControlStraight.SetMode(MANUAL);
     delay(delayExplore);
 }

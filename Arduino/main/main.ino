@@ -6,17 +6,27 @@
 #define FORWARD_TARGET_TICKS 0
 
 // Move 90 degrees
-#define LEFT_ROTATE_DEGREES 90
-#define RIGHT_ROTATE_DEGREES 91
-#define ROTATE_LEFT_180 184.5
+#define LEFT_ROTATE_DEGREES 91.7
+#define RIGHT_ROTATE_DEGREES 92
+//#define LEFT_ROTATE_DEGREES 87
+//#define RIGHT_ROTATE_DEGREES 87.6
+#define ROTATE_LEFT_180 184.5             
 
 //Move Forward fixed distance
-#define FORWARD_DISTANCE 10
-#define MULTIPLE_FORWARD_FACTOR 4.1 / 3
+#define FORWARD_DISTANCE 10.5
+#define FORWARD_DISTANCE_MULTIPLE 9.6
+#define MULTIPLE_FORWARD_FACTOR 4.1 / 3 //4.65 + 4.55(for fastest)
 
-//Move Forward Staight
-#define LEFT_RPM 69
-#define RIGHT_RPM 66.5
+//Move Forward Staight/
+#define LEFT_RPM 70
+#define RIGHT_RPM 65
+//#define LEFT_RPM 100
+//#define RIGHT_RPM 95
+//#define LEFT_RPM 82.2
+//#define RIGHT_RPM 77.95 
+#define LEFT_RPM_MULTIPLE 100
+#define RIGHT_RPM_MULTIPLE 92
+
 
 // For communication
 char source = 't';
@@ -80,7 +90,7 @@ void setup()
 
 void loop()
 {
-  //printSensors(true);
+  //printSensors(3);
   runCommands();
 }
 
@@ -134,7 +144,6 @@ void runCommands()
   case 'W':
   {
     moveForward(FORWARD_DISTANCE);
-    //calibrateRightAngle();
     sendAck();
     break;
   }
@@ -153,6 +162,12 @@ void runCommands()
   case 'E':
   {
     sendSensors(source);
+    break;
+  }
+  case 'Z':
+  {
+    calibrateRightAngle();
+    sendAck();
     break;
   }
   case 'C':
@@ -191,12 +206,6 @@ void runCommands()
     sendAck();
     break;
   }
-  case 'O':
-  {
-    rotateLeft(ROTATE_LEFT_180);
-    sendAck();
-    break;
-  }
   case '1':
   {
     moveForward(FORWARD_DISTANCE);
@@ -217,34 +226,58 @@ void runCommands()
   }
   case '4':
   {
-    moveForward(FORWARD_DISTANCE * 4 + MULTIPLE_FORWARD_FACTOR * 3);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 4 + MULTIPLE_FORWARD_FACTOR * 3);
     sendAck();
     break;
   }
   case '5':
   {
-    moveForward(FORWARD_DISTANCE * 5 + MULTIPLE_FORWARD_FACTOR * 4);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 5 + MULTIPLE_FORWARD_FACTOR * 4);
     sendAck();
     break;
   }
   case '6':
   {
-    moveForward(FORWARD_DISTANCE * 6 + MULTIPLE_FORWARD_FACTOR * 5);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 6 + MULTIPLE_FORWARD_FACTOR * 5);
     sendAck();
     break;
   }
   case '7':
   {
-    moveForward(FORWARD_DISTANCE * 7 + MULTIPLE_FORWARD_FACTOR * 6);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 7 + MULTIPLE_FORWARD_FACTOR * 6);
     sendAck();
     break;
   }
   case '8':
   {
-    moveForward(FORWARD_DISTANCE * 8 + MULTIPLE_FORWARD_FACTOR * 7);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 8 + MULTIPLE_FORWARD_FACTOR * 7);
     sendAck();
     break;
   }
+   case '9':
+  {
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 9 + MULTIPLE_FORWARD_FACTOR * 8);
+    sendAck();
+    break;
+  }
+   case 'I':
+  {
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 10 + MULTIPLE_FORWARD_FACTOR * 9);
+    sendAck();
+    break;
+  }
+   case 'O':
+  {
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 11 + MULTIPLE_FORWARD_FACTOR * 10);
+    sendAck();
+    break;
+  }
+   case 'P':
+  {
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 12 + MULTIPLE_FORWARD_FACTOR * 11);
+    sendAck();
+    break;
+  }    
 
   default:
   {
