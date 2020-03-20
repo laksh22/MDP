@@ -40,8 +40,7 @@ The resulting coordinates of the image should be resolved as such:
 The visualisation for the mapping is illustrated below, note that the camera is facing **RIGHTWARDS**.
 The delimiters `d1` and `d2` are visualised as the border lines between `REGION 0` AND `REGION 1` and `REGION 1` and `REGION 2` respectively.
 
-![region_x_y_mapping](doc_images/region_x_y.png"region and coordinate mapping")
-
+[![region_x_y_mapping](doc_images/region_x_y.png)](doc_images/region_x_y.png)
 
 As such, if the camera is facing rightwards, the generalisation below holds:
 

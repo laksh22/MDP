@@ -132,9 +132,9 @@ This issue is caused by the usage of `/dev/ttyAMA0`, the serial port `/dev/ttyAM
 
 Instead, please use `dev/ttyACM0`. During testing, you can use a USB cable connected to your an Android phone to connect to the upper port nearest to the LAN port.
 
-This should be enough to get you through your tests. For further instructions on how to read the messages sent via the serial port `dev/ttyACM0` please refer to the [Serial](#serial) section.
+This should be enough to get you through your tests. For further instructions on how to read the messages sent via the serial port `dev/ttyACM0` please refer to the [Serial](#42-serial) section.
 
-To resolve this issue, you probably forgot to run the [install Bluetooth dependency command](#bluetooth). Make sure to run the package install command.
+To resolve this issue, you probably forgot to run the [install Bluetooth dependency command](#41-bluetooth). Make sure to run the package install command.
 
 
 ### 5.3. Messages not getting sent over Bluetooth
