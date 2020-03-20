@@ -82,7 +82,7 @@ int files_in_dir(char *path, char ***files) {
       if (entry->d_type == DT_REG) {
         *files = realloc(*files, sizeof(**files) * (file_count + 1));
         // Remember to free from calling function
-        (*files)[file_count] = malloc(strlen(entry->d_name));
+        (*files)[file_count] = malloc(strlen(entry->d_name) + 1);
         strcpy((*files)[file_count], entry->d_name);
         file_count++;
       }
@@ -104,7 +104,7 @@ int l_files_in_dir(char *path, arraylist *l) {
   unsigned int idx = 0;
 
   if ((dir = opendir(path)) != NULL) {
-    printf("[l_files_in_dir] Files in folder [%s]: ", path);
+    printf("[l_files_in_dir] New files in folder [%s]: \n", path);
     while ((entry = readdir(dir)) != NULL) {
       if (entry->d_type == DT_REG) {
         // Do not want invisible files like .DS_Store
@@ -112,9 +112,11 @@ int l_files_in_dir(char *path, arraylist *l) {
           continue;
         } else if (l->size == 0) {
           // Nothing in the list, insert into Arraylist
-          filename = malloc(strlen(entry->d_name) + 1);
+          // +2 for delimiter and null terminater char
+          filename = malloc(strlen(entry->d_name) + 2);
           strcpy(filename, entry->d_name);
           arraylist_add(l, filename);
+          file_count++;
           continue;
         }
 
@@ -126,7 +128,8 @@ int l_files_in_dir(char *path, arraylist *l) {
           } else if (idx == l->size - 1) {
             // Looped to end of list and filename does not exist
             // Insert filename into Arraylist
-            filename = malloc(strlen(entry->d_name) + 1);
+            // +2 for delimiter and null terminater char
+            filename = malloc(strlen(entry->d_name) + 2);
             strcpy(filename, entry->d_name);
             arraylist_add(l, filename);
           }
@@ -150,6 +153,7 @@ void *read_img_labels() {
   unsigned int loop_idx = 0;
   int file_count;
   int cnt = 0;
+  char * filename;
 
   // Ensure required folders are created
   create_work_directories();
@@ -162,10 +166,17 @@ void *read_img_labels() {
     // Find files in IMAGES_FOUND_DIR
     l_files_in_dir(IMAGES_FOUND_DIR, l);
 
+    printf("[read_img_labels] l->size: %d\n", l->size);
+    printf("[read_img_labels] pre_list_idx: %d\n", l->size);
+
     if (l->size > pre_list_idx) {
       // New filenames found, send new filenames to RPi
       for (loop_idx = pre_list_idx; loop_idx < l->size; loop_idx++) {
-        distribute_command(arraylist_get(l, loop_idx), 'b');
+        filename = arraylist_get(l, loop_idx);
+        // C in RPi does not play well with exclamation point as the last char
+        *(filename + strlen(filename)) = '!';
+        *(filename + strlen(filename) + 1) = '\0';
+        distribute_command(filename, 'b');
       }
       pre_list_idx = l->size;
     }

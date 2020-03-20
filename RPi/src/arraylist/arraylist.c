@@ -71,7 +71,7 @@ void arraylist_allocate(arraylist *l, unsigned int size) {
 /**
  * Return the number of items contained in the list.
  */
-unsigned int arraylist_size(arraylist *l) {
+extern unsigned int arraylist_size(arraylist *l) {
   return l->size;
 }
 
