@@ -104,7 +104,7 @@ int l_files_in_dir(char *path, arraylist *l) {
   unsigned int idx = 0;
 
   if ((dir = opendir(path)) != NULL) {
-    printf("[l_files_in_dir] New files in folder [%s]: \n", path);
+//    printf("[l_files_in_dir] New files in folder [%s]: \n", path);
     while ((entry = readdir(dir)) != NULL) {
       if (entry->d_type == DT_REG) {
         // Do not want invisible files like .DS_Store
@@ -112,7 +112,7 @@ int l_files_in_dir(char *path, arraylist *l) {
           continue;
         } else if (l->size == 0) {
           // Nothing in the list, insert into Arraylist
-          // +2 for delimiter and null terminater char
+          // +2 for delimiter and null terminator char
           filename = malloc(strlen(entry->d_name) + 2);
           strcpy(filename, entry->d_name);
           arraylist_add(l, filename);
@@ -128,7 +128,7 @@ int l_files_in_dir(char *path, arraylist *l) {
           } else if (idx == l->size - 1) {
             // Looped to end of list and filename does not exist
             // Insert filename into Arraylist
-            // +2 for delimiter and null terminater char
+            // +2 for delimiter and null terminator char
             filename = malloc(strlen(entry->d_name) + 2);
             strcpy(filename, entry->d_name);
             arraylist_add(l, filename);
@@ -166,8 +166,8 @@ void *read_img_labels() {
     // Find files in IMAGES_FOUND_DIR
     l_files_in_dir(IMAGES_FOUND_DIR, l);
 
-    printf("[read_img_labels] l->size: %d\n", l->size);
-    printf("[read_img_labels] pre_list_idx: %d\n", l->size);
+//    printf("[read_img_labels] l->size: %d\n", l->size);
+//    printf("[read_img_labels] pre_list_idx: %d\n", l->size);
 
     if (l->size > pre_list_idx) {
       // New filenames found, send new filenames to RPi
