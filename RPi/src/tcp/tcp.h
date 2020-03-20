@@ -2,7 +2,6 @@
 #define RPI_RPI_TCP_TCP_H_
 
 #include <sys/socket.h>
-#include "../queue/queue.h"
 
 #define SERVER_IP "192.168.101.1"
 #define SERVER_PORT 4042

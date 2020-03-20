@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <pthread.h>
 #include "tcp.h"
 #include "../hub/hub.h"
 #include "../settings.h"

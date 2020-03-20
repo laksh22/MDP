@@ -1,8 +1,8 @@
-
 import os
+import re
 import time
 from pathlib import Path
-from typing import Union
+from typing import Union, Optional
 
 import cv2
 import numpy as np
@@ -83,6 +83,8 @@ class Yolo:
         self.output_video_path = "videos/"
         self.output_image_found_path = "images/found/"
         self.output_image_not_found_path = "images/not_found/"
+        self.file_name_pattern = re.compile(
+            "^\d{1,2}_\d{1,2}_(?:NORTH|SOUTH|EAST|WEST).jpeg$")
 
         # Create the required output folders
         if not os.path.exists(self.output_video_path):
@@ -94,7 +96,7 @@ class Yolo:
         if not os.path.exists(self.output_image_not_found_path):
             os.makedirs(self.output_image_not_found_path)
 
-    def process_image(self, image: Union[str, np.ndarray]):
+    def process_image(self, filename: str, parent_dir: str) -> str:
         """
         Processes a given image by performing object detection on it. Should
         an object be detected, a bounding box will be drawn around it,
@@ -112,17 +114,7 @@ class Yolo:
         Returns:
             None
         """
-        # Determine the image input type and ensure that it is of the
-        # numpy.ndarray type
-        if isinstance(image, str):
-            image = cv2.imread(image)
-            image_file_name = Path(image).stem
-        elif isinstance(image, np.ndarray):
-            image_file_name = "vid_source"
-        else:
-            print("Invalid image input type detected. Exiting...")
-            exit(2)
-
+        image = cv2.imread(parent_dir.rstrip("/") + "/" + filename)
         # Get the image width and height
         (im_height, im_width) = image.shape[:2]
 
@@ -193,41 +185,135 @@ class Yolo:
         )
 
         # Ensure at least one detection exists
-        if len(idxs) > 0:
-            detected_label_ids = []
-            # Loop over the indexes we are keeping
-            for i in idxs.flatten():
-                # Extract the bounding box coordinates
-                (x, y) = (boxes[i][0], boxes[i][1])
-                (w, h) = (boxes[i][2], boxes[i][3])
+        # if len(idxs) > 0:
+        #     detected_label_ids = []
+        #     # Loop over the indexes we are keeping
+        #     for i in idxs.flatten():
+        #         # Extract the bounding box coordinates
+        #         (x, y) = (boxes[i][0], boxes[i][1])
+        #         (w, h) = (boxes[i][2], boxes[i][3])
+        #
+        #         # Draw a bounding box rectangle and label on the frame
+        #         color = [int(c) for c in self.colors[class_ids[i]]]
+        #         cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
+        #         text = "{}: {:.4f}".format(self.labels[class_ids[i]],
+        #                                    confidences[i])
+        #         print(text)
+        #         cv2.putText(
+        #             image,
+        #             text,
+        #             (x, y - 5),
+        #             cv2.FONT_HERSHEY_SIMPLEX,
+        #             0.5,
+        #             color,
+        #             2
+        #         )
+        #         detected_label_ids.append(self.labels[class_ids[i]])
 
-                # Draw a bounding box rectangle and label on the frame
-                color = [int(c) for c in self.colors[class_ids[i]]]
-                cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
-                text = "{}: {:.4f}".format(self.labels[class_ids[i]],
-                                           confidences[i])
-                print(text)
-                cv2.putText(
-                    image,
-                    text,
-                    (x, y - 5),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.5,
-                    color,
-                    2
+        if len(idxs) == 1:
+            # Extract the bounding box coordinates
+            (x, y) = (boxes[0][0], boxes[0][1])
+            (w, h) = (boxes[0][2], boxes[0][3])
+
+            # Bounding box cannot be more than region 1 + 15% tolerance
+            if w > 253:
+                return None
+
+            # Draw a bounding box rectangle and label on the frame
+            color = [int(c) for c in self.colors[class_ids[0]]]
+
+            # (x, y) is the top left
+            # (x + w, y + h) is the bottom right
+            cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
+            text = "{}: {:.4f}".format(self.labels[class_ids[0]],
+                                       confidences[0])
+            print(text)
+            cv2.putText(
+                image,
+                text,
+                (x, y - 5),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                color,
+                2
+            )
+
+            detected_label = self.labels[class_ids[0]]
+
+            # Determine output file name
+            if not self.file_name_pattern.match(filename):
+                # Invalid format
+                new_filename = "{timestamp}_{label_id}_found.jpg".format(
+                    timestamp=int(time.time()),
+                    label_id=detected_label
                 )
-                detected_label_ids.append(self.labels[class_ids[i]])
+            else:
+                # Filename provided and is in valid format
+                img_meta_dat = filename.split("_")
 
+                # TODO: Calibrate this
+                delim_1 = 200
+                delim_2 = 420
+
+                # Determine which region the center of bounding box is in
+                if center_x < delim_1:
+                    region = 0
+                elif delim_1 <= center_x < delim_2:
+                    region = 1
+                else:
+                    # Case: x >= delim_2
+                    region = 2
+
+                print("Center at {}, {} @ Region: {}".format(center_x, center_y,
+                                                             region))
+
+                # Determine coordinate of image depending on orientation
+                # Note: Camera is facing right
+                coord_x = int(img_meta_dat[0])
+                coord_y = int(img_meta_dat[1])
+
+                # Remove file format
+                img_meta_dat[2] = (img_meta_dat[2]).split(".")[0]
+
+                if region == 1:
+                    # Center region; x,y coordinates will never change
+                    pass
+                elif region == 0:
+                    # Top region
+                    if img_meta_dat[2] == "NORTH":
+                        coord_y += 1
+                    elif img_meta_dat[2] == "SOUTH":
+                        coord_y -= 1
+                    elif img_meta_dat[2] == "EAST":
+                        coord_x += 1
+                    elif img_meta_dat[2] == "WEST":
+                        coord_x -= 1
+                    else:
+                        print("Invalid orientation: [%s]" % img_meta_dat[2])
+                elif region == 2:
+                    # Bottom region
+                    if img_meta_dat[2] == "NORTH":
+                        coord_y -= 1
+                    elif img_meta_dat[2] == "SOUTH":
+                        coord_y += 1
+                    elif img_meta_dat[2] == "EAST":
+                        coord_x -= 1
+                    elif img_meta_dat[2] == "WEST":
+                        coord_x += 1
+                    else:
+                        print("Invalid orientation: [%s]" % img_meta_dat[2])
+
+                new_filename = "%s,%s,%s.jpeg" % (
+                coord_x, coord_y, detected_label)
+
+            print("Saving file [%s]" % new_filename)
             # Write detected image to found directory
             cv2.imwrite(
-                self.output_image_found_path +
-                "{timestamp}_{label_id}_found_{original_file_name}.jpg".format(
-                    timestamp=int(time.time()),
-                    label_id="-".join(detected_label_ids),
-                    original_file_name=image_file_name
-                ),
+                self.output_image_found_path + new_filename,
                 image
             )
+
+            return new_filename
         else:
             # No objects detected
             # Write image with nothing detected to not_found directory
@@ -239,66 +325,68 @@ class Yolo:
             #     ),
             #     image
             # )
-            pass
 
-    def process_video(self, video_path: str, reconstruct_vid: bool):
-        """
-        Processes a given video by segmenting the video into frames and
-        performing object detection on each of the frames. Should an object
-        be detected, a bounding box will be drawn around it, annotated with
-        the confidence level, and label id will also be annotated on the image.
-        If an object be detected, the processed frame will be created in the
-        ~/images/found/path. The image file name will follow the structure of
-        [timestamp]_[label_id]_found_[original_file_name].jpg.
-        If an object is not detected, the processed frame will be created in
-        the ~/images/not_found/path. The image file name will follow the
-        structure of [timestamp]_not_found_[original_file_name].jpg.
-        Args:
-            video_path (str):
-                Absolute path to the video to be processed.
-            reconstruct_vid (bool):
-                Boolean flag to indicate whether a video (based on the
-                original provided video) with the bounding boxes (with
-                confidence level, and label id) drawn around detected objects
-                should be created.
-                If the flag is set (true) the reconstructed video will be
-                saved to ~/videos/[timestamp]_out.avi.
-        Returns:
-            None
-        """
-        v_writer = None
-        epoch_ts = int(time.time())
+            return None
 
-        v_cap = cv2.VideoCapture(video_path)
-        while v_cap.isOpened():
-            # Read the next frame from the file
-            (grabbed, frame) = v_cap.read()
-
-            # If the frame was not grabbed, then we have reached the end of
-            # the stream
-            if not grabbed:
-                break
-
-            # Proccess frame as image
-            self.process_image(frame)
-
-            # Check if the video writer is None
-            if v_writer is None:
-                # Initialize our video writer
-                fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-                v_writer = cv2.VideoWriter(
-                    "%s/%s_out.mp4" % (self.output_video_path, epoch_ts),
-                    fourcc,
-                    3,
-                    (frame.shape[1], frame.shape[0]),
-                    True
-                )
-
-            # Check if video should be reconstructed
-            if reconstruct_vid:
-                v_writer.write(frame)
-
-        # Release the file pointers
-        print("[INFO] cleaning up...")
-        v_writer.release()
-        v_cap.release()
+    # def process_video(self, video_path: str, reconstruct_vid: bool):
+    #     """
+    #     Processes a given video by segmenting the video into frames and
+    #     performing object detection on each of the frames. Should an object
+    #     be detected, a bounding box will be drawn around it, annotated with
+    #     the confidence level, and label id will also be annotated on the image.
+    #     If an object be detected, the processed frame will be created in the
+    #     ~/images/found/path. The image file name will follow the structure of
+    #     [timestamp]_[label_id]_found_[original_file_name].jpg.
+    #     If an object is not detected, the processed frame will be created in
+    #     the ~/images/not_found/path. The image file name will follow the
+    #     structure of [timestamp]_not_found_[original_file_name].jpg.
+    #     Args:
+    #         video_path (str):
+    #             Absolute path to the video to be processed.
+    #         reconstruct_vid (bool):
+    #             Boolean flag to indicate whether a video (based on the
+    #             original provided video) with the bounding boxes (with
+    #             confidence level, and label id) drawn around detected objects
+    #             should be created.
+    #             If the flag is set (true) the reconstructed video will be
+    #             saved to ~/videos/[timestamp]_out.avi.
+    #     Returns:
+    #         None
+    #     """
+    #     v_writer = None
+    #     epoch_ts = int(time.time())
+    #
+    #     v_cap = cv2.VideoCapture(video_path)
+    #     while v_cap.isOpened():
+    #         # Read the next frame from the file
+    #         (grabbed, frame) = v_cap.read()
+    #
+    #         # If the frame was not grabbed, then we have reached the end of
+    #         # the stream
+    #         if not grabbed:
+    #             break
+    #
+    #         # Proccess frame as image
+    #         self.process_image(frame)
+    #
+    #         # Check if the video writer is None
+    #         if v_writer is None:
+    #             # NOTE: This might not be working properly yet
+    #             # Initialize our video writer
+    #             fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    #             v_writer = cv2.VideoWriter(
+    #                 "%s/%s_out.mp4" % (self.output_video_path, epoch_ts),
+    #                 fourcc,
+    #                 3,
+    #                 (frame.shape[1], frame.shape[0]),
+    #                 True
+    #             )
+    #
+    #         # Check if video should be reconstructed
+    #         if reconstruct_vid:
+    #             v_writer.write(frame)
+    #
+    #     # Release the file pointers
+    #     print("[INFO] cleaning up...")
+    #     v_writer.release()
+    #     v_cap.release()

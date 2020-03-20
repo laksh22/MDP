@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include "bluetooth.h"
 #include "../settings.h"
-#include "../queue/queue.h"
 #include "../hub/hub.h"
 
 // BT Variables

@@ -12,13 +12,14 @@ int serial_connect() {
   fd_serial = serialOpen(SERIAL_PORT, BAUD);
   if (fd_serial == -1) {
     perror(
-            "[serial_connect]: Error encountered when establishing serial port connection");
+        "[serial_connect]: Error encountered when establishing serial port connection");
     fflush(stdout);
     return 0;
   } else {
-    printf("[serial_connect]: Serial port connection %s with %d established successfully.\n",
-            SERIAL_PORT,
-            BAUD);
+    printf(
+        "[serial_connect]: Serial port connection %s with %d established successfully.\n",
+        SERIAL_PORT,
+        BAUD);
     fflush(stdout);
     return 1;
   }
@@ -34,7 +35,8 @@ void serial_reconnect() {
   int conn = 0;
 
   while (!conn) {
-    printf("[serial_reconnect]: Attempting to re-establish connection to serial port...\n");
+    printf(
+        "[serial_reconnect]: Attempting to re-establish connection to serial port...\n");
     fflush(stdout);
 
     // Do not need to close serial port
@@ -59,7 +61,7 @@ char *serial_read() {
       perror("[serial_read]: Error encountered when trying to read from serial");
       fflush(stdout);
       serial_reconnect();
-      return 0;
+      return '\0';
     }
 
     // serialGetchar will block up to 10 seconds; if nothing is read, return -1
@@ -74,7 +76,8 @@ char *serial_read() {
       if (serial_buf[0] == '@') {
         if (serial_buf[(count - 2)] == '!') {
           serial_buf[(count - 1)] = '\0';
-          printf("[serial_read]: Received [%s] from Serial client connection\n", serial_buf);
+          printf("[serial_read]: Received [%s] from Serial client connection\n",
+                 serial_buf);
           fflush(stdout);
           p = serial_buf;
           return p;
@@ -83,7 +86,8 @@ char *serial_read() {
         }
       } else {
         printf(
-                "[serial_read]: Invalid string [%s] received, please send a new command\n");
+            "[serial_read]: Invalid string [%s] received, please send a new command\n",
+            serial_buf);
         fflush(stdout);
         return 0;
       }
@@ -109,7 +113,7 @@ void *serial_reader_create(void *args) {
       distribute_command(read_buf, 's');
     } else {
       perror(
-              "[serial_reader_create]: Error encountered when receiving data from serial_read");
+          "[serial_reader_create]: Error encountered when receiving data from serial_read");
       fflush(stdout);
     }
   }

@@ -1,5 +1,4 @@
 #include <ctype.h>
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +6,7 @@
 #include "../bluetooth/bluetooth.h"
 #include "../serial/serial.h"
 #include "../tcp/tcp.h"
+#include "../camera/camera.h"
 
 rpa_queue_t *b_queue, *s_queue, *t_queue;
 
@@ -46,10 +46,12 @@ void write_hub(char *wpointer, char source) {
 //        } else if (source == 'b') {
 //          *(wpointer + 1) = 'b';
 //        }
-
         tcp_send(wpointer + 2);
+
       } else if (tolower(wpointer[1]) == 'b') {
+
         bt_send((void *) wpointer + 2);
+
       } else if (tolower(wpointer[1]) == 's') {
 
         if (source == 't') {
@@ -58,20 +60,24 @@ void write_hub(char *wpointer, char source) {
         } else if (source == 'b') {
           *(wpointer + 1) = 'b';
           serial_send((void *) wpointer + 1);
-        } else {
+        } else if (source == 'p') {
           // Send keep alive message
-          serial_send("pK|")
+          *(wpointer + 1) = 'p';
+          serial_send((void *) wpointer + 1);
+        } else {
+          printf("[write_hub] Unknown source received: [%s]\n", source);
         }
 
-//      } else if (tolower(wpointer[1]) == 'r') {
-//
-//        while (1) {
-//          // TODO: Implement activate camera
-//          if (camera_activate(wpointer + 2)) {
-//            tcp_send("rTAKEN");
-//            break;
-//          }
+      } else if (tolower(wpointer[1]) == 'r') {
+
+        // Uncomment if ACKs are required to be sent to TCP
+//        if (save_coord_orientation(wpointer + 2)) {
+//          // Ack to be sent back to TCP
+//          tcp_send("rCR8");
 //        }
+
+        // Uncomment if ACKs are not required to be sent to TCP
+        save_coord_orientation(wpointer + 2);
 
       } else {
         printf("[write_hub]: Incorrect recipient!\n");

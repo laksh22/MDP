@@ -5,3 +5,4 @@ macro(make_test target source library)
 endmacro(make_test)
 
 make_test(DoTestRpaQueue test_rpa_queue.c RpaQueue)
+make_test(DoTestArraylist test_arraylist.c Arraylist)
