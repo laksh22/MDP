@@ -8,7 +8,7 @@
 #include "../tcp/tcp.h"
 #include "../camera/camera.h"
 
-rpa_queue_t *b_queue, *s_queue, *t_queue;
+rpa_queue_t *b_queue, *s_queue, *t_queue, *r_queue;
 
 // Blocking rpa_queue implementation
 void distribute_command(char *buf, char source) {
@@ -53,8 +53,6 @@ void write_hub(char *wpointer, char source) {
         bt_send((void *) wpointer + 2);
 
       } else if (tolower(wpointer[1]) == 's') {
-        // TODO: Implement advance picture taking code if movement detected command here
-
         if (source == 't') {
           *(wpointer + 1) = 't';
           serial_send((void *) wpointer + 1);
@@ -71,14 +69,7 @@ void write_hub(char *wpointer, char source) {
 
       } else if (tolower(wpointer[1]) == 'r') {
 
-        // Uncomment if ACKs are required to be sent to TCP
-//        if (save_coord_orientation(wpointer + 2)) {
-//          // Ack to be sent back to TCP
-//          tcp_send("rCR8");
-//        }
-
-        // Uncomment if ACKs are not required to be sent to TCP
-        save_coord_orientation(wpointer + 2);
+        rpa_queue_push(r_queue, wpointer + 2);
 
       } else {
         printf("[write_hub]: Incorrect recipient!\n");

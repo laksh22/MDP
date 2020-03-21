@@ -6,7 +6,7 @@
 #define SERIAL_PORT "/dev/ttyACM0"
 #define BAUD 9600
 #define QSIZE 100
-#define NUM_THREADS 8
+#define NUM_THREADS 9
 
 // Camera directories
 #define COORDS_ORIENT_DIR "/home/pi/Desktop/coords_orien/"
