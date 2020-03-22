@@ -211,13 +211,17 @@ void *read_img_labels() {
 void *take_picture() {
   char *coord_orien;
   char tcp_ack[] = "@tY!";
+  char *raw_file;
+  char *file_ext;
+  char *last_ext; // Reference and is not malloc-ed to
+  int img_waiting_counter = 0;
+  char old_file_name[MAX] = '\0';
+  char new_file_name[MAX] = '\0';
+
   while (1) {
+    // Blocking, will wait until something is popped from queue
     rpa_queue_pop(r_queue, (void **) &coord_orien);
     save_coord_orientation(coord_orien);
-
-    // TODO: Implement logic to check if picture is taken, once taken, ACK
-    // Ack to be sent back to TCP
-    distribute_command(tcp_ack, 't');
 
     if (strcmp(coord_orien, "DONE") == 0) {
       distribute_command(tcp_ack, 't');
@@ -225,6 +229,55 @@ void *take_picture() {
       // Break out of endless-loop and proceed to end of function/thread
       break;
     }
+
+    // Get raw file name
+    raw_file = malloc(strlen(coord_orien) + 1);
+    strcpy(raw_file, coord_orien);
+
+    // Determine the file extension
+    last_ext = strrchr(tmp_str, '.');
+
+    // Create a copy of the file extension
+    file_ext = malloc(strlen(last_ext) + 1);
+    strcpy(file_ext, last_ext);
+
+    // Remove file extension from raw_file
+    *last_ext = '\0';
+
+    // Construct the fully qualified path to the original file name
+    old_file_name[0] = '\0';
+    strcpy(old_file_name, COORDS_ORIENT_DIR);
+    strcat(old_file_name, raw_file);
+    strcat(old_file_name, file_ext);
+
+    // Will wait for image to be taken for 250 loops
+    img_waiting_counter = 0;
+    while (img_waiting_counter < 250) {
+      // Check if image is taken
+      if (access(old_file_name, F_OK) != -1) {
+        // Image is taken
+
+        // Build fully qualified path to the new file with suffix "_ACK"
+        new_file_name[0] = '\0';
+        strcpy(new_file_name, COORDS_ORIENT_DIR);
+        strcat(new_file_name, raw_file);
+        strcat(new_file_name, "_ACK");
+        strcat(new_file_name, file_ext);
+
+        // Rename file to suffix with "_ACK"
+        if (rename(old_file_name, new_file_name) == 0) {
+          // Ack to be sent back to TCP
+          distribute_command(tcp_ack, 't');
+          break;
+        }
+      }
+
+      img_waiting_counter++;
+    }
+
+    // Free the malloc strings
+    free(file_ext);
+    free(raw_file);
   }
 }
 

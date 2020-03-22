@@ -19,7 +19,7 @@ void distribute_command(char *buf, char source) {
 
   if (!point) {
     perror(
-            "[distribute_command]: Error encountered when splitting received data");
+        "[distribute_command]: Error encountered when splitting received data");
     fflush(stdout);
   } else {
     while (point != NULL) {
@@ -84,8 +84,9 @@ void write_hub(char *wpointer, char source) {
 }
 
 void all_disconnect(int sig) {
-  printf("[all_disconnect]: %d signal received, terminating all connection ports!\n",
-         sig);
+  printf(
+      "[all_disconnect]: %d signal received, terminating all connection ports!\n",
+      sig);
   fflush(stdout);
   tcp_disconnect(tcp_sockfd);
   bt_disconnect();
