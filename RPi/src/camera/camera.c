@@ -215,8 +215,8 @@ void *take_picture() {
   char *file_ext;
   char *last_ext; // Reference and is not malloc-ed to
   int img_waiting_counter = 0;
-  char old_file_name[MAX] = '\0';
-  char new_file_name[MAX] = '\0';
+  char old_file_name[MAX];
+  char new_file_name[MAX];
 
   while (1) {
     // Blocking, will wait until something is popped from queue
@@ -235,7 +235,7 @@ void *take_picture() {
     strcpy(raw_file, coord_orien);
 
     // Determine the file extension
-    last_ext = strrchr(tmp_str, '.');
+    last_ext = strrchr(raw_file, '.');
 
     // Create a copy of the file extension
     file_ext = malloc(strlen(last_ext) + 1);
