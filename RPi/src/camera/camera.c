@@ -246,7 +246,7 @@ void *take_picture() {
 
     // Construct the fully qualified path to the original file name
     old_file_name[0] = '\0';
-    strcpy(old_file_name, COORDS_ORIENT_DIR);
+    strcpy(old_file_name, IMAGES_TO_SCAN_DIR);
     strcat(old_file_name, raw_file);
     strcat(old_file_name, file_ext);
 
@@ -259,7 +259,7 @@ void *take_picture() {
 
         // Build fully qualified path to the new file with suffix "_ACK"
         new_file_name[0] = '\0';
-        strcpy(new_file_name, COORDS_ORIENT_DIR);
+        strcpy(new_file_name, IMAGES_TO_SCAN_DIR);
         strcat(new_file_name, raw_file);
         strcat(new_file_name, "_ACK");
         strcat(new_file_name, file_ext);
