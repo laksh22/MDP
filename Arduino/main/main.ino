@@ -8,6 +8,8 @@
 // Move 90 degrees
 #define LEFT_ROTATE_DEGREES 88
 #define RIGHT_ROTATE_DEGREES 88
+//#define LEFT_ROTATE_DEGREES 87
+//#define RIGHT_ROTATE_DEGREES 87.6
 #define ROTATE_LEFT_180 184.5             
 
 //Move Forward fixed distance
@@ -24,6 +26,7 @@
 //#define RIGHT_RPM 77.95 
 #define LEFT_RPM_MULTIPLE 100
 #define RIGHT_RPM_MULTIPLE 92
+
 
 // For communication
 char source = 't';
@@ -46,14 +49,20 @@ byte delayExplore = 2.5;
 byte delayFastestPath = 1;
 
 // For PID
-double ticksL = 0.0;
-double ticksR = 0.0;
-double  ticksDiff = ticksL - ticksR;
+volatile int ticksL = 0;
+volatile int ticksR = 0;
+volatile double  ticksDiff = ticksL - ticksR;
 word ticks_moved = 0;
 double currentTicksL, currentTicksR, oldticksL, oldticksR;
 double idealTickDiff = 0;
 
 PID PIDControlStraight(&ticksDiff, &speedL, &idealTickDiff, 3.05, 5, 0, DIRECT);  
+PID PIDControlLeft(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0, DIRECT);
+PID PIDControlRight(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0, DIRECT);
+
+//PID PIDControlStraight(&a, &a, &a, a, a, a, DIRECT);
+//PID PIDControlLeft(&a, &a, &a, a, a, a, DIRECT);
+//PID PIDControlRight(&a, &a, &a, a, a, a, DIRECT);
 
 /*
  * ==============================
@@ -70,8 +79,8 @@ void setup()
   //Attach interrupts to counts ticks
   pinMode(encoder1A, INPUT);
   pinMode(encoder2A, INPUT);
-  enableInterrupt(encoder1A, ELPos, RISING);
-  enableInterrupt(encoder2A, ERPos, RISING);
+  enableInterrupt(encoder1A, E1Pos, RISING);
+  enableInterrupt(encoder2A, E2Pos, RISING);
 
   // Init values
   currentTicksL = currentTicksR = oldticksL = oldticksR = 0;
