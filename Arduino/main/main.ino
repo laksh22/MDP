@@ -6,8 +6,8 @@
 #define FORWARD_TARGET_TICKS 0
 
 // Move 90 degrees
-#define LEFT_ROTATE_DEGREES 91.7
-#define RIGHT_ROTATE_DEGREES 92
+#define LEFT_ROTATE_DEGREES 88
+#define RIGHT_ROTATE_DEGREES 88
 //#define LEFT_ROTATE_DEGREES 87
 //#define RIGHT_ROTATE_DEGREES 87.6
 #define ROTATE_LEFT_180 184.5             
@@ -18,14 +18,15 @@
 #define MULTIPLE_FORWARD_FACTOR 4.1 / 3 //4.65 + 4.55(for fastest)
 
 //Move Forward Staight/
-#define LEFT_RPM 67
-#define RIGHT_RPM 62 
+#define LEFT_RPM 70
+#define RIGHT_RPM 69
 //#define LEFT_RPM 100
 //#define RIGHT_RPM 95
 //#define LEFT_RPM 82.2
 //#define RIGHT_RPM 77.95 
 #define LEFT_RPM_MULTIPLE 100
 #define RIGHT_RPM_MULTIPLE 92
+#define RIGHT_MOTOR_SPEED 300
 
 
 // For communication
@@ -40,7 +41,7 @@ byte encoder1B = 5;
 byte encoder2A = 11;
 byte encoder2B = 13;
 
-double speedL, speedR; // In PWM
+double speedL = 300, speedR = 300;// In PWM
 
 // For operation mode
 bool FASTEST_PATH = false;
@@ -49,19 +50,20 @@ byte delayExplore = 2.5;
 byte delayFastestPath = 1;
 
 // For PID
-volatile word ticksL = 0;
-volatile word ticksR = 0;
+volatile int ticksL = 0;
+volatile int ticksR = 0;
+volatile double  ticksDiff = ticksL - ticksR;
 word ticks_moved = 0;
 double currentTicksL, currentTicksR, oldticksL, oldticksR;
-double a = 0;
+double idealTickDiff = 0;
 
-//PID PIDControlStraight(&currentTicksL, &speedL, &currentTicksR, 3.5, 0, 0.75, DIRECT);
-//PID PIDControlLeft(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0.5, DIRECT);
-//PID PIDControlRight(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0.5, DIRECT);
+PID PIDControlStraight(&ticksDiff, &speedL, &idealTickDiff, 3.05, 5, 0, DIRECT);  
+PID PIDControlLeft(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0, DIRECT);
+PID PIDControlRight(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0, DIRECT);
 
-PID PIDControlStraight(&a, &a, &a, a, a, a, DIRECT);
-PID PIDControlLeft(&a, &a, &a, a, a, a, DIRECT);
-PID PIDControlRight(&a, &a, &a, a, a, a, DIRECT);
+//PID PIDControlStraight(&a, &a, &a, a, a, a, DIRECT);
+//PID PIDControlLeft(&a, &a, &a, a, a, a, DIRECT);
+//PID PIDControlRight(&a, &a, &a, a, a, a, DIRECT);
 
 /*
  * ==============================
@@ -86,12 +88,14 @@ void setup()
 
   // Begin communication
   Serial.begin(9600);
+
+  PIDControlStraight.SetMode(AUTOMATIC);
+  PIDControlStraight.SetOutputLimits(-400, 400);
 }
 
-// 6.19V, battery 1
 void loop()
 {
-  //printSensors(5);
+  //printSensors(3);
   runCommands();
 }
 
