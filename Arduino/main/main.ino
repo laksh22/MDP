@@ -52,23 +52,13 @@ byte delayFastestPath = 1;
 volatile int ticksL = 0;
 volatile int ticksR = 0;
 volatile double  ticksDiff = ticksL - ticksR;
-word ticks_moved = 0;
-double currentTicksL, currentTicksR, oldticksL, oldticksR;
 double idealTickDiff = 0;
 
-PID PIDControlStraight(&ticksDiff, &speedL, &idealTickDiff, 3.05, 5, 0, DIRECT);  
-PID PIDControlLeft(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0, DIRECT);
-PID PIDControlRight(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0, DIRECT);
+PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 3.05, 1, 0, DIRECT);  
 
-//PID PIDControlStraight(&a, &a, &a, a, a, a, DIRECT);
-//PID PIDControlLeft(&a, &a, &a, a, a, a, DIRECT);
-//PID PIDControlRight(&a, &a, &a, a, a, a, DIRECT);
 
-/*
- * ==============================
- * Main Program
- * ==============================
- */
+
+
 void setup()
 {
   sensorInit();
@@ -82,21 +72,24 @@ void setup()
   enableInterrupt(encoder1A, E1Pos, RISING);
   enableInterrupt(encoder2A, E2Pos, RISING);
 
-  // Init values
-  currentTicksL = currentTicksR = oldticksL = oldticksR = 0;
-
   // Begin communication
   Serial.begin(9600);
 
-  PIDControlStraight.SetMode(AUTOMATIC);
-  PIDControlStraight.SetOutputLimits(-400, 400);
+  PIDController.SetMode(AUTOMATIC);
+  PIDController.SetOutputLimits(-400, 400);
 }
+
+
+
 
 void loop()
 {
   //printSensors(3);
   runCommands();
 }
+
+
+
 
 void runCommands()
 {
@@ -124,25 +117,9 @@ void runCommands()
 
   char command;
 
-  //First character is the source
   source = command_buffer[0];
-  //Second character in array is the command
   command = command_buffer[1];
 
-  /*---------------------------------------------------------------------------------------------------
-                                          Input Commands
-                                          --------------
-  LEGEND:
-  -------
-  W ---> Move Forward
-  A ---> Rotate Left
-  D ---> Rotate Right
-  E ---> Read Sensor Values
-  C ---> Recalibrate Robot's Center
-  T ---> Avoiding Obstacle In A Straight Line
-  L ---> Gradual Left Turn
-  R ---> Gradual Right Turn
-  ---------------------------------------------------------------------------------------------------*/
   switch (command)
   {
   case 'W':

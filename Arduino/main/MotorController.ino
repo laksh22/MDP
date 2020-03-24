@@ -3,23 +3,22 @@ void rotateLeft(double degree)
 {
     //at 6.10v to 6.20v
     double targetTicks = 4.3589 * degree;
+    ticksL = ticksR = 0;  
 
     if (targetTicks < 0)
-        return;
+        return;             
 
-    ticksL = ticksR = 0;               
-
+    PIDController.SetSampleTime(6.5);
     md.setSpeeds(-speedL, speedR);
-    PIDControlStraight.SetSampleTime(6.5);
 
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
         ticksDiff = ticksL - ticksR;
-        PIDControlStraight.Compute();
+        PIDController.Compute();
         md.setM1Speed(-speedL);
     }
 
-    md.setBrakes(400, 400);
+    md.setBrakes(350, 350);
     delay(delayExplore);
 }
 
@@ -28,23 +27,22 @@ void rotateRight(double degree)
 {
     //at 6.10v to 6.20v
     double targetTicks = 4.3589 * degree;
+    ticksL = ticksR = 0;  
 
     if (targetTicks < 0)
-        return;
+        return;             
 
-    ticksL = ticksR = 0;               
-
+    PIDController.SetSampleTime(6.5);
     md.setSpeeds(speedL, -speedR);
-    PIDControlStraight.SetSampleTime(6.5);
 
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
         ticksDiff = ticksL - ticksR;
-        PIDControlStraight.Compute();
+        PIDController.Compute();
         md.setM1Speed(speedL);
     }
 
-    md.setBrakes(400, 400);
+    md.setBrakes(350, 350);
     delay(delayExplore);
 }
 
@@ -53,29 +51,19 @@ void moveForward(float distance)
 {
     //at 6.10v to 6.20v
     double targetTicks = 26.85 * distance + FORWARD_TARGET_TICKS;
+    ticksL = ticksR = 0;  
 
     if (targetTicks < 0)
-        return;
+        return;             
 
-    ticksL = ticksR = 0;               
-
-    ticksDiff = 0;
-    speedL = speedR;
-    PIDControlStraight.SetSampleTime(6.5);
+    PIDController.SetSampleTime(6.5);
     md.setSpeeds(speedL, speedR);
 
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
         ticksDiff = ticksL - ticksR;
-        PIDControlStraight.Compute();
+        PIDController.Compute();
         md.setM1Speed(speedL);
-
-        Serial.print("ticksL: "); Serial.println(ticksL);
-        Serial.print("ticksR: "); Serial.println(ticksR);
-        Serial.print("diff: "); Serial.println(ticksDiff);
-        Serial.print("speedL: "); Serial.println(speedL);
-        Serial.println();
-        Serial.println();
     }
 
     md.setBrakes(350, 350);
@@ -87,23 +75,22 @@ void moveBackward(float distance)
 {
     //at 6.10v to 6.20v
     double targetTicks = 26.85 * distance + FORWARD_TARGET_TICKS;
+    ticksL = ticksR = 0;  
 
     if (targetTicks < 0)
-        return;
+        return;             
 
-    ticksL = ticksR = 0;               
-
+    PIDController.SetSampleTime(6.5);
     md.setSpeeds(-speedL, -speedR);
-    PIDControlStraight.SetSampleTime(6.5);
 
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
         ticksDiff = ticksL - ticksR;
-        PIDControlStraight.Compute();
+        PIDController.Compute();
         md.setM1Speed(-speedL);
     }
 
-    md.setBrakes(400, 400);
+    md.setBrakes(350, 350);
     delay(delayExplore);
 }
 
