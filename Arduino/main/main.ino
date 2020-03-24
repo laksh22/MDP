@@ -19,7 +19,7 @@
 
 //Move Forward Staight/
 #define LEFT_RPM 67
-#define RIGHT_RPM 65
+#define RIGHT_RPM 62 
 //#define LEFT_RPM 100
 //#define RIGHT_RPM 95
 //#define LEFT_RPM 82.2
@@ -91,7 +91,7 @@ void setup()
 // 6.19V, battery 1
 void loop()
 {
-  //printSensors(3);
+  //printSensors(5);
   runCommands();
 }
 
