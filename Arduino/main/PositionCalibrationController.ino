@@ -1,19 +1,19 @@
-#define DIST_L_LOWER 1145 // Left sensor distance
+#define DIST_L_LOWER 1110 // Left sensor distance
 #define DIST_L_UPPER DIST_L_LOWER + 20
 
-#define DIST_M_LOWER 1075 // Middle sensor distance
+#define DIST_M_LOWER 1060 // Middle sensor distance
 #define DIST_M_UPPER DIST_M_LOWER + 20
 
-#define DIST_R_LOWER 1079 // Right sensor distance
+#define DIST_R_LOWER 1090 // Right sensor distance
 #define DIST_R_UPPER DIST_R_LOWER + 20
 
-#define ROT_L_LOWER 60 // Left-Middle rotation
+#define ROT_L_LOWER 65 // Left-Middle rotation
 #define ROT_L_UPPER ROT_L_LOWER + 20
 
-#define ROT_M_LOWER -65 // Left-Right rotation
+#define ROT_M_LOWER -75 // Left-Right rotation
 #define ROT_M_UPPER ROT_M_LOWER + 20
 
-#define ROT_R_LOWER -15 // Middle-Right rotation
+#define ROT_R_LOWER -5 // Middle-Right rotation
 #define ROT_R_UPPER ROT_R_LOWER + 20
 
 #define ROT_SIDE_LOWER 68 // Right side rotation

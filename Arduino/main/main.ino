@@ -18,7 +18,7 @@
 #define MULTIPLE_FORWARD_FACTOR 4.1 / 3 //4.65 + 4.55(for fastest)
 
 //Move Forward Staight/
-#define LEFT_RPM 70
+#define LEFT_RPM 67
 #define RIGHT_RPM 65
 //#define LEFT_RPM 100
 //#define RIGHT_RPM 95
@@ -88,6 +88,7 @@ void setup()
   Serial.begin(9600);
 }
 
+// 6.19V, battery 1
 void loop()
 {
   //printSensors(3);
