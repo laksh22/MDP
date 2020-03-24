@@ -35,11 +35,11 @@ void calibrateRightAngle() // ID = 2
 
         if (error > ROT_SIDE_UPPER) // Rotate Left
         {
-            rotateLeftCalib(0.01);
+            rotateLeft(0.01);
         }
         else if (error < ROT_SIDE_LOWER) // Rotate Right
         {
-            rotateRightCalib(0.01);
+            rotateRight(0.01);
         }
         else
         {
@@ -74,11 +74,11 @@ void calibrateFrontAngleLM(bool calibrateDistance) // ID = 1
 
         if (error > ROT_L_UPPER) // Rotate Left
         {
-            rotateRightCalib(0.01);
+            rotateRight(0.01);
         }
         else if (error < ROT_L_LOWER) // Ro    tate Right
         {
-            rotateLeftCalib(0.01);
+            rotateLeft(0.01);
         }
         else
         {
@@ -121,11 +121,11 @@ void calibrateFrontAngleLR(bool calibrateDistance) // ID = 2
 
         if (error > ROT_M_UPPER) // Rotate Left
         {
-            rotateLeftCalib(0.01);
+            rotateLeft(0.01);
         }
         else if (error < ROT_M_LOWER) // Rotate Right
         {
-            rotateRightCalib(0.01);
+            rotateRight(0.01);
         }
         else
         {
@@ -168,11 +168,11 @@ void calibrateFrontAngleMR(bool calibrateDistance) // ID = 3
 
         if (error > ROT_R_UPPER) // Rotate Left
         {
-            rotateRightCalib(0.01);
+            rotateRight(0.01);
         }
         else if (error < ROT_R_LOWER) // Rotate Right
         {
-            rotateLeftCalib(0.01);
+            rotateLeft(0.01);
         }
         else
         {

@@ -8,8 +8,6 @@
 // Move 90 degrees
 #define LEFT_ROTATE_DEGREES 88
 #define RIGHT_ROTATE_DEGREES 88
-//#define LEFT_ROTATE_DEGREES 87
-//#define RIGHT_ROTATE_DEGREES 87.6
 #define ROTATE_LEFT_180 184.5             
 
 //Move Forward fixed distance
@@ -26,8 +24,6 @@
 //#define RIGHT_RPM 77.95 
 #define LEFT_RPM_MULTIPLE 100
 #define RIGHT_RPM_MULTIPLE 92
-#define RIGHT_MOTOR_SPEED 300
-
 
 // For communication
 char source = 't';
@@ -50,20 +46,14 @@ byte delayExplore = 2.5;
 byte delayFastestPath = 1;
 
 // For PID
-volatile int ticksL = 0;
-volatile int ticksR = 0;
-volatile double  ticksDiff = ticksL - ticksR;
+double ticksL = 0.0;
+double ticksR = 0.0;
+double  ticksDiff = ticksL - ticksR;
 word ticks_moved = 0;
 double currentTicksL, currentTicksR, oldticksL, oldticksR;
 double idealTickDiff = 0;
 
 PID PIDControlStraight(&ticksDiff, &speedL, &idealTickDiff, 3.05, 5, 0, DIRECT);  
-PID PIDControlLeft(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0, DIRECT);
-PID PIDControlRight(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0, DIRECT);
-
-//PID PIDControlStraight(&a, &a, &a, a, a, a, DIRECT);
-//PID PIDControlLeft(&a, &a, &a, a, a, a, DIRECT);
-//PID PIDControlRight(&a, &a, &a, a, a, a, DIRECT);
 
 /*
  * ==============================
@@ -80,8 +70,8 @@ void setup()
   //Attach interrupts to counts ticks
   pinMode(encoder1A, INPUT);
   pinMode(encoder2A, INPUT);
-  enableInterrupt(encoder1A, E1Pos, RISING);
-  enableInterrupt(encoder2A, E2Pos, RISING);
+  enableInterrupt(encoder1A, ELPos, RISING);
+  enableInterrupt(encoder2A, ERPos, RISING);
 
   // Init values
   currentTicksL = currentTicksR = oldticksL = oldticksR = 0;
@@ -231,55 +221,55 @@ void runCommands()
   }
   case '4':
   {
-    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 4 + MULTIPLE_FORWARD_FACTOR * 3);
+    moveForward(FORWARD_DISTANCE_MULTIPLE * 4 + MULTIPLE_FORWARD_FACTOR * 3);
     sendAck();
     break;
   }
   case '5':
   {
-    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 5 + MULTIPLE_FORWARD_FACTOR * 4);
+    moveForward(FORWARD_DISTANCE_MULTIPLE * 5 + MULTIPLE_FORWARD_FACTOR * 4);
     sendAck();
     break;
   }
   case '6':
   {
-    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 6 + MULTIPLE_FORWARD_FACTOR * 5);
+    moveForward(FORWARD_DISTANCE_MULTIPLE * 6 + MULTIPLE_FORWARD_FACTOR * 5);
     sendAck();
     break;
   }
   case '7':
   {
-    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 7 + MULTIPLE_FORWARD_FACTOR * 6);
+    moveForward(FORWARD_DISTANCE_MULTIPLE * 7 + MULTIPLE_FORWARD_FACTOR * 6);
     sendAck();
     break;
   }
   case '8':
   {
-    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 8 + MULTIPLE_FORWARD_FACTOR * 7);
+    moveForward(FORWARD_DISTANCE_MULTIPLE * 8 + MULTIPLE_FORWARD_FACTOR * 7);
     sendAck();
     break;
   }
    case '9':
   {
-    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 9 + MULTIPLE_FORWARD_FACTOR * 8);
+    moveForward(FORWARD_DISTANCE_MULTIPLE * 9 + MULTIPLE_FORWARD_FACTOR * 8);
     sendAck();
     break;
   }
    case 'I':
   {
-    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 10 + MULTIPLE_FORWARD_FACTOR * 9);
+    moveForward(FORWARD_DISTANCE_MULTIPLE * 10 + MULTIPLE_FORWARD_FACTOR * 9);
     sendAck();
     break;
   }
    case 'O':
   {
-    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 11 + MULTIPLE_FORWARD_FACTOR * 10);
+    moveForward(FORWARD_DISTANCE_MULTIPLE * 11 + MULTIPLE_FORWARD_FACTOR * 10);
     sendAck();
     break;
   }
    case 'P':
   {
-    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 12 + MULTIPLE_FORWARD_FACTOR * 11);
+    moveForward(FORWARD_DISTANCE_MULTIPLE * 12 + MULTIPLE_FORWARD_FACTOR * 11);
     sendAck();
     break;
   }    
