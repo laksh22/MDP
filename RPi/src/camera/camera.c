@@ -234,10 +234,6 @@ void *take_picture() {
     raw_file = malloc(strlen(coord_orien) + 1);
     strcpy(raw_file, coord_orien);
 
-    // Remove file extension from raw_file
-    //last_ext = strrchr(raw_file, '.');
-    //*last_ext = '\0';
-
 
     // Construct the fully qualified path to the original file name
     old_file_name[0] = '\0';
