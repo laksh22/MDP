@@ -54,7 +54,7 @@ volatile int ticksR = 0;
 volatile double  ticksDiff = ticksL - ticksR;
 double idealTickDiff = 0;
 
-PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 3.05, 1, 0, DIRECT);  
+PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 3.05, 0, 0, DIRECT);  
 
 
 

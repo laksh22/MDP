@@ -11,6 +11,8 @@ void rotateLeft(double degree)
     PIDController.SetSampleTime(6.5);
     md.setSpeeds(-speedL, speedR);
 
+    ticksDiff = 0;
+
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
         ticksDiff = ticksL - ticksR;
@@ -34,6 +36,8 @@ void rotateRight(double degree)
 
     PIDController.SetSampleTime(6.5);
     md.setSpeeds(speedL, -speedR);
+
+    ticksDiff = 0;
 
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
@@ -59,11 +63,20 @@ void moveForward(float distance)
     PIDController.SetSampleTime(6.5);
     md.setSpeeds(speedL, speedR);
 
+    ticksDiff = 0;
+
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
         ticksDiff = ticksL - ticksR;
         PIDController.Compute();
         md.setM1Speed(speedL);
+        Serial.print("ticksL: "); Serial.println(ticksL);
+        Serial.print("ticksR: "); Serial.println(ticksR);
+        Serial.print("diff: "); Serial.println(ticksDiff);
+        Serial.print("speedL: "); Serial.println(speedL);
+        Serial.print("speedR: "); Serial.println(speedR);
+        Serial.println();
+        Serial.println();    
     }
 
     md.setBrakes(350, 350);
@@ -82,6 +95,8 @@ void moveBackward(float distance)
 
     PIDController.SetSampleTime(6.5);
     md.setSpeeds(-speedL, -speedR);
+
+    ticksDiff = 0;
 
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
