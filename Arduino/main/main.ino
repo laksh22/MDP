@@ -7,13 +7,13 @@
 
 // Move 90 degrees
 #define LEFT_ROTATE_DEGREES 86.5
-#define RIGHT_ROTATE_DEGREES 87.5
+#define RIGHT_ROTATE_DEGREES 85
 //#define LEFT_ROTATE_DEGREES 87
 //#define RIGHT_ROTATE_DEGREES 87.6
 #define ROTATE_LEFT_180 184.5             
 
 //Move Forward fixed distance
-#define FORWARD_DISTANCE 10.5
+#define FORWARD_DISTANCE 10
 #define FORWARD_DISTANCE_MULTIPLE 9.6
 #define MULTIPLE_FORWARD_FACTOR 4.1 / 3 //4.65 + 4.55(for fastest)
 
@@ -26,6 +26,8 @@
 //#define RIGHT_RPM 77.95 
 #define LEFT_RPM_MULTIPLE 100
 #define RIGHT_RPM_MULTIPLE 92
+
+boolean shouldCal = true;
 
 
 // For communication
@@ -54,7 +56,7 @@ volatile int ticksR = 0;
 volatile double  ticksDiff = ticksL - ticksR;
 double idealTickDiff = 0;
 
-PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 2, 0, 1, DIRECT);  
+PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 3.5, 0.2, 0.75, DIRECT);  
 
 
 
@@ -84,7 +86,7 @@ void setup()
 
 void loop()
 {
-  //printSensors(4);
+  //printSensors(5);
   runCommands();
 }
 

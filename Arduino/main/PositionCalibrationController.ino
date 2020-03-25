@@ -1,19 +1,19 @@
-#define DIST_L_LOWER 1120 // Left sensor distance
+#define DIST_L_LOWER 1155 // Left sensor distance
 #define DIST_L_UPPER DIST_L_LOWER + 20
 
-#define DIST_M_LOWER 1055 // Middle sensor distance
+#define DIST_M_LOWER 1100 // Middle sensor distance
 #define DIST_M_UPPER DIST_M_LOWER + 20
 
-#define DIST_R_LOWER 1145 // Right sensor distance
+#define DIST_R_LOWER 1190 // Right sensor distance
 #define DIST_R_UPPER DIST_R_LOWER + 20
 
-#define ROT_L_LOWER 60 // Left-Middle rotation
+#define ROT_L_LOWER 55 // Left-Middle rotation
 #define ROT_L_UPPER ROT_L_LOWER + 20
 
-#define ROT_M_LOWER 20 // Left-Right rotation
+#define ROT_M_LOWER 35 // Left-Right rotation
 #define ROT_M_UPPER ROT_M_LOWER + 20
 
-#define ROT_R_LOWER -93 // Middle-Right rotation
+#define ROT_R_LOWER -90 // Middle-Right rotation
 #define ROT_R_UPPER ROT_R_LOWER + 20
 
 #define ROT_SIDE_LOWER 68 // Right side rotation
@@ -200,6 +200,7 @@ void calibrateFrontAngleMR(bool calibrateDistance) // ID = 3
 
 void calibrateDistanceL(int id, bool calibrateAngle)
 {
+    shouldCal = false;
     int count = 0;
     while (1)
     {
@@ -230,6 +231,8 @@ void calibrateDistanceL(int id, bool calibrateAngle)
         }
     }
 
+    shouldCal = true;
+
     float angleError = 0;
 
     switch (id)
@@ -251,6 +254,7 @@ void calibrateDistanceL(int id, bool calibrateAngle)
 
 void calibrateDistanceM(int id, bool calibrateAngle)
 {
+    shouldCal = false;
     int count = 0;
     while (1)
     {
@@ -280,6 +284,8 @@ void calibrateDistanceM(int id, bool calibrateAngle)
         }
     }
 
+    shouldCal = true;
+
     float angleError = 0;
 
     switch (id)
@@ -301,6 +307,7 @@ void calibrateDistanceM(int id, bool calibrateAngle)
 
 void calibrateDistanceR(int id, bool calibrateAngle)
 {
+    shouldCal = false;
     int count = 0;
     while (1)
     {
@@ -316,6 +323,7 @@ void calibrateDistanceR(int id, bool calibrateAngle)
         }
         else
         {
+      
             int RFdistance = sensorFR.distance() * 100;
             if(RFdistance > DIST_R_LOWER && RFdistance < DIST_R_UPPER){
               break;
@@ -329,6 +337,8 @@ void calibrateDistanceR(int id, bool calibrateAngle)
           break;
         }
     }
+
+    shouldCal = true;
 
     float angleError = 0;
 

@@ -60,8 +60,6 @@ void moveForward(float distance)
     if (targetTicks < 0)
         return;      
 
-    speedL = speedR;
-
     PIDController.SetSampleTime(6.5);
     md.setSpeeds(speedL, speedR);
 
@@ -69,9 +67,13 @@ void moveForward(float distance)
 
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
-        ticksDiff = ticksL - ticksR;
-        PIDController.Compute();
-        md.setM1Speed(speedL);
+        if(shouldCal) {
+          ticksDiff = ticksL - ticksR;
+          PIDController.Compute();
+          md.setM1Speed(speedL);
+        } else {
+          md.setM1Speed(speedL);
+        }
 //        Serial.print("ticksL: "); Serial.println(ticksL);
 //        Serial.print("ticksR: "); Serial.println(ticksR);
 //        Serial.print("diff: "); Serial.println(ticksDiff);
