@@ -51,7 +51,7 @@ if __name__ == "__main__":
                 "MDTM {}".format(x)))
 
             for img in images_to_scan:
-                # Only process images with a certain pattern (ends with -ACK.jpeg)
+                # Only process images that ends with "_ACK.jpeg"
                 if "_ACK.jpeg" in img:
                     # Rename image
                     img = img.replace("_ACK.jpeg", ".jpeg")
@@ -151,7 +151,8 @@ if __name__ == "__main__":
         for idx in range(1, len(cv2_imgs_to_disp)):
             if idx % 2 == 1:
                 h_stacks.append(
-                    np.hstack((cv2_imgs_to_disp[idx - 1], cv2_imgs_to_disp[idx])))
+                    np.hstack(
+                        (cv2_imgs_to_disp[idx - 1], cv2_imgs_to_disp[idx])))
             elif idx % 2 == 0 and idx == len(cv2_imgs_to_disp) - 1:
                 # Odd number of images to stitch together
                 # Handle last image
@@ -167,7 +168,8 @@ if __name__ == "__main__":
 
         wrt_img = cv2.imread(all_detected_obj_name + ".jpeg")
         dis_img = cv2.resize(wrt_img,
-                             (int(wrt_img.shape[1] / 2), int(wrt_img.shape[0] / 2)))
+                             (int(wrt_img.shape[1] / 2),
+                              int(wrt_img.shape[0] / 2)))
         # Display the image
         cv2.imshow(all_detected_obj_name, dis_img)
         cv2.waitKey(0)
