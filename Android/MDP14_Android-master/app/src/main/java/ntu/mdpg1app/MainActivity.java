@@ -343,7 +343,17 @@ public class MainActivity extends AppCompatActivity {
         text_mdf1.setText(explored);
 
         EditText text_mdf2 = (EditText) customLayout.findViewById(R.id.textbox_mdf2);
-        String obstacles = HexBin.binToHex(Map.getInstance().getBinaryExploredObstacle());
+        //String obstacles = HexBin.binToHex(Map.getInstance().getBinaryExploredObstacle());
+        String obstacles = "";
+       /*
+        String binaryStr = Map.getInstance().getBinaryExploredObstacle();
+        for(int i = 0; i < binaryStr.length(); i+=4){
+            int decimal = Integer.parseInt(binaryStr.substring(i,i+4),2);
+            String hexStr = Integer.toString(decimal,16);
+            obstacles += hexStr;
+        }
+        */
+        obstacles = Map.getInstance().getObstacleStringFromAlgo();
         text_mdf2.setText(obstacles);
 
         EditText text_imgreg = (EditText) customLayout.findViewById(R.id.textbox_imgreg);
@@ -502,11 +512,11 @@ public class MainActivity extends AppCompatActivity {
         }
         if(menu_set_waypoint.isChecked()){
             Position p = new Position(posX,posY);
-            WayPoint.getInstance().setPosition(p);
-            outgoingMessage("WP:"+(int)posX+","+(int)posY, 0);
 
-            //Make a prompt here to confirm
-            menu_set_waypoint.setChecked(false);
+                            WayPoint.getInstance().setPosition(p);
+                            outgoingMessage("WP:"+(int)posX+","+(int)posY, 0);
+                            //Make a prompt here to confirm
+                            menu_set_waypoint.setChecked(false);
         }
         loadGrid();
     }
