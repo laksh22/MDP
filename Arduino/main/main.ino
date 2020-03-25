@@ -6,8 +6,8 @@
 #define FORWARD_TARGET_TICKS 0
 
 // Move 90 degrees
-#define LEFT_ROTATE_DEGREES 88
-#define RIGHT_ROTATE_DEGREES 88
+#define LEFT_ROTATE_DEGREES 86.5
+#define RIGHT_ROTATE_DEGREES 87.5
 //#define LEFT_ROTATE_DEGREES 87
 //#define RIGHT_ROTATE_DEGREES 87.6
 #define ROTATE_LEFT_180 184.5             
@@ -54,7 +54,7 @@ volatile int ticksR = 0;
 volatile double  ticksDiff = ticksL - ticksR;
 double idealTickDiff = 0;
 
-PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 3.05, 0, 0, DIRECT);  
+PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 2, 0, 1, DIRECT);  
 
 
 
@@ -84,7 +84,7 @@ void setup()
 
 void loop()
 {
-  //printSensors(3);
+  //printSensors(4);
   runCommands();
 }
 

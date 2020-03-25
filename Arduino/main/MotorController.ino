@@ -58,7 +58,9 @@ void moveForward(float distance)
     ticksL = ticksR = 0;  
 
     if (targetTicks < 0)
-        return;             
+        return;      
+
+    speedL = speedR;
 
     PIDController.SetSampleTime(6.5);
     md.setSpeeds(speedL, speedR);
@@ -70,13 +72,13 @@ void moveForward(float distance)
         ticksDiff = ticksL - ticksR;
         PIDController.Compute();
         md.setM1Speed(speedL);
-        Serial.print("ticksL: "); Serial.println(ticksL);
-        Serial.print("ticksR: "); Serial.println(ticksR);
-        Serial.print("diff: "); Serial.println(ticksDiff);
-        Serial.print("speedL: "); Serial.println(speedL);
-        Serial.print("speedR: "); Serial.println(speedR);
-        Serial.println();
-        Serial.println();    
+//        Serial.print("ticksL: "); Serial.println(ticksL);
+//        Serial.print("ticksR: "); Serial.println(ticksR);
+//        Serial.print("diff: "); Serial.println(ticksDiff);
+//        Serial.print("speedL: "); Serial.println(speedL);
+//        Serial.print("speedR: "); Serial.println(speedR);
+//        Serial.println();
+//        Serial.println();    
     }
 
     md.setBrakes(350, 350);
@@ -93,15 +95,13 @@ void moveBackward(float distance)
     if (targetTicks < 0)
         return;             
 
-    PIDController.SetSampleTime(6.5);
+    speedL = speedR;
     md.setSpeeds(-speedL, -speedR);
 
     ticksDiff = 0;
 
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
-        ticksDiff = ticksL - ticksR;
-        PIDController.Compute();
         md.setM1Speed(-speedL);
     }
 
