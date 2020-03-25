@@ -6,20 +6,20 @@
 #define FORWARD_TARGET_TICKS 0
 
 // Move 90 degrees
-#define LEFT_ROTATE_DEGREES 86.5
-#define RIGHT_ROTATE_DEGREES 85
+#define LEFT_ROTATE_DEGREES 87
+#define RIGHT_ROTATE_DEGREES 86.5
 //#define LEFT_ROTATE_DEGREES 87
 //#define RIGHT_ROTATE_DEGREES 87.6
 #define ROTATE_LEFT_180 184.5             
 
 //Move Forward fixed distance
 #define FORWARD_DISTANCE 10
-#define FORWARD_DISTANCE_MULTIPLE 9.6
+#define FORWARD_DISTANCE_MULTIPLE 9.8
 #define MULTIPLE_FORWARD_FACTOR 4.1 / 3 //4.65 + 4.55(for fastest)
 
 //Move Forward Staight/
-#define LEFT_RPM 70
-#define RIGHT_RPM 69
+#define LEFT_RPM 73.65
+#define RIGHT_RPM 69.2
 //#define LEFT_RPM 100
 //#define RIGHT_RPM 95
 //#define LEFT_RPM 82.2
@@ -56,7 +56,14 @@ volatile int ticksR = 0;
 volatile double  ticksDiff = ticksL - ticksR;
 double idealTickDiff = 0;
 
-PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 3.5, 0.2, 0.75, DIRECT);  
+word ticks_moved = 0;
+double currentTicksL, currentTicksR, oldTicksL, oldTicksR;
+
+//PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 4, 0.5, 0.2, DIRECT);  
+//PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 5, 0.5, 0.2, DIRECT);  
+PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 5, 0, 0, DIRECT);  
+
+
 
 
 
@@ -86,7 +93,7 @@ void setup()
 
 void loop()
 {
-  //printSensors(5);
+  //printSensors(4);
   runCommands();
 }
 
@@ -209,55 +216,55 @@ void runCommands()
   }
   case '4':
   {
-    moveForward(FORWARD_DISTANCE_MULTIPLE * 4 + MULTIPLE_FORWARD_FACTOR * 3);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 4 + MULTIPLE_FORWARD_FACTOR * 3);
     sendAck();
     break;
   }
   case '5':
   {
-    moveForward(FORWARD_DISTANCE_MULTIPLE * 5 + MULTIPLE_FORWARD_FACTOR * 4);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 5 + MULTIPLE_FORWARD_FACTOR * 4);
     sendAck();
     break;
   }
   case '6':
   {
-    moveForward(FORWARD_DISTANCE_MULTIPLE * 6 + MULTIPLE_FORWARD_FACTOR * 5);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 6 + MULTIPLE_FORWARD_FACTOR * 5);
     sendAck();
     break;
   }
   case '7':
   {
-    moveForward(FORWARD_DISTANCE_MULTIPLE * 7 + MULTIPLE_FORWARD_FACTOR * 6);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 7 + MULTIPLE_FORWARD_FACTOR * 6);
     sendAck();
     break;
   }
   case '8':
   {
-    moveForward(FORWARD_DISTANCE_MULTIPLE * 8 + MULTIPLE_FORWARD_FACTOR * 7);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 8 + MULTIPLE_FORWARD_FACTOR * 7);
     sendAck();
     break;
   }
    case '9':
   {
-    moveForward(FORWARD_DISTANCE_MULTIPLE * 9 + MULTIPLE_FORWARD_FACTOR * 8);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 9 + MULTIPLE_FORWARD_FACTOR * 8);
     sendAck();
     break;
   }
    case 'I':
   {
-    moveForward(FORWARD_DISTANCE_MULTIPLE * 10 + MULTIPLE_FORWARD_FACTOR * 9);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 10 + MULTIPLE_FORWARD_FACTOR * 9);
     sendAck();
     break;
   }
    case 'O':
   {
-    moveForward(FORWARD_DISTANCE_MULTIPLE * 11 + MULTIPLE_FORWARD_FACTOR * 10);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 11 + MULTIPLE_FORWARD_FACTOR * 10);
     sendAck();
     break;
   }
    case 'P':
   {
-    moveForward(FORWARD_DISTANCE_MULTIPLE * 12 + MULTIPLE_FORWARD_FACTOR * 11);
+    moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 12 + MULTIPLE_FORWARD_FACTOR * 11);
     sendAck();
     break;
   }    

@@ -50,8 +50,55 @@ void rotateRight(double degree)
     delay(delayExplore);
 }
 
-// Move robot forward by distance (in cm)
+
 void moveForward(float distance)
+{
+  //at 6.10v to 6.20v
+  double target_tick = 0;
+
+  //target_tick = FORWARD_TARGET_TICKS; //289 // EDITED
+  target_tick = 26.85 * distance + FORWARD_TARGET_TICKS;
+  double tick_travelled = 0;
+
+  if (target_tick < 0)
+    return;
+
+  // Init values
+  ticksL = ticksR = 0;               //encoder's ticks (constantly increased when the program is running due to interrupt)
+  currentTicksL = currentTicksR = 0; //ticks that we are used to calculate PID. Ticks at the current sampling of PIDController
+  oldTicksL = oldTicksR = 0;
+
+  speedL = rpmToSpeedL(LEFT_RPM); //70.75 //74.9  100
+  speedR = rpmToSpeedR(RIGHT_RPM); //70.5 //74.5 99.5
+
+  //Set Final ideal speed and accomodate for the ticks we used in acceleration
+  md.setSpeeds(speedL, speedR);
+  tick_travelled = (double)ticksR;
+
+  while (tick_travelled < target_tick)
+  {
+    // if not reach destination ticks yet
+    currentTicksL = ticksL - oldTicksL; //calculate the ticks travelled in this sample interval of 50ms
+    currentTicksR = ticksR - oldTicksR;
+
+    oldTicksR += currentTicksR; //update ticks
+    oldTicksL += currentTicksL;
+    tick_travelled += currentTicksR;
+  }
+
+  //md.setBrakes(370,400);
+  md.setBrakes(350, 350);
+  delay(delayExplore);
+  
+  if (FASTEST_PATH)
+    delay(delayFastestPath);
+   
+  md.setBrakes(350, 350);
+  delay(delayExplore);
+}
+
+// Move robot forward by distance (in cm)
+void moveForwardMultiple(float distance)
 {
     //at 6.10v to 6.20v
     double targetTicks = 26.85 * distance + FORWARD_TARGET_TICKS;
@@ -64,6 +111,8 @@ void moveForward(float distance)
     md.setSpeeds(speedL, speedR);
 
     ticksDiff = 0;
+    PIDController.SetMode(AUTOMATIC);
+
 
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
@@ -74,16 +123,15 @@ void moveForward(float distance)
         } else {
           md.setM1Speed(speedL);
         }
-//        Serial.print("ticksL: "); Serial.println(ticksL);
-//        Serial.print("ticksR: "); Serial.println(ticksR);
+        ticksDiff = ticksL - ticksR;
 //        Serial.print("diff: "); Serial.println(ticksDiff);
 //        Serial.print("speedL: "); Serial.println(speedL);
 //        Serial.print("speedR: "); Serial.println(speedR);
 //        Serial.println();
-//        Serial.println();    
     }
 
     md.setBrakes(350, 350);
+    PIDController.SetMode(MANUAL);    
     delay(delayExplore);
 }
 
@@ -124,7 +172,7 @@ void E2Pos()
 }
 
 // RPM to speed conversion (left motor)
-double rpmTospeedL(double RPM)
+double rpmToSpeedL(double RPM)
 {
     if (RPM == 0)
         return 0;
@@ -133,7 +181,7 @@ double rpmTospeedL(double RPM)
 }
 
 // RPM to speed conversion (right motor)
-double rpmTospeedR(double RPM)
+double rpmToSpeedR(double RPM)
 {
     if (RPM == 0)
         return 0;
