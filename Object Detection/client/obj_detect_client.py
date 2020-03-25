@@ -52,9 +52,9 @@ if __name__ == "__main__":
 
             for img in images_to_scan:
                 # Only process images with a certain pattern (ends with -ACK.jpeg)
-                if "-ACK.jpeg" in img:
+                if "_ACK.jpeg" in img:
                     # Rename image
-                    img = img.replace("-ACK.jpeg", ".jpeg")
+                    img = img.replace("_ACK.jpeg", ".jpeg")
                     # Download remote image
                     handle = open(
                         LOCAL_IMAGES_TO_SCAN_DIR.rstrip("/") + "/" + img.lstrip(
