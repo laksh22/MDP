@@ -23,7 +23,7 @@ int save_coord_orientation(char *coord_orientation) {
 int create_work_directories() {
   // Create all required working directories
   char dirList[3][35] =
-      {COORDS_ORIENT_DIR, IMAGES_TO_SCAN_DIR, IMAGES_FOUND_DIR};
+          {COORDS_ORIENT_DIR, IMAGES_TO_SCAN_DIR, IMAGES_FOUND_DIR};
   char emptyDir[1024];
   DIR *dir;
   int i;
@@ -212,7 +212,7 @@ void *take_picture() {
   char *coord_orien;
   char tcp_ack[] = "@tY!";
   char *raw_file;
-  char *file_ext;
+  char file_ext[] = ".jpeg";
   char *last_ext; // Reference and is not malloc-ed to
   int img_waiting_counter = 0;
   char old_file_name[MAX];
@@ -234,15 +234,10 @@ void *take_picture() {
     raw_file = malloc(strlen(coord_orien) + 1);
     strcpy(raw_file, coord_orien);
 
-    // Determine the file extension
-    last_ext = strrchr(raw_file, '.');
-
-    // Create a copy of the file extension
-    file_ext = malloc(strlen(last_ext) + 1);
-    strcpy(file_ext, last_ext);
-
     // Remove file extension from raw_file
-    *last_ext = '\0';
+    //last_ext = strrchr(raw_file, '.');
+    //*last_ext = '\0';
+
 
     // Construct the fully qualified path to the original file name
     old_file_name[0] = '\0';
@@ -250,9 +245,9 @@ void *take_picture() {
     strcat(old_file_name, raw_file);
     strcat(old_file_name, file_ext);
 
-    // Will wait for image to be taken for 250 loops
+    // Will wait for image to be taken for 500 loops
     img_waiting_counter = 0;
-    while (img_waiting_counter < 250) {
+    while (img_waiting_counter < 500) {
       // Check if image is taken
       if (access(old_file_name, F_OK) != -1) {
         // Image is taken
@@ -271,12 +266,11 @@ void *take_picture() {
           break;
         }
       }
-
+      usleep(20 * 1000);
       img_waiting_counter++;
     }
 
     // Free the malloc strings
-    free(file_ext);
     free(raw_file);
   }
 }
