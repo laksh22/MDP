@@ -29,9 +29,11 @@ public class Map {
 	public int[][] getExploredTiles() {
 		return exploredTiles;
 	}
-	public ArrayList<IDblock> getNumberedBlocks() {return numberedBlocks; }
+	public ArrayList<IDblock> getNumberedBlocks() { return numberedBlocks; }
+
 	public void addNumberedBlocks(IDblock block) {
 		for (IDblock nb:numberedBlocks) {
+			//override me
 			if(nb.getPosition().equals(block.getPosition())){
 				numberedBlocks.remove(nb);
 				break;
@@ -39,13 +41,7 @@ public class Map {
 		}
 		numberedBlocks.add(block);
 	}
-	public void setExploredTiles(int[][] exploredTiles) {
-		this.exploredTiles = exploredTiles;
-	}
-	public  void setObstacle(int[][] obstacles) {
-		this.obstacles = obstacles;
-	}
-	
+
 	//in hexdecimal, from map descriptor file to arrays
 	public void setMap(String exploredTileHex, String obstacleHex, String exploredObstacleHex) {
 
@@ -104,41 +100,35 @@ public class Map {
 	}
 
 	public void setMapJson(String obstacleHex){
-			//JSONObject obj = null;
-			//obj = new JSONObject(jsonMap);
-			String exploredTileHex="FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
-			//String exploredObstacleHex="FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
-			//String obstacleHex = obj.getString("grid");
+		String exploredTileHex="FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
 
-			String exploredTileBinary = HexBin.hexToBin(exploredTileHex);
-			exploredTileBinary =exploredTileBinary.substring(2, exploredTileBinary.length()-2);
+		String exploredTileBinary = HexBin.hexToBin(exploredTileHex);
+		exploredTileBinary =exploredTileBinary.substring(2, exploredTileBinary.length()-2);
 
-			String obstacleBinary = HexBin.hexToBin(obstacleHex);
+		String obstacleBinary = HexBin.hexToBin(obstacleHex);
 
-			for(int i =0;i<exploredTileBinary.length();i++){
-				char exploreBit = exploredTileBinary.charAt(i);
-				int y = (i-(i%15))/15;
-				int x = i%15;
-				exploredTiles[y][x]=0;
-				if(exploreBit=='1'){
-					exploredTiles[y][x]=1;
-					//obstacles[y][x]=1;
-				}
+		for(int i =0;i<exploredTileBinary.length();i++){
+			char exploreBit = exploredTileBinary.charAt(i);
+			int y = (i-(i%15))/15;
+			int x = i%15;
+			exploredTiles[y][x]=0;
+			if(exploreBit=='1'){
+				exploredTiles[y][x]=1;
 			}
+		}
 
-
-			for(int i =0;i<obstacleBinary.length();i++){
-				char obstacleBit = '0';
-				if(obstacleBinary.length()>0){
-					obstacleBit = obstacleBinary.charAt(i);
-				}
-				int y = (i-(i%15))/15;
-				int x = i%15;
-				obstacles[19-y][x]=0;
-				if(obstacleBit=='1'){
-					obstacles[19-y][x]=1;
-				}
+		for(int i =0;i<obstacleBinary.length();i++){
+			char obstacleBit = '0';
+			if(obstacleBinary.length()>0){
+				obstacleBit = obstacleBinary.charAt(i);
 			}
+			int y = (i-(i%15))/15;
+			int x = i%15;
+			obstacles[19-y][x]=0;
+			if(obstacleBit=='1'){
+				obstacles[19-y][x]=1;
+			}
+		}
 	}
 
 
@@ -160,7 +150,6 @@ public class Map {
 		int obstacles[][]=Map.getInstance().getObstacles();
 		for(int y =0;y<20;y++){
 			for(int x =0;x<15;x++){
-		//		binaryExplored=binaryExplored+exploredTile[y][x];
 				if(exploredTile[y][x]==1){
 					binaryExploredObstacle=binaryExploredObstacle+obstacles[y][x];
 				}
@@ -174,19 +163,7 @@ public class Map {
 		}
 		return binaryExploredObstacle;
 	}
-	/*
-	public String getBinaryObstacle(){
-		String binaryObstacle="11";
-		int obstacles[][]=Map.getInstance().getObstacles();
-		for(int y =0;y<20;y++){
-			for(int x =0;x<15;x++){
-				binaryObstacle=binaryObstacle+obstacles[y][x];
-			}
-		}
-		binaryObstacle=binaryObstacle+"11";
-		return binaryObstacle;
-	}
-	*/
+
 	public String getObstacleStringFromAlgo() {
 		return obstacleString;
 	}

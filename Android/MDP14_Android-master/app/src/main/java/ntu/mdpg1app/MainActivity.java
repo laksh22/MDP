@@ -53,16 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
     String status = "Idle";
 
-    //For robot fastest-path animation
-    String[] originalMovement = new String[0]; //if there are multiple movements
-    ArrayList<String> simplifiedMovement = new ArrayList<String>();
-
-    //
-
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -343,17 +333,8 @@ public class MainActivity extends AppCompatActivity {
         text_mdf1.setText(explored);
 
         EditText text_mdf2 = (EditText) customLayout.findViewById(R.id.textbox_mdf2);
-        //String obstacles = HexBin.binToHex(Map.getInstance().getBinaryExploredObstacle());
-        String obstacles = "";
-       /*
-        String binaryStr = Map.getInstance().getBinaryExploredObstacle();
-        for(int i = 0; i < binaryStr.length(); i+=4){
-            int decimal = Integer.parseInt(binaryStr.substring(i,i+4),2);
-            String hexStr = Integer.toString(decimal,16);
-            obstacles += hexStr;
-        }
-        */
-        obstacles = Map.getInstance().getObstacleStringFromAlgo();
+        String obstacles = HexBin.binToHex(Map.getInstance().getBinaryExploredObstacle());
+        //obstacles = obstacles + ";" + Map.getInstance().getObstacleStringFromAlgo();
         text_mdf2.setText(obstacles);
 
         EditText text_imgreg = (EditText) customLayout.findViewById(R.id.textbox_imgreg);
@@ -373,8 +354,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     //this is to uncheck all the checkable menuitem
     private void clearAllEditableCheckbox(){
         menu_set_robot_position.setChecked(false);
@@ -383,12 +362,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static final String STATUS_EX_DESC = "Moving (Exploring)";
-    public static final String STATUS_EX_HEADER = "EX";
     public static final String STATUS_FP_DESC = "Moving (Fastest Path)";
-    public static final String STATUS_FP_HEADER = "FP";
-    public static final String STATUS_DONE_DESC = "Stopped";
-    public static final String STATUS_DONE_HEADER = "DONE";
-    public static final String STATUS_TERMINATE_HEADER = "TE|||"; //change this
     public static final String STATUS_TERMINATE_DESC = "Terminated";
 
     //method is ran when new message comes in
@@ -400,88 +374,89 @@ public class MainActivity extends AppCompatActivity {
         if(readMsg.length()>0){
             menu_show_bluetooth_chat.setChecked(true);
             fragment.showChat(true);
-            final String delimiterPattern = ":";
-                String message[];
-                if(readMsg.contains(":")) {
-                    message = readMsg.split(delimiterPattern);
-                }else{
-                    message = readMsg.split("-");
+            String message[];
+            // - delimiter for imgReg, : delimiter for everythig else
+            if(readMsg.contains(":")) {
+                message = readMsg.split(":");
+            }else{
+                message = readMsg.split("-");
+            }
+
+            if (message[0].equals("GRID")) { //receive mapDescriptor from Algo
+                Map.getInstance().setMapJson(message[1]);
+                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                    loadGrid();
                 }
+            }
 
-                if (message[0].equals("GRID")) { //receive mapDescriptor from Algo
+            else if (message[0].equals("DATA")) { //receive full data string (P1, P2, robot pos) from Algo
+                String data[] = message[1].split(",");
 
-                    Map.getInstance().setMapJson(message[1]);
-                    if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
-                        loadGrid();
-                    }
+                Map.getInstance().setMap(data[0], "", data[1]);
+
+                r.setPosX(Float.parseFloat(data[2]));
+                r.setPosY(Float.parseFloat(data[3]));
+                r.setDirection(data[4]);
+
+                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                    loadGrid();
                 }
+            }
 
-                else if (message[0].equals("DATA")) {
-                    String data[] = message[1].split(",");
-
-                    Map.getInstance().setMap(data[0], "", data[1]);
-
-                    r.setPosX(Float.parseFloat(data[2]));
-                    r.setPosY(Float.parseFloat(data[3]));
-                    r.setDirection(data[4]);
-
-                    if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
-                        loadGrid();
-                    }
-                }
-
-                //receive numbered block
-                else if (message[0].equals("BLOCK")) {
-                    String posAndDirect[] = message[1].split(",");
-                    IDblock input = new IDblock(posAndDirect[2], Integer.parseInt(posAndDirect[0]), Integer.parseInt(posAndDirect[1]));
+            else if (message[0].equals("BLOCK")) { //receive numbered block
+                String data[] = message[1].split(","); //x, y, id
+                    IDblock input = new IDblock(data[2], Integer.parseInt(data[0]), Integer.parseInt(data[1]));
                     Map.getInstance().addNumberedBlocks(input);
                     if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
                         loadGrid();
                     }
                 }
 
-                //receive robot position
-                else if (message[0].equals("ROBOTPOSITION")) {
-                    String posAndDirect[] = message[1].split(",");
-                    r.setPosX(Float.parseFloat(posAndDirect[0]));
-                    r.setPosY(Float.parseFloat(posAndDirect[1]));
-                    r.setDirection(posAndDirect[2]);
 
-                    if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
-                        loadGrid();
-                    }
+            else if (message[0].equals("ROBOTPOSITION")) { //receive robot position
+                String posAndDirect[] = message[1].split(",");
+                r.setPosX(Float.parseFloat(posAndDirect[0]));
+                r.setPosY(Float.parseFloat(posAndDirect[1]));
+                r.setDirection(posAndDirect[2]);
+
+                if (menu_auto_update_map != null && menu_auto_update_map.isChecked()) {
+                    loadGrid();
                 }
-                else if(message[0].equals("S")){
-                    if (message[1].equals("F")) {
-                        updateStatus("Moving Forward");
-                    }
-                    if (message[1].equals("TR")) {
-                        updateStatus("Turning Right");
-                    }
-                    if (message[1].equals("TL")) {
-                        updateStatus("Turning Left");
-                    }
-                    if (message[1].equals("FP")) {
-                        updateStatus("Fastest Path");
-                    }
-                    if (message[1].equals("EX")) {
-                        updateStatus("Exploration");
-                    }
-                    if (message[1].equals("DONE")) {
-                        updateStatus("Done!");
-                    }
+            }
+            else if(message[0].equals("S")){
+                if (message[1].equals("F")) {
+                    updateStatus("Moving Forward");
                 }
-                else if(message[0].trim().equals("Y")){
-                    updateStatus("Moving");
+                if (message[1].equals("TR")) {
+                    updateStatus("Turning Right");
                 }
-                else {
-                    updateStatus("Invalid Message");
+                if (message[1].equals("TL")) {
+                    updateStatus("Turning Left");
+                }
+                if (message[1].equals("FP")) {
+                    updateStatus("Fastest Path");
+                }
+                if (message[1].equals("EX")) {
+                    updateStatus("Exploration");
+                }
+                if (message[1].equals("DONE")) {
+                    updateStatus("Done!");
+                }
+            }
+            else if(message[0].trim().equals("Y")){ //harmonize with algo
+                updateStatus("Moving");
+            }
+            else if(message[0].trim().equals("F")){ //harmonize with algo
+                updateStatus("Done!");
+            }
+            else {
+                updateStatus("Invalid Message");
                 }
             }
     }
 
 
-    //method to send out message to rpi thru bluetooth
+    //method to send out message to rpi thru bluetooth -kept for backward compatibility
     public boolean outgoingMessage(String sendMsg) {
         return fragment.sendMsg("@t" + sendMsg + "!");
     }
@@ -493,7 +468,6 @@ public class MainActivity extends AppCompatActivity {
         }else if(destination == 1){
             sendMsg = "@s" + sendMsg + "|!";
         }
-
         return fragment.sendMsg(sendMsg);
     }
     //on the coordinate tapped
@@ -512,11 +486,10 @@ public class MainActivity extends AppCompatActivity {
         }
         if(menu_set_waypoint.isChecked()){
             Position p = new Position(posX,posY);
-
-                            WayPoint.getInstance().setPosition(p);
-                            outgoingMessage("WP:"+(int)posX+","+(int)posY, 0);
-                            //Make a prompt here to confirm
-                            menu_set_waypoint.setChecked(false);
+            WayPoint.getInstance().setPosition(p);
+            outgoingMessage("WP:"+(int)posX+","+(int)posY, 0);
+            //Make a prompt here to confirm
+            menu_set_waypoint.setChecked(false);
         }
         loadGrid();
     }

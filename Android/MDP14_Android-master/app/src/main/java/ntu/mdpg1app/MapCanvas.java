@@ -5,10 +5,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-//import android.support.v4.view.MotionEventCompat;
 import android.graphics.Typeface;
-import android.os.CountDownTimer;
-import android.os.Handler;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -52,7 +49,6 @@ public class MapCanvas extends View implements View.OnTouchListener {
 
 
     private GestureDetector  mDetector;
-    private Activity mScaleDetector;
 
     public MapCanvas(Context context) {
         super(context);
@@ -202,22 +198,16 @@ public class MapCanvas extends View implements View.OnTouchListener {
         ArrayList<IDblock> numberedBlocks = Map.getInstance().getNumberedBlocks();
         for(IDblock block:numberedBlocks)
         {
-            //float posX = (paddingX + block.getPosition().getPosX() * cellWidth);
-            //float posY = (paddingY + (19-block.getPosition().getPosY()) * cellHeight);
             float posX = paddingX + (block.getPosition().getPosX()+0.5f) * cellWidth;
             float posY = paddingY + (20-block.getPosition().getPosY()) * cellHeight;
             if(obstacles[block.getPosition().getPosY()][block.getPosition().getPosX()]==1) {
                 canvas.drawText(block.getID(), posX, posY, numberedObstacle);
             }
-
         }
     }
 
-
     @Override
     public boolean onTouch(View view, MotionEvent me) {
-        //calculation to get the tapped position from view geometry location
-
         try {
             Thread.sleep(50);
         } catch (InterruptedException e) {
@@ -287,60 +277,6 @@ public class MapCanvas extends View implements View.OnTouchListener {
         showToast(toastText);
         ma.onGridTapped( lastX,  lastY);
 
-
-        /*switch(me.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                float inX = me.getX();
-                float inY = me.getY();
-
-                float selectedX = inX- paddingX;
-                float selectedY = inY- paddingY;
-                float cellWidth = w/15f;
-                float cellHeight = h/20f;
-                int posX = (int)(selectedX/cellWidth);
-                int posY = 19-(int)(selectedY/cellHeight);
-                String text = "tapped " + posX + ", " + posY;
-                showToast(text);
-                MainActivity ma = (MainActivity) this.getContext();
-                ma.onGridTapped( posX,  posY);
-                break;
-
-            case MotionEvent.ACTION_MOVE: {
-                float newinX = me.getX();
-                float newinY = me.getY();
-                //int newduration = Toast.LENGTH_SHORT;
-
-
-                float newselectedX = newinX- paddingX;
-                float newselectedY = newinY- paddingY;
-                float newcellWidth = w/15f;
-                float newcellHeight = h/20f;
-                int newposX = (int)(newselectedX/newcellWidth);
-                int newposY = 19-(int)(newselectedY/newcellHeight);
-                String newtext = "tapped " + newposX + ", " + newposY;
-                showToast(newtext);
-                MainActivity newma = (MainActivity) this.getContext();
-                newma.onGridTapped( newposX,  newposY);
-                break;
-            }
-
-            case MotionEvent.ACTION_POINTER_UP: {
-                float upX = me.getX();
-                float upY = me.getY();
-                float upselectedX = upX- paddingX;
-                float upselectedY = upY- paddingY;
-                float upcellWidth = w/15f;
-                float upcellHeight = h/20f;
-                int upposX = (int)(upselectedX/upcellWidth);
-                int upposY = 19-(int)(upselectedY/upcellHeight);
-                String uptext = "tapped " + upposX + ", " + upposY;
-                showToast(uptext);
-                MainActivity upma = (MainActivity) this.getContext();
-                upma.onGridTapped( upposX,  upposY);
-                break;
-            }
-        }
-        */
         return true;
     }
 
@@ -358,65 +294,6 @@ public class MapCanvas extends View implements View.OnTouchListener {
 
 
     }
-
-//    public void showToast(String text) {
-//        // Set the toast and duration
-//        int toastDurationInMilliSeconds = 1000;
-//        Context context = getContext();
-//        mCurrentToast = Toast.makeText(context, text, Toast.LENGTH_LONG);
-//
-//        // Set the countdown to display the toast
-//        CountDownTimer toastCountDown;
-//        toastCountDown = new CountDownTimer(toastDurationInMilliSeconds, 100 /*Tick duration*/) {
-//            public void onTick(long millisUntilFinished) {
-//                mCurrentToast.show();
-//            }
-//            public void onFinish() {
-//                mCurrentToast.cancel();
-//            }
-//        };
-//
-//        // Show the toast and starts the countdown
-//        mCurrentToast.show();
-//        toastCountDown.start();
-//    }
-
-    /*
-    @Override
-    public boolean onTouch(View view, MotionEvent me) {
-        //calculation to get the tapped position from view geometry location
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        me.getSource();
-        switch(me.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                float inX = me.getX();
-                float inY = me.getY();
-                Context context = getContext();
-                int duration = Toast.LENGTH_SHORT;
-
-
-                float selectedX = inX- paddingX;
-                float selectedY = inY- paddingY;
-                float cellWidth = w/15f;
-                float cellHeight = h/20f;
-                int posX = (int)(selectedX/cellWidth);
-                int posY = 19-(int)(selectedY/cellHeight);
-                Toast toast = Toast.makeText(context,"tapped: "+posX+","+posY, duration);
-                toast.show();
-                MainActivity ma = (MainActivity) this.getContext();
-                ma.onGridTapped( posX,  posY);
-                break;
-        }
-        return true;
-    }
-    */
-
-
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event){

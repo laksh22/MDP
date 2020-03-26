@@ -14,10 +14,6 @@ public class Robot {
     public Robot() {
     }
 
-    private long exploringStartTime = 0;
-    private long exploringEndTime = 0;
-    private boolean isExploring = false;
-    private boolean isMoving = false;
     private float posX = -1f;
     private float posY = -1f;
     private float direction = 0;
@@ -66,22 +62,6 @@ public class Robot {
         else return false;
     }
 
-    public boolean isExploring() {
-        return isExploring;
-    }
-
-    public void setExploring(boolean isExploring) {
-        if (isExploring) {
-            exploringStartTime = System.currentTimeMillis();
-        } else {
-            exploringEndTime = System.currentTimeMillis();
-        }
-        this.isExploring = isExploring;
-    }
-
-    public boolean isMoving() {
-        return isMoving;
-    }
 
     public void rotate(float degree) {
 
@@ -155,9 +135,7 @@ public class Robot {
             count = -1;
         }
 
-
         rotate(degree);
-
         return true;
     }
 
@@ -209,10 +187,6 @@ public class Robot {
         }
     }
 
-    public void setMoving(boolean isMoving) {
-        this.isMoving = isMoving;
-    }
-
     public float getDirection() {
         return direction;
     }
@@ -234,26 +208,9 @@ public class Robot {
         }
     }
 
-    public long getExploringStartTime() {
-        return exploringStartTime;
-    }
-
-    public void setExploringStartTime(long exploringStartTime) {
-        this.exploringStartTime = exploringStartTime;
-    }
-
-    public long getExploringEndTime() {
-        return exploringEndTime;
-    }
-
-    public void setExploringEndTime(long exploringEndTime) {
-        this.exploringEndTime = exploringEndTime;
-    }
-
     public int getCount() {
         return count;
     }
-
 
     private float degreeToRotateToDirection(float currentDirection, float inDirection) {
         float difference = inDirection - currentDirection;
@@ -277,48 +234,29 @@ public class Robot {
 
     public void rotateRobotToNorth() {
         if (direction != 0) {
-
             float degree = (int) degreeToRotateToDirection(direction, 0);
-
             rotate(degree);
         }
-
-
     }
 
     public void rotateRobotToSouth() {
         if (direction != 180 && direction != -180) {
-
             float degree = (int) degreeToRotateToDirection(direction, 180);
-
-
             rotate(degree);
         }
     }
 
     public void rotateRobotToEast() {
         if (direction != 90 && direction != -270) {
-
             float degree = (int) degreeToRotateToDirection(direction, 90);
-
-
             rotate(degree);
-
-
         }
     }
-
 
     public void rotateRobotToWest() {
         if (direction != 270 && direction != -90) {
-
             float degree = (int) degreeToRotateToDirection(direction, 270);
-
             rotate(degree);
         }
-
-
     }
-
-
 }

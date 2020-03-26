@@ -13,6 +13,15 @@ public class HexBin {
 		return "";
 	}
 	public static String binToHex(String s) {
-		  return new BigInteger(s, 2).toString(16);
+
+		String obstacles = "";
+		String binaryStr = s;
+		for(int i = 0; i < binaryStr.length(); i+=4){
+			int decimal = Integer.parseInt(binaryStr.substring(i,i+4),2);
+			String hexStr = Integer.toString(decimal,16);
+			obstacles += hexStr;
+		}
+		return obstacles;
+		//return new BigInteger(s, 2).toString(16);
 	}
 }
