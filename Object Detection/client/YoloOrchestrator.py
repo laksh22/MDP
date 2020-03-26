@@ -84,7 +84,7 @@ class Yolo:
         self.output_image_found_path = "images/found/"
         self.output_image_not_found_path = "images/not_found/"
         self.file_name_pattern = re.compile(
-            "^\d{1,2}_\d{1,2}_(?:NORTH|SOUTH|EAST|WEST)_ACK.jpeg$")
+            "^\d{1,2}_\d{1,2}_(?:NORTH|SOUTH|EAST|WEST).jpeg$")
 
         # Create the required output folders
         if not os.path.exists(self.output_video_path):
