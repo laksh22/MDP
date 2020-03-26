@@ -180,6 +180,7 @@ public class Controller {
 	}
 	
 	public boolean hasReachedTimeThreshold() {
+		System.out.println("Reach Time Threshold: "+_hasReachedTimeThreshold);
 		return _hasReachedTimeThreshold;
 	}
 	
@@ -599,7 +600,7 @@ public class Controller {
 				}
 				System.out.println("Fastest Path: Start");
 				pathFinder.moveRobotAlongFastestPath(_fastestPath, explorer.getRobotOrientation());
-				
+				System.out.println("Fastest Path: End");
 				ArrayList<Path.Step> steps = _fastestPath.getSteps();
 				JButton[][] mazeGrids = _ui.getMazeGrids();
 				for (Path.Step step : steps) {
@@ -612,6 +613,8 @@ public class Controller {
 			}
 			@Override
 			public void done() {
+				Robot robot = Robot.getInstance();
+				_robotOrientation = robot.calibrateAtEndZone(_robotOrientation);
 				PCClient pcClient = PCClient.getInstance();
 				if (RobotSystem.isRealRun()) {
 					pcClient.sendMessageToAndroid(Message.EXPLORE_DONE);
@@ -750,6 +753,8 @@ public class Controller {
 		JButton[][] mazeGrids = _ui.getMazeGrids();
 		MazeExplorer explorer = MazeExplorer.getInstance();
 		int[][] mazeRef = explorer.getMazeRef();
+		int[][] weightageRef = explorer.getWeightageRef();
+		
 		for (int i = 0; i < Arena.MAP_LENGTH; i++) {
 			for (int j = 0; j < Arena.MAP_WIDTH; j++) {
 				if (mazeRef[i][j] == MazeExplorer.IS_EMPTY) {
@@ -764,7 +769,7 @@ public class Controller {
 							mazeGrids[19-j][i].setBackground(Color.GREEN);
 						}
 					}
-				} else if (mazeRef[i][j] == MazeExplorer.IS_OBSTACLE) {
+				} else if (mazeRef[i][j] == MazeExplorer.IS_OBSTACLE) {// && weightageRef[i][j] > 1) {
 					mazeGrids[19-j][i].setBackground(Color.RED);
 				}
 			}

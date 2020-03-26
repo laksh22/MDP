@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.time.LocalTime;
 import java.util.Scanner;
 
 import datatypes.Message;
@@ -66,7 +67,7 @@ public class PCClient {
 		_toRPi.print(msg);
 		_toRPi.flush();
 		
-		System.out.println("Message sent to Arduino: " + msg);
+		System.out.println("Message sent to Arduino: " + msg+" - "+LocalTime.now());
 	}
 	
 	public void sendMessageToAndroid(String msg) {
@@ -74,7 +75,7 @@ public class PCClient {
 		_toRPi.print(msg);
 		_toRPi.flush();
 		
-		System.out.println("Message sent to Android: " + msg);
+		System.out.println("Message sent to Android: " + msg+" - "+LocalTime.now());
 	}
 	
 	public void sendMsgToRPI(String msg){
@@ -82,12 +83,12 @@ public class PCClient {
 		_toRPi.print(msg);
 		_toRPi.flush();
 		
-		System.out.println("Message sent to RPI: " + msg);
+		System.out.println("Message sent to RPI: " + msg+" - "+LocalTime.now());
 	}
 
 	public String readMessage() throws IOException {
 		String messageReceived = _fromRPi.nextLine();
-		System.out.println("Message received: " + messageReceived);
+		System.out.println("Message received: " + messageReceived+" - "+LocalTime.now());
 		
 		return messageReceived;
 	}

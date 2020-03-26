@@ -282,6 +282,8 @@ public void moveForward(int count) {
 		
 		Controller controller = Controller.getInstance();
 		PCClient pcClient = controller.getPCClient();
+		boolean moreThan = false;
+		
 		if (!RobotSystem.isRealRun()) {
 			int stepTime = 1000 / _speed;
 			for (int i = 0; i < count; i++) {
@@ -295,25 +297,103 @@ public void moveForward(int count) {
 			}
 		} else {
 			try {
-				System.out.println("Robot: Moving robot straight: "+count+" "+LocalTime.now());
-				for (int i = 0; i < count; i++) {
-					controller.moveRobotForward();
+				String msg = "";
+				if(count == 10)
+					msg = "I";
+				else if (count == 11)
+					msg = "O";
+				else if (count == 12) 
+					msg = "P";
+				else if(count > 12) {
+					msg = Integer.toString(count-12);
+					moreThan = true;
 				}
-				System.out.println("Robot: Moving robot straight via RPI: "+count+" "+LocalTime.now());
-				pcClient.sendMessage(Integer.toString(count));
-				
-				String feedback = pcClient.readMessage();	
-				while (!feedback.equals(Message.DONE)) {
-					System.out.println("Waiting: "+LocalTime.now());
+				else
+					msg = Integer.toString(count);
+				if(moreThan) {
+					System.out.println("Robot: Moving robot straight via RPI: "+count+" "+LocalTime.now());
+					pcClient.sendMessage(msg+ Message.SEPARATOR);
+					
+					System.out.println("Robot: Moving robot straight: "+count+" "+LocalTime.now());
+					for (int i = 0; i < (count-12); i++) {
+						controller.moveRobotForward();
+					}
+					
+					String feedback = pcClient.readMessage();
+					while (!feedback.equals(Message.DONE)) {
+						feedback = pcClient.readMessage();
+					}
+					
+					pcClient.sendMessage("P"+ Message.SEPARATOR);
+					
+					System.out.println("Robot: Moving robot straight: "+count+" "+LocalTime.now());
+					for (int i = 0; i < 12; i++) {
+						controller.moveRobotForward();
+					}
+					
 					feedback = pcClient.readMessage();
+					while (!feedback.equals(Message.DONE)) {
+						feedback = pcClient.readMessage();
+					}
 				}
-
+				else {
+					System.out.println("Robot: Moving robot straight via RPI: "+count+" "+LocalTime.now());
+					pcClient.sendMessage(msg+ Message.SEPARATOR);
+					
+					System.out.println("Robot: Moving robot straight: "+count+" "+LocalTime.now());
+					for (int i = 0; i < count; i++) {
+						controller.moveRobotForward();
+					}
+					
+					String feedback = pcClient.readMessage();
+					while (!feedback.equals(Message.DONE)) {
+						feedback = pcClient.readMessage();
+					}
+				}
+				
+				
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-	}
+	}	
+	
+//public void moveForward(int count) {
+//		
+//		Controller controller = Controller.getInstance();
+//		PCClient pcClient = controller.getPCClient();
+//		if (!RobotSystem.isRealRun()) {
+//			int stepTime = 1000 / _speed;
+//			for (int i = 0; i < count; i++) {
+//				try {
+//					Thread.sleep(stepTime);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//		
+//				controller.moveRobotForward();
+//			}
+//		} else {
+//			try {
+//				System.out.println("Robot: Moving robot straight: "+count+" "+LocalTime.now());
+//				for (int i = 0; i < count; i++) {
+//					controller.moveRobotForward();
+//				}
+//				System.out.println("Robot: Moving robot straight via RPI: "+count+" "+LocalTime.now());
+//				pcClient.sendMessage(Integer.toString(count));
+//				
+//				String feedback = pcClient.readMessage();	
+//				while (!feedback.equals(Message.DONE)) {
+//					System.out.println("Waiting: "+LocalTime.now());
+//					feedback = pcClient.readMessage();
+//				}
+//
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 	
 	public void sendToAndroid() {
 		Controller controller = Controller.getInstance();
@@ -407,6 +487,23 @@ public void moveForward(int count) {
 				turnRight();
 				calibrateRobotPosition();
 				turnRight();
+		}
+		return Orientation.NORTH;
+	}
+	
+	public Orientation calibrateAtEndZone(Orientation ori) {	
+		switch (ori) {
+			case NORTH:
+				calibrateRobotPosition();
+				turnRight();
+				calibrateRobotPosition();
+				turnLeft();
+				break;
+			case EAST:
+				calibrateRobotPosition();
+				turnLeft();
+				calibrateRobotPosition();
+				break;
 		}
 		return Orientation.NORTH;
 	}
