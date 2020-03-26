@@ -53,14 +53,20 @@ if __name__ == "__main__":
             for img in images_to_scan:
                 # Only process images that ends with "_ACK.jpeg"
                 if "_ACK.jpeg" in img:
-                    # Rename image
-                    img = img.replace("_ACK.jpeg", ".jpeg")
+                    local_download_file_path = LOCAL_IMAGES_TO_SCAN_DIR.rstrip(
+                        "/") + "/" + img.lstrip("/")
+                    local_download_renamed_file_path = \
+                        LOCAL_IMAGES_TO_SCAN_DIR.rstrip("/") + "/" \
+                        + img.replace("_ACK.jpeg", ".jpeg").lstrip("/")
+
                     # Download remote image
-                    handle = open(
-                        LOCAL_IMAGES_TO_SCAN_DIR.rstrip("/") + "/" + img.lstrip(
-                            "/"), 'wb')
+                    handle = open(local_download_file_path, 'wb')
                     ftp.retrbinary('RETR %s' % img, handle.write)
                     handle.close()
+
+                    # Rename downloaded image
+                    os.rename(local_download_file_path,
+                              local_download_renamed_file_path)
 
                     # Delete remote image after it has been downloaded
                     ftp.delete(img)
