@@ -47,8 +47,10 @@ if __name__ == "__main__":
 
         while 1:
             # Get all images to scan sorted by modified time
-            images_to_scan = sorted(ftp.nlst(), key=lambda x: ftp.voidcmd(
-                "MDTM {}".format(x)))
+            # images_to_scan = sorted(ftp.nlst(), key=lambda x: ftp.voidcmd(
+            #     "MDTM {}".format(x)))
+
+            images_to_scan = ftp.nlst()
 
             for img in images_to_scan:
                 # Only process images that ends with "_ACK.jpeg"
@@ -74,12 +76,13 @@ if __name__ == "__main__":
                     # Run YOLO object detection on image
                     try:
                         detected_img_name = yolo.process_image(
-                            filename=img, parent_dir=LOCAL_IMAGES_TO_SCAN_DIR)
+                            filename=img.replace("_ACK.jpeg", ".jpeg"), parent_dir=LOCAL_IMAGES_TO_SCAN_DIR)
+                        print(img)
                     except Exception as e:
                         print(e)
 
                     # Delete raw image from local images_to_scan
-                    os.remove(LOCAL_IMAGES_TO_SCAN_DIR + img)
+                    os.remove(local_download_renamed_file_path)
 
                     # Write file back to RPi if object is found
                     if detected_img_name:
@@ -109,15 +112,18 @@ if __name__ == "__main__":
                         print("No object detected")
 
             # Check the REMOTE_IMAGES_TO_SCAN_DIR
-            images_to_scan = sorted(ftp.nlst(), key=lambda x: ftp.voidcmd(
-                "MDTM {}".format(x)))
+            # images_to_scan = sorted(ftp.nlst(), key=lambda x: ftp.voidcmd(
+            #     "MDTM {}".format(x)))
+
+            images_to_scan = ftp.nlst()
 
             # Navigate back to REMOTE_COORDS_ORIEN_DIR
             ftp.cwd(REMOTE_COORDS_ORIEN_DIR)
 
             # Check the REMOTE_COORDS_ORIEN_DIR
-            coords = sorted(ftp.nlst(),
-                            key=lambda x: ftp.voidcmd("MDTM {}".format(x)))
+            # coords = sorted(ftp.nlst(),
+                            # key=lambda x: ftp.voidcmd("MDTM {}".format(x)))
+            coords = ftp.nlst()
 
             # Make sure there are no more images to scan
             # Make sure that DONE file is the only file there
