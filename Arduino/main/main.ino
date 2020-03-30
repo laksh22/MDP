@@ -5,12 +5,10 @@
 // Move 1 block
 #define FORWARD_TARGET_TICKS 0
 
-// Move 90 degrees
-#define LEFT_ROTATE_DEGREES 87
-#define RIGHT_ROTATE_DEGREES 86.5
-//#define LEFT_ROTATE_DEGREES 87
-//#define RIGHT_ROTATE_DEGREES 87.6
-#define ROTATE_LEFT_180 184.5             
+// Fix Rotations
+#define LEFT_ROTATE_DEGREES 85.25
+#define RIGHT_ROTATE_DEGREES 85.95
+#define ROTATE_180_DEGREES 178
 
 //Move Forward fixed distance
 #define FORWARD_DISTANCE 10
@@ -18,8 +16,8 @@
 #define MULTIPLE_FORWARD_FACTOR 4.1 / 3 //4.65 + 4.55(for fastest)
 
 //Move Forward Staight/
-#define LEFT_RPM 73.65
-#define RIGHT_RPM 69.2
+#define LEFT_RPM 71.5
+#define RIGHT_RPM 69
 //#define LEFT_RPM 100
 //#define RIGHT_RPM 95
 //#define LEFT_RPM 82.2
@@ -62,12 +60,7 @@ double currentTicksL, currentTicksR, oldTicksL, oldTicksR;
 //PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 4, 0.5, 0.2, DIRECT);  
 //PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 5, 0.5, 0.2, DIRECT);  
 PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 5, 0, 0, DIRECT);  
-
-
-
-
-
-
+ 
 void setup()
 {
   sensorInit();
@@ -86,19 +79,13 @@ void setup()
 
   PIDController.SetMode(AUTOMATIC);
   PIDController.SetOutputLimits(-400, 400);
-}
-
-
-
+}     
 
 void loop()
 {
-  //printSensors(4);
+  //printSensors(5);
   runCommands();
 }
-
-
-
 
 void runCommands()
 {
@@ -146,6 +133,12 @@ void runCommands()
   case 'D':
   {
     rotateRight(RIGHT_ROTATE_DEGREES);
+    sendAck();
+    break;
+  }
+  case 'Q':
+  {
+    rotateRight(ROTATE_180_DEGREES);
     sendAck();
     break;
   }

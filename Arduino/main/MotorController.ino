@@ -12,6 +12,8 @@ void rotateLeft(double degree)
     md.setSpeeds(-speedL, speedR);
 
     ticksDiff = 0;
+    PIDController.SetMode(AUTOMATIC);
+
 
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
@@ -21,6 +23,7 @@ void rotateLeft(double degree)
     }
 
     md.setBrakes(350, 350);
+    PIDController.SetMode(MANUAL);        
     delay(delayExplore);
 }
 
@@ -38,6 +41,8 @@ void rotateRight(double degree)
     md.setSpeeds(speedL, -speedR);
 
     ticksDiff = 0;
+    PIDController.SetSampleTime(6.5);
+
 
     while (ticksL < targetTicks && ticksR < targetTicks)
     {
@@ -47,6 +52,8 @@ void rotateRight(double degree)
     }
 
     md.setBrakes(350, 350);
+    PIDController.SetMode(MANUAL);        
+
     delay(delayExplore);
 }
 

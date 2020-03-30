@@ -84,10 +84,10 @@ void printSensors(int type)
         int rf = sensorRF.distance() * 100;
         int rb = sensorRB.distance() * 100;
         int l = sensorL.distance() * 100;
-        Serial.print("F: ");
-        Serial.print(f);
-        Serial.print(", FL: ");
+        Serial.print("FL: ");
         Serial.print(fl);
+        Serial.print(", F: ");
+        Serial.print(f);
         Serial.print(", FR: ");
         Serial.print(fr);
         Serial.print(", RF: ");
@@ -163,11 +163,13 @@ int gridsRB()
 
 int gridsL()
 {
-    float vals[5];
-    for(int i = 0; i < 5; i++){
-      vals[i] = sensorL.distance();
-    }
-    float dis = findMedianFloat(vals, 5);
+//    float vals[5];
+//    for(int i = 0; i < 5; i++){
+//      vals[i] = sensorL.distance();
+//    }
+//    float dis = findMedianFloat(vals, 5);
+
+    float dis = sensorL.distance();
     
     if (dis <= 19.05)
         return 1;
@@ -190,12 +192,14 @@ int gridsL()
 
 int gridsRF()
 {
-    int buffer = 15;
-    float vals[buffer];
-    for(int i = 0; i < buffer; i++){
-      vals[i] = sensorRF.distance();
-    }
-    float dis = findMedianFloat(vals, buffer);
+//    int buffer = 15;
+//    float vals[buffer];
+//    for(int i = 0; i < buffer; i++){
+//      vals[i] = sensorRF.distance();
+//    }
+//    float dis = findMedianFloat(vals, buffer);
+
+      float dis = sensorRF.distance();
     
     if (dis <= 18.25)
         return 1;
@@ -209,12 +213,14 @@ int gridsRF()
 
 int gridsF()
 {
-    int buffer = 5;
-    float vals[buffer];
-    for(int i = 0; i < buffer; i++){
-      vals[i] = sensorF.distance();
-    }
-    float dis = findMedianFloat(vals, buffer);
+//    int buffer = 5;
+//    float vals[buffer];
+//    for(int i = 0; i < buffer; i++){
+//      vals[i] = sensorF.distance();
+//    }
+//    float dis = findMedianFloat(vals, buffer);
+
+      float dis = sensorF.distance();
 
     if (dis <= 16.90)
         return 1;
@@ -228,12 +234,15 @@ int gridsF()
 
 int gridsFL()
 {
-    int buffer = 5;
-    float vals[buffer];
-    for(int i = 0; i < buffer; i++){
-      vals[i] = sensorFL.distance();
-    }
-    float dis = findMedianFloat(vals, buffer);
+//    int buffer = 5;
+//    float vals[buffer];
+//    for(int i = 0; i < buffer; i++){
+//      vals[i] = sensorFL.distance();
+//    }
+//    float dis = findMedianFloat(vals, buffer);
+
+
+      float dis = sensorFL.distance();
 
     if (dis <= 16.85)
         return 1;
@@ -247,12 +256,14 @@ int gridsFL()
 
 int gridsFR()
 {
-    int buffer = 15;
-    float vals[buffer];
-    for(int i = 0; i < buffer; i++){
-      vals[i] = sensorFR.distance();
-    }
-    float dis = findMedianFloat(vals, buffer);
+//    int buffer = 15;
+//    float vals[buffer];
+//    for(int i = 0; i < buffer; i++){
+//      vals[i] = sensorFR.distance();
+//    }
+//    float dis = findMedianFloat(vals, buffer);
+
+      float dis = sensorFR.distance();
 
     if (dis <= 16.88)
         return 1;
