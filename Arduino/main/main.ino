@@ -2,31 +2,23 @@
 #include "EnableInterrupt.h"
 #include "PID_v1.h"
 
-// Move 1 block
-#define FORWARD_TARGET_TICKS 0
-
-// Move 90 degrees
-#define LEFT_ROTATE_DEGREES 91.7
-#define RIGHT_ROTATE_DEGREES 92
-//#define LEFT_ROTATE_DEGREES 87
-//#define RIGHT_ROTATE_DEGREES 87.6
-#define ROTATE_LEFT_180 184.5             
+// Fix Rotations
+#define LEFT_ROTATE_DEGREES 85.25
+#define RIGHT_ROTATE_DEGREES 85.95
+#define ROTATE_180_DEGREES 178
 
 //Move Forward fixed distance
-#define FORWARD_DISTANCE 10.5
-#define FORWARD_DISTANCE_MULTIPLE 9.6
+#define FORWARD_DISTANCE 10
+#define FORWARD_DISTANCE_MULTIPLE 9.8
 #define MULTIPLE_FORWARD_FACTOR 4.1 / 3 //4.65 + 4.55(for fastest)
 
-//Move Forward Staight/
-#define LEFT_RPM 70
-#define RIGHT_RPM 65
-//#define LEFT_RPM 100
-//#define RIGHT_RPM 95
-//#define LEFT_RPM 82.2
-//#define RIGHT_RPM 77.95 
+//Move Forward Staight
+#define LEFT_RPM 71.5
+#define RIGHT_RPM 69
 #define LEFT_RPM_MULTIPLE 100
 #define RIGHT_RPM_MULTIPLE 92
 
+boolean shouldCal = true;
 
 // For communication
 char source = 't';
@@ -40,34 +32,20 @@ byte encoder1B = 5;
 byte encoder2A = 11;
 byte encoder2B = 13;
 
-double speedL, speedR; // In PWM
+double speedL = 300, speedR = 300; // In PWM
 
 // For operation mode
-bool FASTEST_PATH = false;
-bool DEBUG = true;
 byte delayExplore = 2.5;
-byte delayFastestPath = 1;
 
 // For PID
-volatile word ticksL = 0;
-volatile word ticksR = 0;
-word ticks_moved = 0;
-double currentTicksL, currentTicksR, oldticksL, oldticksR;
-double a = 0;
+volatile int ticksL = 0;
+volatile int ticksR = 0;
+volatile double ticksDiff = ticksL - ticksR;
+double idealTickDiff = 0;
+double currentTicksL, currentTicksR, oldTicksL, oldTicksR;
 
-//PID PIDControlStraight(&currentTicksL, &speedL, &currentTicksR, 3.5, 0, 0.75, DIRECT);
-//PID PIDControlLeft(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0.5, DIRECT);
-//PID PIDControlRight(&currentTicksL, &speedL, &currentTicksR, 3, 0, 0.5, DIRECT);
+PID PIDController(&ticksDiff, &speedL, &idealTickDiff, 5, 0, 0, DIRECT);
 
-PID PIDControlStraight(&a, &a, &a, a, a, a, DIRECT);
-PID PIDControlLeft(&a, &a, &a, a, a, a, DIRECT);
-PID PIDControlRight(&a, &a, &a, a, a, a, DIRECT);
-
-/*
- * ==============================
- * Main Program
- * ==============================
- */
 void setup()
 {
   sensorInit();
@@ -81,16 +59,16 @@ void setup()
   enableInterrupt(encoder1A, E1Pos, RISING);
   enableInterrupt(encoder2A, E2Pos, RISING);
 
-  // Init values
-  currentTicksL = currentTicksR = oldticksL = oldticksR = 0;
-
   // Begin communication
   Serial.begin(9600);
+
+  PIDController.SetMode(AUTOMATIC);
+  PIDController.SetOutputLimits(-400, 400);
 }
 
 void loop()
 {
-  //printSensors(3);
+  //printSensors(5);
   runCommands();
 }
 
@@ -120,25 +98,9 @@ void runCommands()
 
   char command;
 
-  //First character is the source
   source = command_buffer[0];
-  //Second character in array is the command
   command = command_buffer[1];
 
-  /*---------------------------------------------------------------------------------------------------
-                                          Input Commands
-                                          --------------
-  LEGEND:
-  -------
-  W ---> Move Forward
-  A ---> Rotate Left
-  D ---> Rotate Right
-  E ---> Read Sensor Values
-  C ---> Recalibrate Robot's Center
-  T ---> Avoiding Obstacle In A Straight Line
-  L ---> Gradual Left Turn
-  R ---> Gradual Right Turn
-  ---------------------------------------------------------------------------------------------------*/
   switch (command)
   {
   case 'W':
@@ -156,6 +118,12 @@ void runCommands()
   case 'D':
   {
     rotateRight(RIGHT_ROTATE_DEGREES);
+    sendAck();
+    break;
+  }
+  case 'Q':
+  {
+    rotateRight(ROTATE_180_DEGREES);
     sendAck();
     break;
   }
@@ -254,30 +222,30 @@ void runCommands()
     sendAck();
     break;
   }
-   case '9':
+  case '9':
   {
     moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 9 + MULTIPLE_FORWARD_FACTOR * 8);
     sendAck();
     break;
   }
-   case 'I':
+  case 'I':
   {
     moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 10 + MULTIPLE_FORWARD_FACTOR * 9);
     sendAck();
     break;
   }
-   case 'O':
+  case 'O':
   {
     moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 11 + MULTIPLE_FORWARD_FACTOR * 10);
     sendAck();
     break;
   }
-   case 'P':
+  case 'P':
   {
     moveForwardMultiple(FORWARD_DISTANCE_MULTIPLE * 12 + MULTIPLE_FORWARD_FACTOR * 11);
     sendAck();
     break;
-  }    
+  }
 
   default:
   {
