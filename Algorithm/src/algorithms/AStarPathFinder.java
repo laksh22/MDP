@@ -159,7 +159,7 @@ public class AStarPathFinder {
 		} else {
 			_robot.moveForward(count);
 		}
-		
+		System.out.println("moveRobotAlongFastestPath Ends");
 		return currentOrientation;
 		
 	}

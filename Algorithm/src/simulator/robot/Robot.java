@@ -164,6 +164,7 @@ public class Robot {
 	public void turnRight() {
 		Controller controller = Controller.getInstance();
 		PCClient pcClient = controller.getPCClient();
+		MazeExplorer me = MazeExplorer.getInstance();
 		if (!RobotSystem.isRealRun()) {
 			int stepTime = 1000 / _speed;
 			try {
@@ -184,13 +185,16 @@ public class Robot {
 			}
 		}
 		controller.turnRobotRight();
+		me.setLeftCountdownBack();
+		me.setleftGotObstacle();
 		sendToAndroid();
 	}
 
 	public void moveForward() {
 		Controller controller = Controller.getInstance();
 		PCClient pcClient = controller.getPCClient();
-
+		MazeExplorer mc = MazeExplorer.getInstance();
+		
 		if (!RobotSystem.isRealRun()) {
 			int stepTime = 1000 / _speed;
 			try {
@@ -212,12 +216,16 @@ public class Robot {
 		}
 		
 		controller.moveRobotForward();
+		if(mc.getleftGotObstacle())
+			mc.setLeftCoundown();
 		sendToAndroid();
 	}
 
 	public void turnLeft() {
 		Controller controller = Controller.getInstance();
 		PCClient pcClient = controller.getPCClient();
+		MazeExplorer me = MazeExplorer.getInstance();
+		
 		if (!RobotSystem.isRealRun()) {
 			int stepTime = 1000 / _speed;
 			try {
@@ -237,6 +245,8 @@ public class Robot {
 			}
 		}
 		controller.turnRobotLeft();
+		me.setLeftCountdownBack();
+		me.setleftGotObstacle();
 		sendToAndroid();
 	}
 	
