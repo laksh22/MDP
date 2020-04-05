@@ -1,1 +1,0 @@
-Insert your training images in this directory.
