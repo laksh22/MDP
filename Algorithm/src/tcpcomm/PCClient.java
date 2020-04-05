@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.time.LocalTime;
 import java.util.Scanner;
 
 import datatypes.Message;
-import datatypes.Orientation;
 
 public class PCClient {
 	
@@ -32,7 +30,7 @@ public class PCClient {
     }
 	
 	public static void main (String[] args) throws UnknownHostException, IOException {
-		System.out.println("Inside PC Client");
+		
 		PCClient pcClient = PCClient.getInstance();
 		pcClient.setUpConnection(RPI_IP_ADDRESS, RPI_PORT);
 		System.out.println("RPi successfully connected");
@@ -50,45 +48,23 @@ public class PCClient {
 	}
 	
 	public void closeConnection() throws IOException {
-		System.out.println("Closing Connection");
 		if (!_clientSocket.isClosed()) {
 			_clientSocket.close();
 		}
 	}
 
 	public void sendMessage(String msg) throws IOException {
-//		try {
-//			Thread.sleep(100);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		msg = "@s"+msg+"!";
+		
 		_toRPi.print(msg);
 		_toRPi.flush();
 		
-		System.out.println("Message sent to Arduino: " + msg+" - "+LocalTime.now());
-	}
-	
-	public void sendMessageToAndroid(String msg) {
-		msg = "@b"+msg+"!";
-		_toRPi.print(msg);
-		_toRPi.flush();
-		
-		System.out.println("Message sent to Android: " + msg+" - "+LocalTime.now());
-	}
-	
-	public void sendMsgToRPI(String msg){
-		msg = "@r"+msg+"!";
-		_toRPi.print(msg);
-		_toRPi.flush();
-		
-		System.out.println("Message sent to RPI: " + msg+" - "+LocalTime.now());
+		System.out.println("Message sent: " + msg);
 	}
 
 	public String readMessage() throws IOException {
+
 		String messageReceived = _fromRPi.nextLine();
-		System.out.println("Message received: " + messageReceived+" - "+LocalTime.now());
+		System.out.println("Message received: " + messageReceived);
 		
 		return messageReceived;
 	}

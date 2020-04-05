@@ -33,6 +33,7 @@ public class VirtualMap {
 	
 	
 	public void updateVirtualMap(int[][] mazeRef) {
+
 		for (int i = 0; i < Arena.MAP_LENGTH; i++) {
 			for (int j = 0; j < Arena.MAP_WIDTH; j++) {
 				_visited[i][j] = false;

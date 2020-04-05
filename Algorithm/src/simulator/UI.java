@@ -7,8 +7,6 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 
@@ -28,7 +26,6 @@ import javax.swing.text.Document;
 import main.RobotSystem;
 import simulator.arena.Arena;
 import simulator.arena.FileReaderWriter;
-import tcpcomm.PCClient;
 
 import java.awt.Font;
 
@@ -58,48 +55,6 @@ public class UI extends JFrame implements ActionListener {
 		_contentPane = new JPanel();
 		_contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		_contentPane.setLayout(new BorderLayout(0, 0));
-		addWindowListener(new WindowListener() {            
-			public void windowOpened(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			@Override
-			public void windowClosing(WindowEvent e) {
-				try {
-					if(RobotSystem.isRealRun())
-					PCClient.getInstance().closeConnection();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
-			}
-			@Override
-			public void windowClosed(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			@Override
-			public void windowIconified(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			@Override
-			public void windowDeiconified(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			@Override
-			public void windowActivated(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			@Override
-			public void windowDeactivated(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
 		setContentPane(_contentPane);
 		initContentPane(_contentPane);
 		pack();
@@ -282,8 +237,8 @@ public class UI extends JFrame implements ActionListener {
 		exploreCtrlPane.setBorder(new EmptyBorder(20, 20, 20, 20));
 
 		// Add control panel for finding fastest path.
-		JLabel[] ffpCtrlLabels = new JLabel[3];
-		_ffpTextFields = new JTextField[3];
+		JLabel[] ffpCtrlLabels = new JLabel[2];
+		_ffpTextFields = new JTextField[2];
 		_ffpBtn = new JButton("Navigate");
 		
 		if (RobotSystem.isRealRun()) {
@@ -296,21 +251,18 @@ public class UI extends JFrame implements ActionListener {
 		
 		ffpCtrlLabels[0] = new JLabel("Speed (steps/sec): ");
 		ffpCtrlLabels[1] = new JLabel("Time limit (sec): ");
-		ffpCtrlLabels[2] = new JLabel("Set Waypoint: ");
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 2; i++) {
 			_ffpTextFields[i] = new JTextField(10);
 			if (RobotSystem.isRealRun()) {
 				_ffpTextFields[i].setEditable(false);
 			}
 		}
 
-		JPanel ffpInputPane = new JPanel(new GridLayout(3, 3));
+		JPanel ffpInputPane = new JPanel(new GridLayout(2, 2));
 		ffpInputPane.add(ffpCtrlLabels[0]);
 		ffpInputPane.add(_ffpTextFields[0]);
 		ffpInputPane.add(ffpCtrlLabels[1]);
 		ffpInputPane.add(_ffpTextFields[1]);
-		ffpInputPane.add(ffpCtrlLabels[2]);
-		ffpInputPane.add(_ffpTextFields[2]);
 		
 		if (!RobotSystem.isRealRun()) {
 			ffpCtrlLabels[0].setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -322,17 +274,11 @@ public class UI extends JFrame implements ActionListener {
 			_ffpTextFields[1].setFont(new Font("Tahoma", Font.PLAIN, 14));
 			_ffpTextFields[1].getDocument().addDocumentListener(new InitialPositionListener());
 			_ffpTextFields[1].getDocument().putProperty("name", "Robot FFP Time Limit");
-			
-			_ffpTextFields[2].setText("");
-			ffpCtrlLabels[2].setFont(new Font("Tahoma", Font.PLAIN, 14));
-			_ffpTextFields[2].setFont(new Font("Tahoma", Font.PLAIN, 14));
-			_ffpTextFields[2].getDocument().addDocumentListener(new InitialPositionListener());
-			_ffpTextFields[2].getDocument().putProperty("name", "Maze Waypoint");
 	}
 
 		JPanel ffpBtnPane = new JPanel();
 		ffpBtnPane.add(_ffpBtn);
-		
+
 		JPanel ffpCtrlPane = new JPanel();
 		ffpCtrlPane.add(ffpInputPane);
 		ffpCtrlPane.add(ffpBtnPane);
@@ -430,7 +376,8 @@ public class UI extends JFrame implements ActionListener {
 		} else if(cmd.equals("stopExplore")) {
 			_stopExploreBtn.setEnabled(false);
 			_controller.stopExploring();
-		} 
+			
+		}
 	}
 
 	public void setStatus(String message) {
@@ -538,15 +485,6 @@ public class UI extends JFrame implements ActionListener {
 					} else {
 						_status.setText("time limit for fastest path not set");
 					}
-				} catch (BadLocationException ex) {
-					ex.printStackTrace();
-				}
-			} else if (name.equals("Maze Waypoint")) {
-				try {
-					String waypoint = doc.getText(0, doc.getLength());
-					if (waypoint.isEmpty() || waypoint.matches("[0-9]+,[0-9]+") ) {
-						_controller.setWayPointInMaze(getMazeGrids(), waypoint);
-					} 
 				} catch (BadLocationException ex) {
 					ex.printStackTrace();
 				}
