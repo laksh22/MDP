@@ -155,4 +155,5 @@ Below is an example of the object detection output on a low frame rate feed that
 Below is an example of output images that are stacked together horizontally and physically in a *2 x n* array as per required by the leaderboard guidelines. 
 *n* is the number of rows denoted by the *total_number_of_detected_images/2*.
 
-![](doc_resources/object_detect_out.jpeg) 
+![](doc_resources/object_detect_out.jpeg)
+ 
