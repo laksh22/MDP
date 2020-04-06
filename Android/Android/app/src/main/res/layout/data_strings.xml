@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10px">
+
+    <TextView
+        android:id="@+id/label_mdf1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/textbox_mdf1"
+        android:text="@string/mdf_string_1_explored_squares" />
+
+    <EditText
+        android:id="@+id/textbox_mdf1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="none"
+        android:textIsSelectable="true" />
+
+    <TextView
+        android:id="@+id/label_mdf2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/textbox_mdf2"
+        android:text="@string/mdf_string_2_discovered_obstacles" />
+
+    <EditText
+        android:id="@+id/textbox_mdf2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="none"
+        android:textIsSelectable="true" />
+
+    <TextView
+        android:id="@+id/label_imgreg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@id/textbox_imgreg"
+        android:text="@string/image_recognition_string" />
+
+    <EditText
+        android:id="@+id/textbox_imgreg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="none"
+        android:textIsSelectable="true" />
+
+</LinearLayout>

@@ -1,0 +1,153 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:17:1-55:12
+INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:17:1-55:12
+INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.appcompat:appcompat:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/37ec02f661e3547c5499ecdfd9f3cd1f/appcompat-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.fragment:fragment:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/add2bdb41de46d90e5d3bd4e75929820/fragment-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/dd07e922b5233b833d82ee834e6becf7/appcompat-resources-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/34085af895daa23049fd0af188e6a001/drawerlayout-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/f3997ce16a5c00ae84a772d300d0e1e8/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/331f61861c2d3a925f2252286afb1f53/loader-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/daa47187fb0f0a7c419d1b10e1677cdd/activity-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/beed28e19d4f55ab2c17aff66e0bc400/vectordrawable-animated-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/e0d80e5c178a0db065288a448fc598ef/vectordrawable-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.customview:customview:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/740a70a0c89c8c085b6e012b4bd7790e/customview-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c527b78844be871c44103f6f45a963fb/core-1.1.0/AndroidManifest.xml:17:1-26:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/aa91d8d2653c363bbd5da9d9892260d3/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c9c8616d74aa0ab3eb457d24b669c685/versionedparcelable-1.1.0/AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/0554424e228349ffc3db0700d1324aa1/lifecycle-runtime-2.1.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/bad233a64070d55cab9a83b26afbf154/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/7acef2a7bfef3795312317efec15d83e/savedstate-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/d4ef17d609918d2a5f5a86d1ea02678f/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/420f294924962582b4c42c622af43461/lifecycle-livedata-2.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/66e997bde0b6ece28f7fd36f5f4a1584/lifecycle-livedata-core-2.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.arch.core:core-runtime:2.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/8787729f29cf7add1bc29c81caccddfd/core-runtime-2.0.0/AndroidManifest.xml:17:1-22:12
+INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:17:1-55:12
+INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:17:1-55:12
+	package
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:20:5-48
+	android:versionName
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:22:5-30
+		INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+		INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:19:5-51
+	xmlns:android
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:18:5-63
+	android:versionCode
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:21:5-28
+		INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+		INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+uses-permission#android.permission.BLUETOOTH_ADMIN
+ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:26:5-74
+	android:name
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:26:22-71
+uses-permission#android.permission.BLUETOOTH
+ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:27:5-68
+	android:name
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:27:22-65
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:28:5-79
+	android:name
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:28:22-76
+application
+ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:30:5-53:19
+MERGED from [androidx.core:core:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c527b78844be871c44103f6f45a963fb/core-1.1.0/AndroidManifest.xml:24:5-89
+MERGED from [androidx.core:core:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c527b78844be871c44103f6f45a963fb/core-1.1.0/AndroidManifest.xml:24:5-89
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c9c8616d74aa0ab3eb457d24b669c685/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c9c8616d74aa0ab3eb457d24b669c685/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c527b78844be871c44103f6f45a963fb/core-1.1.0/AndroidManifest.xml:24:18-86
+	android:label
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:33:9-41
+	tools:ignore
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:35:9-48
+	android:icon
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:32:9-45
+	android:allowBackup
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:31:9-35
+	android:theme
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:34:9-40
+activity#com.example.android.bluetoothchat.MainActivity
+ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:37:9-45:20
+	android:label
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:40:13-45
+	android:configChanges
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:39:13-63
+	android:name
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:38:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:41:13-44:29
+action#android.intent.action.MAIN
+ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:42:17-69
+	android:name
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:42:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:43:17-77
+	android:name
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:43:27-74
+activity#com.example.android.bluetoothchat.DeviceListActivity
+ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:47:9-51:64
+	android:label
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:50:13-50
+	android:configChanges
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:49:13-63
+	android:theme
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:51:13-61
+	android:name
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml:48:13-47
+uses-sdk
+INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+MERGED from [androidx.appcompat:appcompat:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/37ec02f661e3547c5499ecdfd9f3cd1f/appcompat-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/37ec02f661e3547c5499ecdfd9f3cd1f/appcompat-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/add2bdb41de46d90e5d3bd4e75929820/fragment-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/add2bdb41de46d90e5d3bd4e75929820/fragment-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/dd07e922b5233b833d82ee834e6becf7/appcompat-resources-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat-resources:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/dd07e922b5233b833d82ee834e6becf7/appcompat-resources-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/34085af895daa23049fd0af188e6a001/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/34085af895daa23049fd0af188e6a001/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/f3997ce16a5c00ae84a772d300d0e1e8/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/f3997ce16a5c00ae84a772d300d0e1e8/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/331f61861c2d3a925f2252286afb1f53/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/331f61861c2d3a925f2252286afb1f53/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/daa47187fb0f0a7c419d1b10e1677cdd/activity-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/daa47187fb0f0a7c419d1b10e1677cdd/activity-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/beed28e19d4f55ab2c17aff66e0bc400/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/beed28e19d4f55ab2c17aff66e0bc400/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/e0d80e5c178a0db065288a448fc598ef/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/e0d80e5c178a0db065288a448fc598ef/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.customview:customview:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/740a70a0c89c8c085b6e012b4bd7790e/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/740a70a0c89c8c085b6e012b4bd7790e/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c527b78844be871c44103f6f45a963fb/core-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c527b78844be871c44103f6f45a963fb/core-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/aa91d8d2653c363bbd5da9d9892260d3/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/aa91d8d2653c363bbd5da9d9892260d3/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c9c8616d74aa0ab3eb457d24b669c685/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/c9c8616d74aa0ab3eb457d24b669c685/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/0554424e228349ffc3db0700d1324aa1/lifecycle-runtime-2.1.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/0554424e228349ffc3db0700d1324aa1/lifecycle-runtime-2.1.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/bad233a64070d55cab9a83b26afbf154/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/bad233a64070d55cab9a83b26afbf154/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/7acef2a7bfef3795312317efec15d83e/savedstate-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/7acef2a7bfef3795312317efec15d83e/savedstate-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/d4ef17d609918d2a5f5a86d1ea02678f/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/d4ef17d609918d2a5f5a86d1ea02678f/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/420f294924962582b4c42c622af43461/lifecycle-livedata-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/420f294924962582b4c42c622af43461/lifecycle-livedata-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/66e997bde0b6ece28f7fd36f5f4a1584/lifecycle-livedata-core-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/66e997bde0b6ece28f7fd36f5f4a1584/lifecycle-livedata-core-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/8787729f29cf7add1bc29c81caccddfd/core-runtime-2.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.0.0] /Users/debashreeaddi/.gradle/caches/transforms-2/files-2.1/8787729f29cf7add1bc29c81caccddfd/core-runtime-2.0.0/AndroidManifest.xml:20:5-44
+INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+		INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+		ADDED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
+		INJECTED from /Users/debashreeaddi/Documents/GitHub/MDP/Android/BluetoothChat/Application/src/main/AndroidManifest.xml
