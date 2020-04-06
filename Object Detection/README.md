@@ -1,0 +1,132 @@
+# 1. Description of implementation
+
+1. Whenever RPi receives a take picture command from TCP `@r_x_y_orientation!`. 
+The coordinates and orientation will be saved as a file in a folder (**coords_orien**) with filename (`x_y_orientation`). 
+The file will have no contents.
+
+2. There will be Python script "polling" the **coords_orien** folder. 
+If it sees a file (or an increase in number of files), it will take the file name, take a picture and save the image as **x_y_orientation.jpg** (same as the file name) and save it to a folder, **images_to_scan**. 
+The polling is done at every 35ms.
+
+3. We have another Python script on the same PC running the algorithm for exploration and fastest path to run YOLOv3 - object detection, which will constantly scan the folder, **images_to_scan** where all images awaiting object detection are saved via FTP.
+Once it has finish scanning an image, it will delete the image that was scanned from **images_to_scan**, reducing the number of images in the **images_to_scan** folder.
+
+4. If an object is detected, it will save it back to RPi via FTP as an image with the name **id,x,y.jpg** in an output folder named, **images_found** and also, on the PC to be displayed later in a single window, as part of the laboratory requirements.
+
+5. After it has receive *EXPLORE_DONE* command from TCP, it will create a **DONE** file in the input folder **coords_orien**.
+
+6. Once PC sees the **DONE** file via FTP, and it has finished scanning all the images in **images_to_scan** it will display all the images in ONE single window.
+
+7. RPi will then read all the image filenames in the **images_found** folder and send it to Bluetooth as separate packets for each image in **images_found** with the filename of the images as packet contents.
+
+# 2. Object Position
+Depending on the position of the bounding box, the **coord_orien** in the form of `x_y_orientation` needs to be resolved.
+`x_y_orientation` is the center of the obstacle detected by the robot.
+
+To illustrate this, assume that the camera is facing right. An object is detected on the image `2_10_NORTH`. This means that the robot is facing **NORTH**. Hence, this means that the camera is facing **EAST**.
+ 
+The image is delimited to three zones, hence, it will have 2 delimiters (d1, d2). In such a state, there will be 3 case:
+1. Center of bounding box of detected object < d1
+2. Center of bounding box of detected object >= d1 and < d2
+3. Center of bounding box of detected object >= d2
+
+The resulting coordinates of the image should be resolved as such:
+| no. | state                    | region | coord. of object | robot orient. |
+|-----|--------------------------|--------|------------------|---------------|
+| 1   | bb_center < d1           | 0      | id,2,11          | NORTH         |
+| 2   | bb_center >= d1 and < d2 | 1      | id,2,10          | NORTH         |
+| 3   | bb_center >= d2          | 2      | id,2,9           | NORTH         |
+
+As such, if the camera is facing rightwards, the generalisation below holds:
+
+```python
+x = coordinate_x
+y = coordinate_y
+
+if region == 1:
+    # Center region; x,y coordinates will never change
+    pass
+elif region == 0:
+    # Top region
+    if ORIENTATION == "NORTH":
+        y += 1
+    elif ORIENTATION == "SOUTH":
+        y -= 1
+    elif ORIENTATION == "EAST":
+        x += 1
+    elif ORIENTATION == "WEST":
+        x -= 1
+    else:
+        print("Invalid orientation")
+elif region == 2:
+    # Bottom region
+    if ORIENTATION == "NORTH":
+        y -= 1
+    elif ORIENTATION == "SOUTH":
+        y += 1
+    elif ORIENTATION == "EAST":
+        x -= 1
+    elif ORIENTATION == "WEST":
+        x += 1
+    else:
+        print("Invalid orientation")
+```
+
+# 3. How to run
+Included in this section are the instructions to run object detection.
+
+## 3.1 Dependencies
+The Python code requires the RPi to have FTP. 
+FTP was preferred over SFTP as Python's FTPlib does not support SFTP.
+
+To enable FTP on the Raspberry Pi (RPi), run the following commands below in terminal, while connected to the RPi.
+
+```shell script
+sudo apt-get update
+sudo apt-get install vsftpd
+```
+
+Open up the config file by entering the following command.
+```shell script
+sudo nano /etc/vsftpd.conf
+```
+
+Add or uncomment (Remove the #) for the following settings:
+```shell script
+anonymous_enable=NO
+local_enable=YES
+write_enable=YES
+local_umask=022
+chroot_local_user=YES
+user_sub_token=$USER
+local_root=/home/$USER/
+```
+
+If you try to copy to FTP, it will not work but FTP/files will. Replace <user> with the relevant user, for example
+Create the FTP directory so transfering of files is permitted. 
+The root directory is not allowed to have write permissions so a subfolder called files is needed.
+
+```shell script
+mkdir /home/<user>/FTP
+mkdir /home/<user>/FTP/files
+chmod a-w /home/<user>/FTP
+```
+
+Restart the service by entering the following command.
+```shell script
+sudo service vsftpd restart
+```
+
+Connect over plain FTP (Port 21) should be enabled after all the steps above are performed.
+
+
+## 3.2 Performing Object Detection / Running
+
+1. Ensure that all required devices (Serial, Bluetooth, Serial) are connected after running the `RPi` communication hub binary.
+2. In a separate terminal window with the RPi connected, run the `Object\ detection/rpi/img_event_handler.py` Python script.
+3. On a preferred laptop with the required `opencv2` and `darknet/yolov3` dependencies installed, run the `Object\ detection/client/obj_detect_client.py` Python script.
+ 
+ 
+
+
+
