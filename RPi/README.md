@@ -1,4 +1,46 @@
 # RPi communication Hub
+The general implementation of the infrastructure is written and implemented in C as speed and efficiency was kept in mind when developing. 
+As such, the decision to write the communication hub in C was made as we wanted to "get as close to the metal as possible" (to be as low level as possible). The overall message sending infrastructure consists of nine (9) threads and three (3) queues - 
+
+- 9 Threads
+  - Two threads (Bluetooth, Serial, TCP)
+  - 1 keep alive queue 
+  - 2 image taking and handling threads
+
+1. tcp_reader_create
+2. tcp_sender_create
+3. bt_reader_create
+4. bt_sender_create
+5. serial_reader_create
+6. serial_sender_create
+7. serial_inactiv_prvt_thread
+8. read_img_labels
+9. take_picture
+
+```c
+pthread_t *thread_group = malloc(sizeof(pthread_t) * NUM_THREADS);
+pthread_create(&thread_group[0], NULL, tcp_reader_create, NULL);
+pthread_create(&thread_group[1], NULL, tcp_sender_create, NULL);
+pthread_create(&thread_group[2], NULL, bt_reader_create, NULL);
+pthread_create(&thread_group[3], NULL, bt_sender_create, NULL);
+pthread_create(&thread_group[4], NULL, serial_reader_create, NULL);
+pthread_create(&thread_group[5], NULL, serial_sender_create, NULL);
+pthread_create(&thread_group[6], NULL, serial_inactiv_prvt_thread, NULL);
+pthread_create(&thread_group[7], NULL, read_img_labels, NULL);
+pthread_create(&thread_group[8], NULL, take_picture, NULL);
+```
+
+- 3 Queues
+    - One queue per communication interface
+    
+```c
+// Create the respective rpa_queue for each communication port
+rpa_queue_create(&s_queue, (uint32_t) QSIZE);
+rpa_queue_create(&b_queue, (uint32_t) QSIZE);
+rpa_queue_create(&t_queue, (uint32_t) QSIZE);
+rpa_queue_create(&r_queue, (uint32_t) QSIZE);
+```
+
 This section contains everything you will need to know to get the `RPi` communication hub binary that is written in C to run.
 
 ## 1. Compiling
