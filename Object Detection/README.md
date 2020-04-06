@@ -152,6 +152,7 @@ Note that `Step 2` is **OPTIONAL** as the RPi binary initialises this script for
 Below is an example of the object detection output on a low frame rate feed that has been sped up by 8x.
 ![](doc_resources/object_detection_8x.gif) 
 
-Below is an example of output images that are stacked together horizontally and physically in a 2xn array as per required by the leaderboard guidelines.
+Below is an example of output images that are stacked together horizontally and physically in a *2 x n* array as per required by the leaderboard guidelines. 
+*n* is the number of rows denoted by the *total_number_of_detected_images/2*.
 
 ![](doc_resources/object_detect_out.jpeg) 
