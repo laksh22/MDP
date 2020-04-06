@@ -241,7 +241,7 @@ void *take_picture() {
     strcat(old_file_name, raw_file);
     strcat(old_file_name, file_ext);
 
-    // Will wait for image to be taken for 500 loops
+    // Will wait for image to be taken for 1000 loops
     img_waiting_counter = 0;
     while (img_waiting_counter < 1000) {
       // Check if image is taken
