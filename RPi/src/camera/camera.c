@@ -243,7 +243,7 @@ void *take_picture() {
 
     // Will wait for image to be taken for 500 loops
     img_waiting_counter = 0;
-    while (img_waiting_counter < 500) {
+    while (img_waiting_counter < 1000) {
       // Check if image is taken
       if (access(old_file_name, F_OK) != -1) {
         // Image is taken

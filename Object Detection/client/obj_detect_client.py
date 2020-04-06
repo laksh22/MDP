@@ -79,7 +79,7 @@ if __name__ == "__main__":
                         print(e)
 
                     # Delete raw image from local images_to_scan
-                    os.remove(LOCAL_IMAGES_TO_SCAN_DIR + img)
+                    os.remove(local_download_renamed_file_path)
 
                     # Write file back to RPi if object is found
                     if detected_img_name:
