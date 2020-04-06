@@ -1,4 +1,6 @@
 # RPi communication Hub
+The general implementation of the infrastructure is written and implemented in C as speed and efficiency was kept in mind when developing. As such, the decision to write the communication hub in C was made as we wanted to "get as close to the metal as possible" (to be as low level as possible). The overall message sending infrastructure consists of nine (9) threads and three (3) queues - two threads (Bluetooth, Serial, TCP) + 1 keep alive queue + 2 image taking threads and one queue per communication interface, in line with our message structure below, and one thread to handle the keep-alive signal as will be elaborated on later.
+
 This section contains everything you will need to know to get the `RPi` communication hub binary that is written in C to run.
 
 ## 1. Compiling

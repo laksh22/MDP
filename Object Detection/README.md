@@ -1,5 +1,13 @@
 # 1. Description of implementation
 
+The aim/goal of the image recognition/object detection module is to be as fast as possible. As such, we are trying to minimise on the time taken when the Algorithm initiates the "take picture command" to when Android receives the "image detected" message.
+
+As such the main object detection code will not be performed on the Raspberry Pi and will be executed remotely on another computer.
+
+There will be a Python script that will keep the camera warmed up and ready to take a picture whenever a take picture command is sent. This will reduce the time required to take a picture from roughly 2.8 seconds (2 seconds for the camera to warm up) to approximately 0.6 seconds to take a picture.
+
+With such an implementation, it will take approximately 0.7 to 0.8 seconds to take a picture and process it, most of which, can happen asynchronously after the initial 0.6 seconds where the robot will need to stay still when the image is taken.
+
 1. Whenever RPi receives a take picture command from TCP `@r_x_y_orientation!`. 
 The coordinates and orientation will be saved as a file in a folder (**coords_orien**) with filename (`x_y_orientation`). 
 The file will have no contents.
@@ -8,16 +16,22 @@ The file will have no contents.
 If it sees a file (or an increase in number of files), it will take the file name, take a picture and save the image as **x_y_orientation.jpg** (same as the file name) and save it to a folder, **images_to_scan**. 
 The polling is done at every 35ms.
 
-3. We have another Python script on the same PC running the algorithm for exploration and fastest path to run YOLOv3 - object detection, which will constantly scan the folder, **images_to_scan** where all images awaiting object detection are saved via FTP.
+3. To ensure that the robot stays still whenever the picture is taken, an *ACK* is required to be sent back to Algorithm before the next action is initiated. 
+The communication hub's camera thread will continuously poll the **images_to_scan** to check if the **x_y_orientation.jpg** image has already been taken. 
+If the image is taken, it will rename the **x_y_orientation.jpg** image to **x_y_orientation_ACK.jpg** and send an ACK to Algorithm. 
+This process will loop for 1000 iterations. 
+If the image is not taken, Algorithm will not receive an *ACK* and will send a take picture command again.
+
+4. We have another Python script on the same PC running the algorithm for exploration and fastest path to run YOLOv3 - object detection, which will constantly scan the folder, **images_to_scan** where all images awaiting object detection are saved via FTP.
 Once it has finish scanning an image, it will delete the image that was scanned from **images_to_scan**, reducing the number of images in the **images_to_scan** folder.
 
-4. If an object is detected, it will save it back to RPi via FTP as an image with the name **id,x,y.jpg** in an output folder named, **images_found** and also, on the PC to be displayed later in a single window, as part of the laboratory requirements.
+5. If an object is detected, it will save it back to RPi via FTP as an image with the name **id,x,y.jpg** in an output folder named, **images_found** and also, on the PC to be displayed later in a single window, as part of the laboratory requirements.
 
-5. After it has receive *EXPLORE_DONE* command from TCP, it will create a **DONE** file in the input folder **coords_orien**.
+6. After it has receive *DONE* (explore done) command from TCP, it will create a **DONE** file in the input folder **coords_orien**.
 
-6. Once PC sees the **DONE** file via FTP, and it has finished scanning all the images in **images_to_scan** it will display all the images in ONE single window.
+7. Once PC sees the **DONE** file via FTP, and it has finished scanning all the images in **images_to_scan** it will display all the images in ONE single window.
 
-7. RPi will then read all the image filenames in the **images_found** folder and send it to Bluetooth as separate packets for each image in **images_found** with the filename of the images as packet contents.
+8. RPi will then read all the image filenames in the **images_found** folder and send it to Bluetooth as separate packets for each image in **images_found** with the filename of the images as packet contents.
 
 # 2. Object Position
 Depending on the position of the bounding box, the **coord_orien** in the form of `x_y_orientation` needs to be resolved.
@@ -40,7 +54,7 @@ The resulting coordinates of the image should be resolved as such:
 The visualisation for the mapping is illustrated below, note that the camera is facing **RIGHTWARDS**.
 The delimiters `d1` and `d2` are visualised as the border lines between `REGION 0` AND `REGION 1` and `REGION 1` and `REGION 2` respectively.
 
-[![region_x_y_mapping](doc_images/region_x_y.png)](doc_images/region_x_y.png)
+[![region_x_y_mapping](doc_resources/region_x_y.png)](doc_resources/region_x_y.png)
 
 As such, if the camera is facing rightwards, the generalisation below holds:
 
@@ -133,3 +147,11 @@ Note that `Step 2` is **OPTIONAL** as the RPi binary initialises this script for
 2. **(NOTE: THIS IS NOT NECESSARY UNLESS YOU ARE DEBUGGING.**) In a separate terminal window with the RPi connected, run the `Object\ detection/rpi/img_event_handler.py` Python script. 
 3. On a preferred laptop with the required `opencv2` and `darknet/yolov3` dependencies installed, run the `Object\ detection/client/obj_detect_client.py` Python script.
  
+## 3.3 Sample output 
+
+Below is an example of the object detection output on a low frame rate feed that has been sped up by 8x.
+![](doc_resources/object_detection_8x.gif) 
+
+Below is an example of output images that are stacked together horizontally and physically in a 2xn array as per required by the leaderboard guidelines.
+
+![](doc_resources/object_detect_out.jpeg) 
