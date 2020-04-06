@@ -157,3 +157,4 @@ Below is an example of output images that are stacked together horizontally and 
 
 ![](doc_resources/object_detect_out.jpeg)
  
+
