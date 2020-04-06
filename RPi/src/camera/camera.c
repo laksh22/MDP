@@ -8,6 +8,8 @@
 #include "../hub/hub.h"
 #include "../settings.h"
 
+rpa_queue_t *r_queue;
+
 int save_coord_orientation(char *coord_orientation) {
   char emptyDir[50];
   FILE *fp;
@@ -21,7 +23,7 @@ int save_coord_orientation(char *coord_orientation) {
 int create_work_directories() {
   // Create all required working directories
   char dirList[3][35] =
-      {COORDS_ORIENT_DIR, IMAGES_TO_SCAN_DIR, IMAGES_FOUND_DIR};
+          {COORDS_ORIENT_DIR, IMAGES_TO_SCAN_DIR, IMAGES_FOUND_DIR};
   char emptyDir[1024];
   DIR *dir;
   int i;
@@ -104,7 +106,7 @@ int l_files_in_dir(char *path, arraylist *l) {
   unsigned int idx = 0;
 
   if ((dir = opendir(path)) != NULL) {
-    printf("[l_files_in_dir] New files in folder [%s]: \n", path);
+//    printf("[l_files_in_dir] New files in folder [%s]: \n", path);
     while ((entry = readdir(dir)) != NULL) {
       if (entry->d_type == DT_REG) {
         // Do not want invisible files like .DS_Store
@@ -112,7 +114,7 @@ int l_files_in_dir(char *path, arraylist *l) {
           continue;
         } else if (l->size == 0) {
           // Nothing in the list, insert into Arraylist
-          // +2 for delimiter and null terminater char
+          // +2 for delimiter and null terminator char
           filename = malloc(strlen(entry->d_name) + 2);
           strcpy(filename, entry->d_name);
           arraylist_add(l, filename);
@@ -128,7 +130,7 @@ int l_files_in_dir(char *path, arraylist *l) {
           } else if (idx == l->size - 1) {
             // Looped to end of list and filename does not exist
             // Insert filename into Arraylist
-            // +2 for delimiter and null terminater char
+            // +2 for delimiter and null terminator char
             filename = malloc(strlen(entry->d_name) + 2);
             strcpy(filename, entry->d_name);
             arraylist_add(l, filename);
@@ -153,7 +155,7 @@ void *read_img_labels() {
   unsigned int loop_idx = 0;
   int file_count;
   int cnt = 0;
-  char * filename;
+  char *filename;
 
   // Ensure required folders are created
   create_work_directories();
@@ -163,24 +165,6 @@ void *read_img_labels() {
 
   // Endless loop
   while (1) {
-    // Find files in IMAGES_FOUND_DIR
-    l_files_in_dir(IMAGES_FOUND_DIR, l);
-
-    printf("[read_img_labels] l->size: %d\n", l->size);
-    printf("[read_img_labels] pre_list_idx: %d\n", l->size);
-
-    if (l->size > pre_list_idx) {
-      // New filenames found, send new filenames to RPi
-      for (loop_idx = pre_list_idx; loop_idx < l->size; loop_idx++) {
-        filename = arraylist_get(l, loop_idx);
-        // C in RPi does not play well with exclamation point as the last char
-        *(filename + strlen(filename)) = '!';
-        *(filename + strlen(filename) + 1) = '\0';
-        distribute_command(filename, 'b');
-      }
-      pre_list_idx = l->size;
-    }
-
     // Get number of files in COORDS_ORIENT_DIR and filenames
     file_count = count_files_in_dir(COORDS_ORIENT_DIR);
 
@@ -189,6 +173,27 @@ void *read_img_labels() {
       // DONE file exists and is the only file
       // Break out of endless-loop and proceed to end of function/thread
       break;
+    }
+
+    // Find files in IMAGES_FOUND_DIR
+    l_files_in_dir(IMAGES_FOUND_DIR, l);
+
+//    printf("[read_img_labels] l->size: %d\n", l->size);
+//    printf("[read_img_labels] pre_list_idx: %d\n", l->size);
+
+    if (l->size > pre_list_idx) {
+      // New filenames found, send new filenames to RPi
+      for (loop_idx = pre_list_idx; loop_idx < l->size; loop_idx++) {
+        filename = arraylist_get(l, loop_idx);
+        /*
+         * C in RPi does not play well with exclamation point as the last char
+         * if stored in memory, do not store it, append it back when required
+         */
+        *(filename + strlen(filename)) = '!';
+        *(filename + strlen(filename) + 1) = '\0';
+        distribute_command(filename, 'b');
+      }
+      pre_list_idx = l->size;
     }
 
     //Pause thread for 1 second
@@ -201,5 +206,68 @@ void *read_img_labels() {
     free(arraylist_get(l, loop_idx));
   }
   arraylist_destroy(l);
+}
+
+void *take_picture() {
+  char *coord_orien;
+  char tcp_ack[] = "@tY!";
+  char *raw_file;
+  char file_ext[] = ".jpeg";
+  char *last_ext; // Reference and is not malloc-ed to
+  int img_waiting_counter = 0;
+  char old_file_name[MAX];
+  char new_file_name[MAX];
+
+  while (1) {
+    // Blocking, will wait until something is popped from queue
+    rpa_queue_pop(r_queue, (void **) &coord_orien);
+    save_coord_orientation(coord_orien);
+
+    if (strcmp(coord_orien, "DONE") == 0) {
+      distribute_command(tcp_ack, 't');
+      // DONE file is sent
+      // Break out of endless-loop and proceed to end of function/thread
+      break;
+    }
+
+    // Get raw file name
+    raw_file = malloc(strlen(coord_orien) + 1);
+    strcpy(raw_file, coord_orien);
+
+
+    // Construct the fully qualified path to the original file name
+    old_file_name[0] = '\0';
+    strcpy(old_file_name, IMAGES_TO_SCAN_DIR);
+    strcat(old_file_name, raw_file);
+    strcat(old_file_name, file_ext);
+
+    // Will wait for image to be taken for 1000 loops
+    img_waiting_counter = 0;
+    while (img_waiting_counter < 1000) {
+      // Check if image is taken
+      if (access(old_file_name, F_OK) != -1) {
+        // Image is taken
+
+        // Build fully qualified path to the new file with suffix "_ACK"
+        new_file_name[0] = '\0';
+        strcpy(new_file_name, IMAGES_TO_SCAN_DIR);
+        strcat(new_file_name, raw_file);
+        strcat(new_file_name, "_ACK");
+        strcat(new_file_name, file_ext);
+
+        // Rename file to suffix with "_ACK"
+        if (rename(old_file_name, new_file_name) == 0) {
+          // Ack to be sent back to TCP
+          distribute_command(tcp_ack, 't');
+          break;
+        }
+      }
+      usleep(20 * 1000);
+      img_waiting_counter++;
+    }
+
+    // Free the malloc strings
+    free(raw_file);
+  }
 }
 

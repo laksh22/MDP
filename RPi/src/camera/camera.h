@@ -23,4 +23,7 @@ int l_files_in_dir(char *path, arraylist *l);
 // Thread to reads the labels containing id,x,y to be sent to Bluetooth
 void *read_img_labels();
 
+// Thread to take picture and ACK back to TCP
+void *take_picture();
+
 #endif //RPI_RPI_SRC_PICAMERA_PICAMERA_H_

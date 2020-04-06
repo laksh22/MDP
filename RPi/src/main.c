@@ -14,7 +14,7 @@
 int tcp_status, bt_status, serial_status;
 pthread_mutex_t lock;
 
-rpa_queue_t *b_queue, *s_queue, *t_queue;
+rpa_queue_t *b_queue, *s_queue, *t_queue, *r_queue;
 
 // Serial "keep-alive" thread
 void *serial_inactiv_prvt_thread(void *arg) {
@@ -49,6 +49,7 @@ int main() {
   rpa_queue_create(&s_queue, (uint32_t) QSIZE);
   rpa_queue_create(&b_queue, (uint32_t) QSIZE);
   rpa_queue_create(&t_queue, (uint32_t) QSIZE);
+  rpa_queue_create(&r_queue, (uint32_t) QSIZE);
 
   // Default should be 0
   serial_status = 1;
@@ -92,6 +93,7 @@ int main() {
   pthread_create(&thread_group[5], NULL, serial_sender_create, NULL);
   pthread_create(&thread_group[6], NULL, serial_inactiv_prvt_thread, NULL);
   pthread_create(&thread_group[7], NULL, read_img_labels, NULL);
+  pthread_create(&thread_group[8], NULL, take_picture, NULL);
 
   // Start python script to take pictures
   system("python ../../../Object\\ Detection/RPi/img_evnt_handler.py &");

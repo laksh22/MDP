@@ -37,6 +37,11 @@ The resulting coordinates of the image should be resolved as such:
 | 2   | bb_center >= d1 and < d2 | 1      | id,2,10          | NORTH         |
 | 3   | bb_center >= d2          | 2      | id,2,9           | NORTH         |
 
+The visualisation for the mapping is illustrated below, note that the camera is facing **RIGHTWARDS**.
+The delimiters `d1` and `d2` are visualised as the border lines between `REGION 0` AND `REGION 1` and `REGION 1` and `REGION 2` respectively.
+
+[![region_x_y_mapping](doc_images/region_x_y.png)](doc_images/region_x_y.png)
+
 As such, if the camera is facing rightwards, the generalisation below holds:
 
 ```python
@@ -102,9 +107,10 @@ user_sub_token=$USER
 local_root=/home/$USER/
 ```
 
-If you try to copy to FTP, it will not work but FTP/files will. Replace <user> with the relevant user, for example
-Create the FTP directory so transfering of files is permitted. 
-The root directory is not allowed to have write permissions so a subfolder called files is needed.
+If you try to copy to FTP, it will not work but listing of FTP/files will work. This is so as teh home directory is not configured properly yet.
+Configure it by replacing <user> with the relevant user, for example:
+Create the FTP directory so transferring of files is permitted. 
+The root directory is not allowed to have write permissions so a sub-folder called files is needed.
 
 ```shell script
 mkdir /home/<user>/FTP
@@ -122,11 +128,8 @@ Connect over plain FTP (Port 21) should be enabled after all the steps above are
 
 ## 3.2 Performing Object Detection / Running
 
+Note that `Step 2` is **OPTIONAL** as the RPi binary initialises this script for the user. This reduces the number of commands that the user will need to run during the 2 minutes preparation time. 
 1. Ensure that all required devices (Serial, Bluetooth, Serial) are connected after running the `RPi` communication hub binary.
-2. In a separate terminal window with the RPi connected, run the `Object\ detection/rpi/img_event_handler.py` Python script.
+2. **(NOTE: THIS IS NOT NECESSARY UNLESS YOU ARE DEBUGGING.**) In a separate terminal window with the RPi connected, run the `Object\ detection/rpi/img_event_handler.py` Python script. 
 3. On a preferred laptop with the required `opencv2` and `darknet/yolov3` dependencies installed, run the `Object\ detection/client/obj_detect_client.py` Python script.
  
- 
-
-
-

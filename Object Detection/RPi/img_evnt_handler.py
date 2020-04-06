@@ -55,7 +55,13 @@ with picamera.PiCamera() as camera:
                     "%s.jpeg" % (IMAGES_TO_SCAN_DIR + files[0]))
                 # For debugging
 
-                copyfile("%s.jpeg" % (IMAGES_TO_SCAN_DIR + files[0]), "%s.jpeg" % (IMAGES_DEBUG_DIR + files[0]))
+                try:
+                    # Try to copy file to debug path
+                    copyfile("%s.jpeg" % (IMAGES_TO_SCAN_DIR + files[0]), "%s.jpeg" % (IMAGES_DEBUG_DIR + files[0]))
+                except:
+                    # Image renamed
+                    copyfile("%s_ACK.jpeg" % (IMAGES_TO_SCAN_DIR + files[0]), "%s.jpeg" % (IMAGES_DEBUG_DIR + files[0]))
+
 
                 # Remove COORD_ORIEN file
                 remove(COORDS_ORIEN_DIR + files[0])

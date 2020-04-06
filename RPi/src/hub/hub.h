@@ -4,13 +4,10 @@
 #include <pthread.h>
 #include "../rpa_queue/rpa_queue.h"
 
-//extern Queue *b_queue;
-//extern Queue *s_queue;
-//extern Queue *t_queue;
-
 extern rpa_queue_t *b_queue;
 extern rpa_queue_t *s_queue;
 extern rpa_queue_t *t_queue;
+extern rpa_queue_t *r_queue;
 
 //extern pthread_mutex_t lock;
 
