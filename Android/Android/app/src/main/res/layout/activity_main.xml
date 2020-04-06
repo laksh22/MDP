@@ -1,0 +1,182 @@
+<!-- android:background="#263238" -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/sample_main_layout"
+    android:background="@android:color/white"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/tv_status"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:textColor="@android:color/black"/>
+
+    </RelativeLayout>
+
+
+    <GridLayout
+        android:id="@+id/base_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="5">
+    </GridLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        //Forward Left Right Section
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="40"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <Button
+                android:text="Forward"
+                android:id="@+id/btn_forward"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#4DB6AC"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="50"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_left"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_weight="0.5"
+                    android:background="#4DB6AC"
+                    android:text="Left" />
+
+                <Button
+                    android:text="Right"
+                    android:id="@+id/btn_right"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:background="#4DB6AC"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="5dp"
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        //EX and FP Section
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="20"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:text="EX"
+                android:id="@+id/btn_explr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="#C6FF00"/>
+
+            <Button
+                android:text="FP"
+                android:id="@+id/btn_fastest"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#C6FF00"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
+
+        </LinearLayout>
+
+        //End Ex Section
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="20"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <Button
+                android:text="End EX"
+                android:id="@+id/btn_terminate"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="97"
+                android:background="#689EFF"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                />
+
+
+            </LinearLayout>
+
+
+
+        //C1 and C1 Section
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="20"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:text="C1"
+                android:id="@+id/btn_config1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#689F38"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
+
+            <Button
+                android:text="C2"
+                android:id="@+id/btn_config2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#689F38"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/sample_content_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:textColor="@android:color/white"
+
+        >
+
+    </FrameLayout>
+
+</LinearLayout>
+
