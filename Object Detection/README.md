@@ -133,7 +133,3 @@ Note that `Step 2` is **OPTIONAL** as the RPi binary initialises this script for
 2. **(NOTE: THIS IS NOT NECESSARY UNLESS YOU ARE DEBUGGING.**) In a separate terminal window with the RPi connected, run the `Object\ detection/rpi/img_event_handler.py` Python script. 
 3. On a preferred laptop with the required `opencv2` and `darknet/yolov3` dependencies installed, run the `Object\ detection/client/obj_detect_client.py` Python script.
  
- 
-
-
-
