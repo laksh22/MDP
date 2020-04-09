@@ -146,8 +146,16 @@ Note that `Step 2` is **OPTIONAL** as the RPi binary initialises this script for
 1. Ensure that all required devices (Serial, Bluetooth, Serial) are connected after running the `RPi` communication hub binary.
 2. **(NOTE: THIS IS NOT NECESSARY UNLESS YOU ARE DEBUGGING.**) In a separate terminal window with the RPi connected, run the `Object\ detection/rpi/img_event_handler.py` Python script. 
 3. On a preferred laptop with the required `opencv2` and `darknet/yolov3` dependencies installed, run the `Object\ detection/client/obj_detect_client.py` Python script.
- 
+
 ## 3.3 Object detection model
+
+1. Our team made use of YOLO model as the method to perform object detection.
+2. The YOLO model was trained on top of `darknet53.conv.74` model downloaded from https://pjreddie.com/darknet/yolo/
+3. Images of the signs were taken manually, with different angles. More than 2000 images were used to train the model.
+4. Model was trained using 1 of our laplop with GPU. We stop the training process after the accuracy of validation set stopped increasing.
+5. The .weights file was then used as the object detection model in YoloOrchestrator.py
+
+## 3.4 Object detection model
 
 1. Our team made use of YOLO model as the method to perform object detection.
 2. The YOLO model was trained on top of `darknet53.conv.74` model downloaded from https://pjreddie.com/darknet/yolo/
