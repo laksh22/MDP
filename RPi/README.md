@@ -1,9 +1,9 @@
 # RPi communication Hub
 The general implementation of the infrastructure is written and implemented in C as speed and efficiency was kept in mind when developing. 
-As such, the decision to write the communication hub in C was made as we wanted to "get as close to the metal as possible" (to be as low level as possible). The overall message sending infrastructure consists of nine (9) threads and three (3) queues - 
+As such, the decision to write the communication hub in C was made as we wanted to "get as close to the metal as possible" (to be as low level as possible). The overall message sending infrastructure consists of nine (9) threads and three (4) queues - 
 
 - 9 Threads
-  - Two threads (Bluetooth, Serial, TCP)
+  - Two threads each for the communications protocol (_Bluetooth_, _Serial_, _TCP_)
   - 1 keep alive queue 
   - 2 image taking and handling threads
 
@@ -30,7 +30,7 @@ pthread_create(&thread_group[7], NULL, read_img_labels, NULL);
 pthread_create(&thread_group[8], NULL, take_picture, NULL);
 ```
 
-- 3 Queues
+- 4 Queues
     - One queue per communication interface
     
 ```c
@@ -159,6 +159,8 @@ Please set them or make sure they are set and tested correctly in the CMake file
 -- Configuring incomplete, errors occurred!
 ```
 
+To resolve this issue, you probably forgot to run the [install Bluetooth dependency command](#41-bluetooth). Make sure to run the package install command.
+
 ### 5.2. Bluetooth not connecting / waiting for connection
 
 ```text
@@ -170,13 +172,9 @@ Please set them or make sure they are set and tested correctly in the CMake file
 [bt_connect]: Bluetooth Server is now listening for connections..
 ```
 
-This issue is caused by the usage of `/dev/ttyAMA0`, the serial port `/dev/ttyAMA0` should not be used. 
-
-Instead, please use `dev/ttyACM0`. During testing, you can use a USB cable connected to your an Android phone to connect to the upper port nearest to the LAN port.
+This issue is caused by the usage of `/dev/ttyAMA0`, the serial port `/dev/ttyAMA0` should not be used. Instead, please use `dev/ttyACM0`.
 
 This should be enough to get you through your tests. For further instructions on how to read the messages sent via the serial port `dev/ttyACM0` please refer to the [Serial](#42-serial) section.
-
-To resolve this issue, you probably forgot to run the [install Bluetooth dependency command](#41-bluetooth). Make sure to run the package install command.
 
 
 ### 5.3. Messages not getting sent over Bluetooth
