@@ -152,7 +152,7 @@ Note that `Step 2` is **OPTIONAL** as the RPi binary initialises this script for
 1. Our team made use of YOLO model as the method to perform object detection.
 2. The YOLO model was trained on top of `darknet53.conv.74` model downloaded from https://pjreddie.com/darknet/yolo/
 3. Images of the signs were taken manually, with different angles. More than 2000 images were used to train the model.
-4. Model was trained using 1 of our laplop with GPU. We stop the training process after the accuracy of validation set stopped increasing.
+4. Model was trained using 1 of our laptop with a GPU. We stop the training process after the accuracy of validation set stopped increasing.
 5. The .weights file was then used as the object detection model in YoloOrchestrator.py
 
 ## 3.4 Sample output
