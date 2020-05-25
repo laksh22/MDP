@@ -44,9 +44,9 @@ rpa_queue_create(&t_queue, (uint32_t) QSIZE);
 rpa_queue_create(&r_queue, (uint32_t) QSIZE);
 ```
 
+## 1. Compiling
 This section contains everything you will need to know to get the `RPi` communication hub binary that is written in C to run.
 
-## 1. Compiling
 You must be in the `RPi/src` directory before running the commands below.
 ```shell script
 cd RPi/src/
