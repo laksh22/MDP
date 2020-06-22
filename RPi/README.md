@@ -1,6 +1,10 @@
 # RPi communication Hub
 The general implementation of the infrastructure is written and implemented in C as speed and efficiency was kept in mind when developing. 
-As such, the decision to write the communication hub in C was made as we wanted to "get as close to the metal as possible" (to be as low level as possible). The overall message sending infrastructure consists of nine (9) threads and three (4) queues - 
+
+As such, the decision to write the communication hub in C was made as we wanted to "get as close to the metal as possible" (to be as low level as possible).
+
+## Details
+The overall message sending infrastructure consists of nine (**9**) threads and three (**4**) queues.
 
 - 9 Threads
   - Two threads each for the communications protocol (_Bluetooth_, _Serial_, _TCP_)
@@ -41,9 +45,9 @@ rpa_queue_create(&t_queue, (uint32_t) QSIZE);
 rpa_queue_create(&r_queue, (uint32_t) QSIZE);
 ```
 
+## 1. Compiling
 This section contains everything you will need to know to get the `RPi` communication hub binary that is written in C to run.
 
-## 1. Compiling
 You must be in the `RPi/src` directory before running the commands below.
 ```shell script
 cd RPi/src/
