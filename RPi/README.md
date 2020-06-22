@@ -1,5 +1,6 @@
 # RPi communication Hub
 The general implementation of the infrastructure is written and implemented in C as speed and efficiency was kept in mind when developing. 
+
 As such, the decision to write the communication hub in C was made as we wanted to "get as close to the metal as possible" (to be as low level as possible).
 
 ## Details
