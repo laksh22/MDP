@@ -8,7 +8,9 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.file.FileSystems;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -23,6 +25,7 @@ import algorithms.Path;
 import algorithms.Path.Step;
 import datatypes.Message;
 import datatypes.Orientation;
+import datatypes.SensorPosition;
 import main.RobotSystem;
 import simulator.arena.Arena;
 import simulator.arena.FileReaderWriter;
@@ -37,17 +40,19 @@ public class Controller {
 	private static final int EXPLORE_TIME_LIMIT = 360;
 	private static final int FFP_TIME_LIMIT = 120;
 	private static final int EXPLORE_REAL_RUN_SPEED = 1;
+	private static final int EXPLORE_COVERAGE = 100;
 	
 	private static Controller _instance;
 	private UI _ui;
 	private Timer _exploreTimer, _ffpTimer;
 	private int[] _robotPosition = new int[2];
+	private int[] _waypointPosition = new int[2];
 	private Orientation _robotOrientation;
 	private int _speed,  _exploreTimeLimit, _ffpTimeLimit;
 	private float _actualCoverage, _initialCoverage;
 	private boolean _hasReachedStart, _hasReachedTimeThreshold;
 	private PCClient _pcClient;
-	private Path _fastestPath;
+	private Path _fastestPath, _fastestPath2, _fastestBackPath;
 
 	private Controller() {
 		_ui = new UI();
@@ -59,10 +64,22 @@ public class Controller {
 		}
 		return _instance;
 	}
-
+	
+	public Orientation getOrientation() {
+		return this._robotOrientation;
+	}
+	
+	public int[] getPosition() {
+		return this._robotPosition;
+	}
+	
+	public Path getFastestPathBack() {
+		return _fastestBackPath;
+	}
+	
 	public void run() {
 		_ui.setVisible(true);
-		
+		_robotOrientation = Orientation.NORTH;
 		if (RobotSystem.isRealRun()) {
 	
 			_pcClient = PCClient.getInstance();
@@ -79,15 +96,51 @@ public class Controller {
 						_ui.setStatus("connected with RPi");
 						
 						//Read initial robot position
-						String msgRobotPosition = _pcClient.readMessage();
-						while (!msgRobotPosition.matches("[0-9]+,[0-9]+")) {
-							msgRobotPosition = _pcClient.readMessage();
+						String msgRobotPosition = "";
+						String msgWayPoint = "";
+						boolean receivePosition = true;
+						boolean receiveWaypoint = true;
+						String messageReceive = "";
+						List<String> valueList;
+						
+						while(receivePosition || receiveWaypoint) {
+							messageReceive = _pcClient.readMessage();
+							valueList = Arrays.asList(messageReceive.split(":"));
+							
+							if(receivePosition && valueList.get(0).equals("START")) {
+								msgRobotPosition = valueList.get(1);
+								int[] robotPosInput = getRobotPositionInput(msgRobotPosition);
+								resetRobotInMaze(_ui.getMazeGrids(), robotPosInput[0], robotPosInput[1]);
+								receivePosition = false;
+							}
+							if(receiveWaypoint && valueList.get(0).equals("WP")) {
+								msgWayPoint = valueList.get(1);
+								setWayPointInMaze(_ui.getMazeGrids(), msgWayPoint);
+								receiveWaypoint = false;
+							}
 						}
-						int[] robotPosInput = getRobotPositionInput(msgRobotPosition);
-						resetRobotInMaze(_ui.getMazeGrids(), robotPosInput[0], robotPosInput[1]);
+						
+//						msgRobotPosition = "1,1";
+//						//msgRobotPosition = valueList.get(1);
+//						int[] robotPosInput = getRobotPositionInput(msgRobotPosition);
+//						resetRobotInMaze(_ui.getMazeGrids(), robotPosInput[0], robotPosInput[1]);
+//
+//						msgWayPoint = "6,18";
+//						//String msgWayPoint = valueList.get(1);
+//						setWayPointInMaze(_ui.getMazeGrids(), msgWayPoint);
+						
+						// Version 2
+						MazeExplorer me = MazeExplorer.getInstance();
+						me.init(_robotPosition, _robotOrientation);
+						Robot caliRobot = Robot.getInstance();
+						
+						_robotOrientation = caliRobot.calibrateAtStartZone(_robotOrientation);
+						me.setOrientation(_robotOrientation);
+						//End Version 2
 						
 						//Get explore command
 						String msgExplore = _pcClient.readMessage();
+						//String msgExplore = Message.START_EXPLORATION;
 						while (!msgExplore.equals(Message.START_EXPLORATION)) {
 							msgExplore = _pcClient.readMessage();
 						}
@@ -100,15 +153,6 @@ public class Controller {
 				}
 					return null;
 				}
-	
-				private int[] getRobotPositionInput (String msgRobotPosition) {
-					int[] posInput = new int[2];
-					int index = msgRobotPosition.indexOf(",");
-					posInput[0] = Integer.parseInt(msgRobotPosition.substring(0, index));
-					posInput[1] = Integer.parseInt(msgRobotPosition.substring(index + 1));
-					return posInput;
-				}
-				
 				
 			};
 			
@@ -117,6 +161,14 @@ public class Controller {
 		} else {
 			_ui.refreshExploreInput();
 		}
+	}
+	
+	public int[] getRobotPositionInput (String msgRobotPosition) {
+		int[] posInput = new int[2];
+		int index = msgRobotPosition.indexOf(",");
+		posInput[0] = Integer.parseInt(msgRobotPosition.substring(0, index));
+		posInput[1] = Integer.parseInt(msgRobotPosition.substring(index + 1));
+		return posInput;
 	}
 
 	public UI getUI() {
@@ -128,6 +180,7 @@ public class Controller {
 	}
 	
 	public boolean hasReachedTimeThreshold() {
+		System.out.println("Reach Time Threshold: "+_hasReachedTimeThreshold);
 		return _hasReachedTimeThreshold;
 	}
 	
@@ -188,6 +241,10 @@ public class Controller {
 	}
 
 	public void resetRobotInMaze(JButton[][] mazeGrids, int x, int y) {
+		if(RobotSystem.isRealRun()) {
+			x+=1;
+			y+=1;
+		}
 		if (x < 2 || x > 14 || y < 2 || y > 9) {
 			_ui.setStatus("warning: robot position out of range");
 			resetMaze(mazeGrids);
@@ -198,7 +255,7 @@ public class Controller {
 				}
 			}
 			
-			_robotOrientation = Orientation.NORTH;
+			//_robotOrientation = Orientation.NORTH;
 			
 			switch (_robotOrientation) {
 			case NORTH:
@@ -218,8 +275,35 @@ public class Controller {
 			_robotPosition[0] = x - 1;
 			_robotPosition[1] = y - 1;
 		
-			
+			System.out.println("Robot initial position set at "+_robotPosition[0]+","+_robotPosition[1]);
 			_ui.setStatus("robot initial position set");
+		}
+	}
+	
+	public void setWayPointInMaze(JButton[][] mazeGrids, String waypoint) {
+		
+		if((_waypointPosition[1] != 0 && _waypointPosition[0] != 0) || waypoint.isEmpty())
+			mazeGrids[20-(_waypointPosition[1]+1)][(_waypointPosition[0]+1)-1].setText("");	
+		if(!waypoint.isEmpty()) {
+			int[] mazeWayPoint = getRobotPositionInput(waypoint);
+			int x = mazeWayPoint[0];
+			int y = mazeWayPoint[1];
+			
+			if(RobotSystem.isRealRun()) {
+				x+=1;
+				y+=1;
+			}
+			
+			if (x < 2 || x > 14 || y < 2 || y > 19) {
+				_ui.setStatus("warning: robot position out of range");
+				resetMaze(mazeGrids);
+			} else {
+				mazeGrids[20-y][x - 1].setText("WP");	
+				_waypointPosition[0] = x - 1;
+				_waypointPosition[1] = y - 1;
+				System.out.println("Waypoint set at "+_waypointPosition[0]+", "+_waypointPosition[1]);
+				_ui.setStatus("waypoint set at "+_waypointPosition[0]+", "+_waypointPosition[1]);
+			}
 		}
 	}
 
@@ -283,15 +367,18 @@ public class Controller {
 			
 			if (_counter >= 0) {
 				SwingWorker<Void, Float> getThreshold = new SwingWorker<Void, Float>() {
-					Path _backPath;
+//					Path _backPath;
 					@Override
 					protected Void doInBackground() throws Exception {
 						//float threshold;
 						MazeExplorer explorer = MazeExplorer.getInstance();
 						AStarPathFinder pathFinder = AStarPathFinder.getInstance();
 						
-						_backPath = pathFinder.findFastestPath(_robotPosition[0], _robotPosition[1], 
-								MazeExplorer.START[0], MazeExplorer.START[1], explorer.getMazeRef());
+//						_backPath = pathFinder.findFastestPath(_robotPosition[0], _robotPosition[1], 
+//								MazeExplorer.START[0], MazeExplorer.START[1], explorer.getMazeRef());
+//						System.out.println("Find fastest path back every turn");
+//						_fastestBackPath = pathFinder.findFastestPath(_robotPosition[0], _robotPosition[1], 
+//								MazeExplorer.START[0], MazeExplorer.START[1], explorer.getMazeRef());
 						
 						//threshold = _backPath.getNumOfSteps() * (1 / (float)_speed) + THRESHOLD_BUFFER_TIME; //If need buffer.
 						publish((float)_counter);
@@ -345,6 +432,7 @@ public class Controller {
 		if (RobotSystem.isRealRun()) {
 			_exploreTimeLimit = EXPLORE_TIME_LIMIT;
 			_speed = EXPLORE_REAL_RUN_SPEED;
+			_initialCoverage = EXPLORE_COVERAGE;
 		}
 
 		ExploreTimeClass timeActionListener = new ExploreTimeClass(_exploreTimeLimit);
@@ -358,21 +446,28 @@ public class Controller {
 				_hasReachedStart = false;
 				
 				explorer.explore(_robotPosition, _robotOrientation);
-				
 				//Compute the fastest path right after exploration for real run
 				if (RobotSystem.isRealRun()) {
+					System.out.println("Explore: Finish");
 					AStarPathFinder pathFinder = AStarPathFinder.getInstance();
+					
 					_fastestPath = pathFinder.findFastestPath(MazeExplorer.START[0], MazeExplorer.START[1], 
+							_waypointPosition[0], _waypointPosition[1], explorer.getMazeRef());
+					
+					_fastestPath2 = pathFinder.findFastestPath(_waypointPosition[0], _waypointPosition[1], 
 							MazeExplorer.GOAL[0], MazeExplorer.GOAL[1], explorer.getMazeRef());
+
+					_fastestPath.combineSteps(_fastestPath2.getSteps());
+					System.out.println("Explore: Fastest Path Found");
 					Orientation bestOri = pathFinder.getBestInitialOrientation(_fastestPath);
 					explorer.adjustOrientationTo(bestOri);
+					
 				}
 				
 				return null;
 			}
 			@Override
 			public void done() {
-				
 				_hasReachedStart = true;
 				
 				//Generate P1 & P2 map descriptors
@@ -398,7 +493,6 @@ public class Controller {
 				} else {
 					_ui.setStatus("exploration not reaches goal zone");
 				}
-				
 				
 				//Waiting for fastest path command for real run
 				if (!RobotSystem.isRealRun()) {
@@ -435,8 +529,8 @@ public class Controller {
 					_actualCoverage = (float)(100 * numExplored) / (float)(Arena.MAP_LENGTH * Arena.MAP_WIDTH);
 					_ui.setCoverageUpdate( _actualCoverage);
 					
-					if(_initialCoverage <= _actualCoverage)
-						stopExploring();
+//					if(_initialCoverage <= _actualCoverage)
+//						stopExploring();
 				}
 				return null;
 			}
@@ -489,21 +583,24 @@ public class Controller {
 			
 			_ui.refreshFfpInput();
 		} 
-		
+
 		SwingWorker<Void, Void> findFastestPath = new SwingWorker<Void, Void>() {
 			@Override
 			protected Void doInBackground() throws Exception {
-				
 				MazeExplorer explorer = MazeExplorer.getInstance();
 				AStarPathFinder pathFinder = AStarPathFinder.getInstance();
 	
-				if (!RobotSystem.isRealRun()) {
+				if(!RobotSystem.isRealRun()) {
 					_fastestPath = pathFinder.findFastestPath(MazeExplorer.START[0], MazeExplorer.START[1], 
+							_waypointPosition[0], _waypointPosition[1], explorer.getMazeRef());
+					_fastestPath2 = pathFinder.findFastestPath(_waypointPosition[0], _waypointPosition[1], 
 							MazeExplorer.GOAL[0], MazeExplorer.GOAL[1], explorer.getMazeRef());
-				}
-				
-				pathFinder.moveRobotAlongFastestPath(_fastestPath, explorer.getRobotOrientation());
 	
+					_fastestPath.combineSteps(_fastestPath2.getSteps());
+				}
+				System.out.println("Fastest Path: Start");
+				pathFinder.moveRobotAlongFastestPath(_fastestPath, explorer.getRobotOrientation());
+				System.out.println("Fastest Path: End");
 				ArrayList<Path.Step> steps = _fastestPath.getSteps();
 				JButton[][] mazeGrids = _ui.getMazeGrids();
 				for (Path.Step step : steps) {
@@ -511,23 +608,27 @@ public class Controller {
 					int y = step.getY();
 					mazeGrids[19-y][x].setBackground(Color.YELLOW);
 				}
+				
 				return null;
 			}
 			@Override
 			public void done() {
+				Robot robot = Robot.getInstance();
+				_robotOrientation = robot.calibrateAtEndZone(_robotOrientation);
+				PCClient pcClient = PCClient.getInstance();
+				if (RobotSystem.isRealRun()) {
+					pcClient.sendMessageToAndroid(Message.EXPLORE_DONE);
+				}
 				_ui.setStatus("fastest path found");
-	
 				if (!_ui.getTimerMessage().equals("fastest path: time out")) {
 					_ui.setTimerMessage("fastest path: within time limit");
 				}
 				if (_ffpTimer.isRunning()) {
 					_ffpTimer.stop();
 				}
-	
 			}
 		};
 		
-	
 		if (RobotSystem.isRealRun()) {
 			_ffpTimeLimit = FFP_TIME_LIMIT;
 		}
@@ -591,6 +692,7 @@ public class Controller {
 				_robotPosition[0] = _robotPosition[0] - 1;
 		}
 		updateMazeColor();
+		System.out.println("MoveRobotForward: "+LocalTime.now());
 	}
 
 	public void turnRobotRight() {
@@ -651,6 +753,8 @@ public class Controller {
 		JButton[][] mazeGrids = _ui.getMazeGrids();
 		MazeExplorer explorer = MazeExplorer.getInstance();
 		int[][] mazeRef = explorer.getMazeRef();
+		int[][] weightageRef = explorer.getWeightageRef();
+		
 		for (int i = 0; i < Arena.MAP_LENGTH; i++) {
 			for (int j = 0; j < Arena.MAP_WIDTH; j++) {
 				if (mazeRef[i][j] == MazeExplorer.IS_EMPTY) {
@@ -665,7 +769,7 @@ public class Controller {
 							mazeGrids[19-j][i].setBackground(Color.GREEN);
 						}
 					}
-				} else if (mazeRef[i][j] == MazeExplorer.IS_OBSTACLE) {
+				} else if (mazeRef[i][j] == MazeExplorer.IS_OBSTACLE) {// && weightageRef[i][j] > 1) {
 					mazeGrids[19-j][i].setBackground(Color.RED);
 				}
 			}
