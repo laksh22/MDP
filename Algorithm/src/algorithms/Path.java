@@ -5,13 +5,22 @@ import java.util.ArrayList;
 public class Path {
 	
 	private ArrayList<Step> _steps = new ArrayList<Step>();
-
-	public void prependStep(int x, int y) {
-		_steps.add(0, new Step(x, y));
+	
+	public void prependStep(int index, int x, int y) {
+		_steps.add(index, new Step(x, y));
 	}
 	
 	public ArrayList<Step> getSteps() {
 		return _steps;
+	}
+	
+	public void combineSteps(ArrayList<Step> step) {
+		_steps.remove(_steps.size()-1);
+		_steps.addAll(step);
+	}
+	
+	public int getStepSize() {
+		return _steps.size();
 	}
 	
 	public int getNumOfSteps() {

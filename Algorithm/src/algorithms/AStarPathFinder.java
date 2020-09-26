@@ -1,13 +1,16 @@
 package algorithms;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.time.LocalTime;  
 
 import datatypes.Movement;
 import datatypes.Orientation;
 import main.RobotSystem;
 import simulator.arena.Arena;
 import simulator.robot.Robot;
+import tcpcomm.PCClient;
 
 public class AStarPathFinder {
 	
@@ -24,9 +27,14 @@ public class AStarPathFinder {
         }
         return _instance;
     }
+    
+    public static AStarPathFinder getNewInstance() {
+    	_instance = new AStarPathFinder();
+    	return _instance;
+    }
 	
 	public Path findFastestPath(int startX, int startY, int destinationX, int destinationY, int[][] mazeRef) {
-		
+		System.out.println("findFastestPath Start "+LocalTime.now());
 		init(mazeRef);
 		
 		_closed.clear();
@@ -35,23 +43,7 @@ public class AStarPathFinder {
 		_nodes[startX][startY]._pathCost = 0;
 		_nodes[startX][startY]._ori = Orientation.NORTH;
 		_open.add(_nodes[startX][startY]);
-		
-		//testing - check virtual map
-//		boolean[][] cleared = _virtualMap.getCleared();
-//		int value;
-//		for (int a = Arena.MAP_WIDTH - 1; a >= 0; a--) {
-//			for (int b = 0; b < Arena.MAP_LENGTH; b++) {
-//				if (cleared[b][a]) {
-//					value = 1;
-//				} else {
-//					value = 0;
-//				}
-//				System.out.print(value + " ");
-//			}
-//			System.out.println();
-//		}
 
-		
 		while (_open.size() != 0) {
 			Node current = _open.getFirstNode();
 			if (current == _nodes[destinationX][destinationY]) {
@@ -72,7 +64,6 @@ public class AStarPathFinder {
 					int neighborX = current._x + i;
 					int neighborY = current._y + j; 
 					
-
 					if (isValidLocation(_virtualMap.getCleared(), neighborX, neighborY)) {
 						int pathCostOfNeighbor = current._pathCost + getEdgeCost(current._ori, current._x, current._y, neighborX, neighborY);
 						int heuristicOfNeighbor = getHeuristicCost(neighborX, neighborY, destinationX, destinationY);
@@ -102,19 +93,20 @@ public class AStarPathFinder {
 		Path path = new Path();
 		Node target = _nodes[destinationX][destinationY];
 		while (target != _nodes[startX][startY]) {
-			path.prependStep(target._x, target._y);
+			path.prependStep(0, target._x, target._y);
 			target = target._parent;
 		}
-		path.prependStep(startX,startY);
-				
+		path.prependStep(0, startX,startY);
+		System.out.println("findFastestPath End "+LocalTime.now());
 		return path;
 	}
-
+	
 	public Orientation moveRobotAlongFastestPath(Path fastestPath, Orientation currentOrientation) {
-		return moveRobotAlongFastestPath(fastestPath, currentOrientation, false, false);
+		return moveRobotAlongFastestPath(fastestPath, currentOrientation, false, false, false);
 	}
 	
-	public Orientation moveRobotAlongFastestPath(Path fastestPath, Orientation currentOrientation, boolean isExploring, boolean hasCalibration) {
+	public Orientation moveRobotAlongFastestPath(Path fastestPath, Orientation currentOrientation, boolean isExploring, 
+													boolean hasCalibration, boolean isImageRun) {
 
 		int[] tempPosition = new int[2];
 		int[] robotPosition;
@@ -122,11 +114,11 @@ public class AStarPathFinder {
 		Orientation nextOrientation;
 		ArrayList<Path.Step> steps = fastestPath.getSteps();
 		MazeExplorer explorer = MazeExplorer.getInstance();
-		
 		robotPosition = fastestPath.getStep(0);
 		
 		int count = 0;
-
+		String moveMessage = "";
+		System.out.println("Fastest Path Start via AStarPathFinder "+LocalTime.now());
 		for (int i = 0; i < steps.size() - 1; i++) {
 			
 			tempPosition[0] = steps.get(i).getX();
@@ -139,8 +131,8 @@ public class AStarPathFinder {
 					nextPosition[0], nextPosition[1]);
 			if (nextOrientation == currentOrientation) {
 				count++;
-			} else {
 
+			} else {
 				if (isExploring) {
 					for (int v = 0; v < count; v++) {
 						_robot.moveForward();
@@ -148,25 +140,26 @@ public class AStarPathFinder {
 						explorer.setIsExplored(robotPosition, currentOrientation, hasCalibration);
 					}
 				} else {
-					_robot.moveForward(count);
+					System.out.println("AStarPathFinder: moving robot forward: "+count+" "+LocalTime.now());
+					if(count != 0)
+						_robot.moveForward(count);
 				}
 				count = 1;
 				ChangeRobotOrientation(currentOrientation, nextOrientation, isExploring, hasCalibration);
 			}
 			currentOrientation = nextOrientation;
 		}
-
-
 		if (isExploring) {
 			for (int v = 0; v < count; v++) {
 				_robot.moveForward();
 				robotPosition = explorer.updateRobotPositionAfterMF(currentOrientation, robotPosition);
+				//if(!isImageRun)
 				explorer.setIsExplored(robotPosition, currentOrientation, hasCalibration);
 			}
 		} else {
 			_robot.moveForward(count);
 		}
-		
+		System.out.println("moveRobotAlongFastestPath Ends");
 		return currentOrientation;
 		
 	}
